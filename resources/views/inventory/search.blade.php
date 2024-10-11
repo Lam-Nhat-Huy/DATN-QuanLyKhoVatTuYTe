@@ -13,7 +13,7 @@
         <td colspan="6" class="p-0" style="border: 1px solid #dcdcdc; background-color: #fafafa;">
             <div class="card card-flush p-2" style="border: none; margin: 0;">
                 <div class="card-body p-2">
-                    <div class="table-responsive">
+                    <div class="table-responsive rounded">
                         <table class="table table-striped table-sm table-hover">
                             <thead class="fw-bolder bg-danger text-white">
                                 <tr>

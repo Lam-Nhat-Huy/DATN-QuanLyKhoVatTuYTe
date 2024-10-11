@@ -132,15 +132,13 @@ class EquipmentsController extends Controller
                 return redirect()->back();
             } elseif ($request->action_type === 'delete') {
 
-                $equipments = $this->equipmentModal::withTrashed()->whereIn('code', $request->equipment_codes)->get();
+                $equipments = $this->equipmentModal::onlyTrashed()->whereIn('code', $request->equipment_codes)->get();
 
                 foreach ($equipments as $equipment) {
 
                     if ($equipment->image) {
-                        $imagePath = public_path('images/equipments/' . $equipment->image);
-                        if (file_exists($imagePath)) {
-                            unlink($imagePath);
-                        }
+
+                        Storage::disk('public')->delete($equipment->image);
                     }
 
                     $equipment->forceDelete();
@@ -259,19 +257,14 @@ class EquipmentsController extends Controller
 
     public function delete_permanently($code)
     {
-        // Tìm thiết bị đã bị xóa mềm
-        $equipment = $this->equipmentModal::withTrashed()->where('code', $code)->firstOrFail();
+        $equipment = $this->equipmentModal::onlyTrashed()->where('code', $code)->firstOrFail();
 
-        // Xóa vĩnh viễn thiết bị
-        $equipment->forceDelete();
-
-        // Xóa ảnh nếu cần thiết
         if ($equipment->image) {
-            $imagePath = public_path('images/equipments/' . $equipment->image);
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
-            }
+
+            Storage::disk('public')->delete($equipment->image);
         }
+
+        $equipment->forceDelete();
 
         toastr()->success('Xóa vĩnh viễn thiết bị thành công');
 
@@ -280,7 +273,7 @@ class EquipmentsController extends Controller
 
     public function restore_equipment($code)
     {
-        $this->equipmentModal::withTrashed()->where('code', $code)->restore();
+        $this->equipmentModal::onlyTrashed()->where('code', $code)->restore();
 
         toastr()->success('Khôi phục thiết bị thành công');
 
@@ -430,7 +423,7 @@ class EquipmentsController extends Controller
                 return redirect()->back();
             } elseif ($request->action_type === 'delete') {
 
-                Equipment_types::withTrashed()->whereIn('code', $request->equipment_group_codes)->forceDelete();
+                Equipment_types::onlyTrashed()->whereIn('code', $request->equipment_group_codes)->forceDelete();
 
                 toastr()->success('Xóa thành công');
 
@@ -449,7 +442,7 @@ class EquipmentsController extends Controller
 
         if (!empty($request->delete_value)) {
 
-            $notification = Equipment_types::withTrashed()->where('code', $request->delete_value)->forceDelete();
+            $notification = Equipment_types::onlyTrashed()->where('code', $request->delete_value)->forceDelete();
 
             toastr()->success('Xóa vĩnh viễn thành công');
 
@@ -545,10 +538,8 @@ class EquipmentsController extends Controller
 
     public function restore_equipment_group($code)
     {
-        // Tìm nhóm thiết bị đã bị xóa mềm bằng code
-        $group = Equipment_types::withTrashed()->where('code', $code)->firstOrFail();
+        $group = Equipment_types::onlyTrashed()->where('code', $code)->firstOrFail();
 
-        // Khôi phục
         $group->restore();
 
         return redirect()->route('equipments.equipments_group_trash')->with('success', 'Nhóm thiết bị đã được khôi phục thành công!');
@@ -556,10 +547,8 @@ class EquipmentsController extends Controller
 
     public function delete_permanently_group($code)
     {
-        // Tìm nhóm thiết bị đã bị xóa mềm
-        $group = Equipment_types::withTrashed()->where('code', $code)->firstOrFail();
+        $group = Equipment_types::onlyTrashed()->where('code', $code)->firstOrFail();
 
-        // Xóa vĩnh viễn
         $group->forceDelete();
 
         return redirect()->route('equipments.equipments_group_trash')->with('success', 'Nhóm thiết bị đã được xóa vĩnh viễn!');
@@ -567,7 +556,7 @@ class EquipmentsController extends Controller
 
     function generateRandomString($length = 9)
     {
-        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters = '0123456789';
 
         $charactersLength = strlen($characters);
 

@@ -71,7 +71,7 @@ var KTModalExportUsers = function () {
                             });
 
                             //form.submit(); // Submit form
-                        }, 2000);
+                        }, 500);
                     } else {
                         Swal.fire({
                             text: "Sorry, looks like there are some errors detected, please try again.",

@@ -116,7 +116,7 @@
             </div>
         </div>
         <div class="card-body py-3">
-            <div class="table-responsive">
+            <div class="table-responsive rounded">
                 <table class="table align-middle gs-0 gy-4">
                     <thead>
                         <tr class="fw-bolder bg-success">
@@ -179,7 +179,7 @@
                                         <div class="card-body p-2" style="padding-top: 0px !important">
                                             <!-- Begin::Receipt Items (Right column) -->
                                             <div class="col-md-12">
-                                                <div class="table-responsive">
+                                                <div class="table-responsive rounded">
                                                     <table class="table table-striped table-sm table-hover">
                                                         <thead class="fw-bolder bg-danger">
                                                             <tr>

@@ -13,8 +13,8 @@ return new class extends Migration
             $table->char('equipment_code', 20)->nullable()->nullable();
             $table->char('batch_number', 20)->unique();
             $table->integer('current_quantity')->nullable();
-            $table->date('expiry_date')->nullable();
-            $table->date('manufacture_date')->nullable();
+            $table->timestamp('expiry_date')->nullable();
+            $table->timestamp('manufacture_date')->nullable();
             $table->char('import_code', 20)->nullable()->nullable();
             $table->char('export_code', 20)->nullable()->nullable();
             $table->timestamps();

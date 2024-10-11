@@ -16,6 +16,6 @@ loadAnimationButtons.forEach(button => {
 
         setTimeout(() => {
             form.submit();
-        }, 1200);
+        }, 500);
     });
 });

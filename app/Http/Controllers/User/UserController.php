@@ -137,7 +137,7 @@ class UserController extends Controller
                 return redirect()->back();
             } elseif ($request->action_type === 'delete') {
 
-                $users = $this->callModel::withTrashed()->whereIn('code', $request->user_codes)->get();
+                $users = $this->callModel::onlyTrashed()->whereIn('code', $request->user_codes)->get();
 
                 foreach ($users as $user) {
 
@@ -173,7 +173,7 @@ class UserController extends Controller
 
         if (isset($request->user_code_delete)) {
 
-            $user = $this->callModel::withTrashed()->where('code', $request->user_code_delete)->first();
+            $user = $this->callModel::onlyTrashed()->where('code', $request->user_code_delete)->first();
 
             if ($user->avatar) {
 
@@ -317,7 +317,7 @@ class UserController extends Controller
 
     function generateRandomString($length = 9)
     {
-        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters = '0123456789';
 
         $charactersLength = strlen($characters);
 

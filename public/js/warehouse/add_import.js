@@ -1,18 +1,20 @@
 let equipmentData = [];
 
 // Kiểm tra trùng số lô trước khi thêm vào danh sách thiết bị
-async function checkBatchNumber(batch_number, equipment_code) {
-    try {
-        const response = await fetch(
-            `/system/warehouse/check-batch-number/${batch_number}/${equipment_code}`
-        );
-        const data = await response.json();
-        return data.exists;
-    } catch (error) {
-        console.error("Error checking batch number:", error);
-        return false;
-    }
-}
+// async function checkBatchNumber(batch_number, equipment_code) {
+//     try {
+//         const response = await fetch(
+//             `/system/warehouse/check-batch-number/${batch_number}/${equipment_code}`
+//         );
+//         const data = await response.json();
+//         return data.exists;
+//     } catch (error) {
+//         console.error("Error checking batch number:", error);
+//         return false;
+//     }
+// }
+
+// Thêm thiết bị vào danh sách
 async function addEquipment() {
     const supplier_code = document.getElementById("supplier_code").value;
     const note = document.getElementById("note").value;
@@ -174,6 +176,7 @@ async function addEquipment() {
     calculateTotals();
 }
 
+// Xóa thiết bị khỏi danh sách
 function removeEquipment(index, element) {
     equipmentData.splice(index, 1);
     const row = element.closest("tr");
@@ -186,6 +189,7 @@ function removeEquipment(index, element) {
     calculateTotals();
 }
 
+// Tính Tiền
 function calculateTotals() {
     let totalDiscount = 0;
     let totalVAT = 0;
@@ -221,78 +225,79 @@ function calculateTotals() {
         });
 }
 
-function submitEquipments() {
-    document.getElementById("equipmentData").value =
-        JSON.stringify(equipmentData);
-}
+// function submitEquipments() {
+//     document.getElementById("equipmentData").value =
+//         JSON.stringify(equipmentData);
+// }
 
-document
-    .getElementById("equipment_code")
-    .addEventListener("change", function () {
-        const equipmentCode = this.value;
+// document
+//     .getElementById("equipment_code")
+//     .addEventListener("change", function () {
+//         const equipmentCode = this.value;
 
-        if (equipmentCode) {
-            // Gửi yêu cầu AJAX để lấy dữ liệu của thiết bị
-            fetch(`/system/system/warehouse/get_equipment/${equipmentCode}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    // Điền dữ liệu vào các trường liên quan
-                    document.getElementById("price").value = data.price || "";
-                    document.getElementById("batch_number").value =
-                        data.batch_number || "";
-                    document.getElementById("product_date").value =
-                        data.product_date || "";
-                    document.getElementById("expiry_date").value =
-                        data.expiry_date || "";
-                })
-                .catch((error) => {
-                    console.error("Error fetching equipment data:", error);
-                });
-        }
-    });
-function formatCurrency(input) {
-    let value = input.value.replace(/[^0-9]/g, "");
+//         if (equipmentCode) {
+//             // Gửi yêu cầu AJAX để lấy dữ liệu của thiết bị
+//             fetch(`/system/system/warehouse/get_equipment/${equipmentCode}`)
+//                 .then((response) => response.json())
+//                 .then((data) => {
+//                     // Điền dữ liệu vào các trường liên quan
+//                     document.getElementById("price").value = data.price || "";
+//                     document.getElementById("batch_number").value =
+//                         data.batch_number || "";
+//                     document.getElementById("product_date").value =
+//                         data.product_date || "";
+//                     document.getElementById("expiry_date").value =
+//                         data.expiry_date || "";
+//                 })
+//                 .catch((error) => {
+//                     console.error("Error fetching equipment data:", error);
+//                 });
+//         }
+//     });
 
-    if (value) {
-        value = parseFloat(value).toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-        });
-    } else {
-        value = "0 VNĐ";
-    }
+// function formatCurrency(input) {
+//     let value = input.value.replace(/[^0-9]/g, "");
 
-    input.value = value.replace("VNĐ", "").trim();
-}
+//     if (value) {
+//         value = parseFloat(value).toLocaleString("vi-VN", {
+//             style: "currency",
+//             currency: "VND",
+//         });
+//     } else {
+//         value = "0 VNĐ";
+//     }
 
-function filterProducts() {
-    var input = document.getElementById("equipment_name"); // Lấy tên thiết bị để tìm kiếm
-    var filter = input.value.toUpperCase();
-    var dropdown = document.getElementById("productDropdown");
+//     input.value = value.replace("VNĐ", "").trim();
+// }
 
-    dropdown.style.display = filter ? "block" : "none";
-    dropdown.innerHTML = ""; // Xóa nội dung trước đó
+// function filterProducts() {
+//     var input = document.getElementById("equipment_name"); // Lấy tên thiết bị để tìm kiếm
+//     var filter = input.value.toUpperCase();
+//     var dropdown = document.getElementById("productDropdown");
 
-    var filteredProducts = products.filter(function (product) {
-        return product.name.toUpperCase().indexOf(filter) > -1;
-    });
+//     dropdown.style.display = filter ? "block" : "none";
+//     dropdown.innerHTML = ""; // Xóa nội dung trước đó
 
-    filteredProducts.forEach(function (product) {
-        var item = `
-            <a class="dropdown-item d-flex align-items-center" style="background-color: white !important; color: #000;" onclick="selectProduct('${product.code}', '${product.name}')">
-                <img src="https://png.pngtree.com/template/20190316/ourlarge/pngtree-medical-health-logo-image_79595.jpg" alt="Product Image" class="me-2" style="width: 40px; height: 40px;">
-                <div>
-                    <div class="fw-bold">${product.name}</div>
-                    <small>Mã thiết bị: ${product.code}</small>
-                </div>
-            </a>
-        `;
-        dropdown.insertAdjacentHTML("beforeend", item);
-    });
-}
+//     var filteredProducts = products.filter(function (product) {
+//         return product.name.toUpperCase().indexOf(filter) > -1;
+//     });
 
-function selectProduct(productCode, productName) {
-    document.getElementById("equipment_name").value = productName; // Hiển thị tên thiết bị
-    document.getElementById("equipment_code").value = productCode; // Lưu mã thiết bị trong input ẩn
-    document.getElementById("productDropdown").style.display = "none";
-}
+//     filteredProducts.forEach(function (product) {
+//         var item = `
+//             <a class="dropdown-item d-flex align-items-center" style="background-color: white !important; color: #000;" onclick="selectProduct('${product.code}', '${product.name}')">
+//                 <img src="https://png.pngtree.com/template/20190316/ourlarge/pngtree-medical-health-logo-image_79595.jpg" alt="Product Image" class="me-2" style="width: 40px; height: 40px;">
+//                 <div>
+//                     <div class="fw-bold">${product.name}</div>
+//                     <small>Mã thiết bị: ${product.code}</small>
+//                 </div>
+//             </a>
+//         `;
+//         dropdown.insertAdjacentHTML("beforeend", item);
+//     });
+// }
+
+// function selectProduct(productCode, productName) {
+//     document.getElementById("equipment_name").value = productName; // Hiển thị tên thiết bị
+//     document.getElementById("equipment_code").value = productCode; // Lưu mã thiết bị trong input ẩn
+//     document.getElementById("productDropdown").style.display = "none";
+// }

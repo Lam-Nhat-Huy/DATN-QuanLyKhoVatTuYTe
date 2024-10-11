@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('receipt_details', function (Blueprint $table) {
             $table->id();
             $table->char('receipt_code', 20)->nullable();
-            $table->char('batch_number', 20)->unique();
-            $table->date('expiry_date')->nullable();
-            $table->date('manufacture_date')->nullable();
+            $table->char('batch_number', 20)->nullable();
+            $table->timestamp('expiry_date')->nullable();
+            $table->timestamp('manufacture_date')->nullable();
             $table->integer('quantity');
             $table->decimal('VAT', 10, 2)->nullable();
             $table->decimal('discount', 10, 2)->nullable();
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('receipt_code')->references('code')->on('receipts')->onDelete('set null');
+            $table->foreign('receipt_code')->references('code')->on('receipts')->onDelete('cascade');
             $table->foreign('equipment_code')->references('code')->on('equipments')->onDelete('set null');
         });
     }

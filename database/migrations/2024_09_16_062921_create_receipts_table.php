@@ -12,9 +12,9 @@ return new class extends Migration
             $table->char('code', 20)->primary();
             $table->char('supplier_code', 20);
             $table->text('note')->nullable();
-            $table->boolean('status')->default(true);
-            $table->bigInteger('receipt_no');
-            $table->date('receipt_date')->nullable();
+            $table->boolean('status')->default(false);
+            $table->char('receipt_no');
+            $table->timestamp('receipt_date')->nullable();
             $table->char('created_by', 20);
             $table->timestamps();
             $table->softDeletes();

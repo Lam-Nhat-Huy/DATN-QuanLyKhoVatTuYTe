@@ -621,7 +621,7 @@
                         document.getElementById('loading-overlay').style.display = 'none';
                         this.disabled = false;
                     });
-            }, 1000);
+            }, 500);
         });
 
         // Xóa nhóm thiết bị
@@ -671,7 +671,7 @@
                         document.getElementById('loading-overlay').style.display = 'none';
                         this.disabled = false;
                     });
-            }, 1000);
+            }, 500);
         });
 
         //------------------------------------------------------------------------------------//
@@ -768,7 +768,7 @@
                         document.getElementById('loading-overlay').style.display = 'none';
                         this.disabled = false;
                     });
-            }, 1000);
+            }, 500);
         });
 
         // Xóa đơn vị tính
@@ -816,7 +816,7 @@
                         document.getElementById('loading-overlay').style.display = 'none';
                         this.disabled = false;
                     });
-            }, 1000);
+            }, 500);
         });
 
         //------------------------------------------------------------------------------------//
@@ -908,7 +908,7 @@
                         document.getElementById('loading-overlay').style.display = 'none';
                         this.disabled = false;
                     });
-            }, 1000);
+            }, 500);
         });
 
         // Xóa nhà cung cấp
@@ -956,7 +956,7 @@
                         document.getElementById('loading-overlay').style.display = 'none';
                         this.disabled = false;
                     });
-            }, 1000);
+            }, 500);
         });
 
         function changeEquipmentType() {

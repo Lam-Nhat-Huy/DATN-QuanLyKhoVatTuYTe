@@ -115,7 +115,7 @@ class ReportController extends Controller
                 return redirect()->back();
             } elseif ($request->action_type === 'delete') {
 
-                $reports = $this->callModel::withTrashed()->whereIn('code', $request->report_codes)->get();
+                $reports = $this->callModel::onlyTrashed()->whereIn('code', $request->report_codes)->get();
 
                 foreach ($reports as $report) {
 
@@ -141,7 +141,7 @@ class ReportController extends Controller
 
         if (isset($request->delete_report)) {
 
-            $report = $this->callModel::withTrashed()->where('code', $request->delete_report)->first();
+            $report = $this->callModel::onlyTrashed()->where('code', $request->delete_report)->first();
 
             Storage::disk('public')->delete('reports/' . $report->file);
 
@@ -287,7 +287,7 @@ class ReportController extends Controller
 
     function generateRandomString($length = 9)
     {
-        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters = '0123456789';
 
         $charactersLength = strlen($characters);
 

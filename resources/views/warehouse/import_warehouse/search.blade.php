@@ -1,4 +1,4 @@
-@forelse ($receipts as $item)
+{{-- @forelse ($receipts as $item)
     <tr class="text-center hover-table pointer" data-bs-toggle="collapse" data-bs-target="#collapse{{ $item['code'] }}"
         aria-expanded="false" aria-controls="collapse{{ $item['code'] }}">
         <td>
@@ -150,7 +150,7 @@
 
                         <!-- Begin::Receipt Items (Right column) -->
                         <div class="col-md-12">
-                            <div class="table-responsive">
+                            <div class="table-responsive rounded">
                                 <table class="table table-striped table-sm table-hover">
                                     <thead class="fw-bolder bg-danger">
                                         <tr>
@@ -245,4 +245,4 @@
             </div>
         </td>
     </tr>
-@endforelse
+@endforelse --}}

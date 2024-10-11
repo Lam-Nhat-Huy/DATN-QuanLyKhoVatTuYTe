@@ -74,7 +74,7 @@
         @include('check_warehouse.filter')
 
         <div class="card-body py-3">
-            <div class="table-responsive">
+            <div class="table-responsive rounded">
                 <table class="table align-middle gs-0 gy-4">
                     <!-- Trong phần <thead> của bảng -->
                     <thead>
@@ -190,7 +190,7 @@
                                                 </div>
 
                                                 <div class="col-md-12">
-                                                    <div class="table-responsive">
+                                                    <div class="table-responsive rounded">
                                                         <table class="table table-striped table-sm table-hover">
                                                             <thead style="background-color: #FFA500;">
                                                                 <tr class="text-center">

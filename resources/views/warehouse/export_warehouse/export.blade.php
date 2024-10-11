@@ -96,7 +96,7 @@
 
         {{-- Danh sách phiếu  --}}
         <div class="card-body py-3">
-            <div class="table-responsive">
+            <div class="table-responsive rounded">
                 <table class="table align-middle gs-0 gy-4">
                     <thead>
                         <tr class="bg-success">
@@ -209,7 +209,7 @@
 
                                                 <!-- Begin::Receipt Items (Right column) -->
                                                 <div class="col-md-12">
-                                                    <div class="table-responsive">
+                                                    <div class="table-responsive rounded">
                                                         <table class="table table-striped table-sm table-hover">
                                                             <thead class="fw-bolder bg-danger">
                                                                 <tr>
@@ -466,7 +466,7 @@
                                 <!-- Begin::Export Items -->
                                 <div class="mb-4">
                                     <h4 class="text-twitter border-bottom border-dark pb-4 mb-4">Danh sách thiết bị</h4>
-                                    <div class="table-responsive">
+                                    <div class="table-responsive rounded">
                                         <table class="table table-striped table-sm table-hover">
                                             <thead class="fw-bolder bg-success">
                                                 <tr>
@@ -597,7 +597,7 @@
                         <!-- Receipt Items -->
                         <div class="mb-5">
                             <h5 class="text-twitter">Danh sách thiết bị</h5>
-                            <div class="table-responsive">
+                            <div class="table-responsive rounded">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr class="fw-bold bg-success">

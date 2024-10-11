@@ -99,6 +99,9 @@ class EquipmentRequestController extends Controller
                     'status' => 1,
                 ]);
 
+            Import_equipment_request_details::where('import_request_code', $request->browse_request)
+                ->update(['status' => 1]);
+
             toastr()->success('Đã duyệt phiếu yêu cầu mua hàng');
 
             return redirect()->back();
@@ -126,7 +129,9 @@ class EquipmentRequestController extends Controller
             }
         }
 
-        return view("{$this->route}.import_equipment_request.index", compact('title', 'AllEquipmentRequest', 'AllSuppiler', 'AllUser'));
+        $allReceiptNo = Receipts::pluck('receipt_no');
+
+        return view("{$this->route}.import_equipment_request.index", compact('title', 'AllEquipmentRequest', 'AllSuppiler', 'AllUser', 'allReceiptNo'));
     }
 
     public function import_equipment_request_trash(Request $request)
@@ -433,7 +438,7 @@ class EquipmentRequestController extends Controller
 
     function generateRandomString($length = 9)
     {
-        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters = '0123456789';
 
         $charactersLength = strlen($characters);
 

@@ -148,7 +148,7 @@
 
         <div class="card-body py-3">
             @if ($items->isNotEmpty())
-                <div class="table-responsive">
+                <div class="table-responsive rounded">
                     <table class="table table-striped align-middle gs-0 gy-4">
                         <thead>
                             <tr class="fw-bolder bg-success text-white">

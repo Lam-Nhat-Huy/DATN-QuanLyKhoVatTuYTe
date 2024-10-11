@@ -5,26 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Receipt_details extends Model
+class   Receipt_details extends Model
 {
-    protected $primaryKey = 'code';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     use HasFactory;
 
     protected $fillable = [
         'receipt_code',
         'batch_number',
-        'expire_date',
+        'expiry_date',
         'manufacture_date',
         'quantity',
-        'price',
+        'VAT',
         'discount',
+        'price',
+        'equipment_code',
         'created_at',
         'updated_at',
+        'deleted_at',
     ];
 
     public function receipt()

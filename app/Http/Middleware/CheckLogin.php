@@ -19,15 +19,12 @@ class CheckLogin
         $userCode = session('user_code');
 
         $user = Users::where('code', $userCode)
-            ->where(function ($query) {
-                $query->where('status', 0)
-                    ->orWhereNotNull('deleted_at');
-            })
-            ->withTrashed()
+            ->where('status', 0)
+            ->onlyTrashed()
             ->first();
 
         if ($userCode && $user) {
-            
+
             session()->forget(['user_code', 'isAdmin']);
 
             return redirect()->route('home');

@@ -157,7 +157,7 @@
             </form>
         </div>
         <div class="card-body py-3">
-            <div class="table-responsive">
+            <div class="table-responsive rounded">
                 <table class="table align-middle gs-0 gy-4">
                     <thead>
                         <tr class="text-center bg-success">
@@ -223,7 +223,7 @@
                                         <div class="card-body p-2" style="padding-top: 0px !important">
                                             <!-- Begin::Receipt Items (Right column) -->
                                             <div class="col-md-12">
-                                                <div class="table-responsive">
+                                                <div class="table-responsive rounded">
                                                     <table class="table table-striped table-sm table-hover">
                                                         <thead class="text-center bg-danger">
                                                             <tr>
@@ -375,7 +375,7 @@
                                                     <h4 class="text-primary border-bottom border-dark pb-4 mb-4">
                                                         Danh Sách Thiết Bị
                                                     </h4>
-                                                    <div class="table-responsive">
+                                                    <div class="table-responsive rounded">
                                                         <table class="table table-striped align-middle gs-0 gy-4">
                                                             <thead>
                                                                 <tr class="text-center bg-success">

@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Receipts extends Model
 {
     use HasFactory;
+
+    use SoftDeletes;
 
     protected $primaryKey = 'code';
 
@@ -20,11 +23,12 @@ class Receipts extends Model
         'supplier_code',
         'note',
         'status',
-        'receipt_date',
         'receipt_no',
+        'receipt_date',
         'created_by',
         'created_at',
         'updated_at',
+        'deleted_at',
     ];
 
     public function details()

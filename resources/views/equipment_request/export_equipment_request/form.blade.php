@@ -127,7 +127,7 @@
 
         <div class="card mb-5 mb-xl-8 pt-5">
             <div class="card-body py-3 px-17">
-                <div class="table-responsive">
+                <div class="table-responsive rounded">
                     <table class="table table-striped align-middle gs-0 gy-4">
                         <thead>
                             <tr class="fw-bolder bg-success">

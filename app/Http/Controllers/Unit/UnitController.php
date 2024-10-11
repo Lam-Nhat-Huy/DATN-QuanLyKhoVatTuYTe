@@ -179,7 +179,7 @@ class UnitController extends Controller
 
     function generateRandomString($length = 9)
     {
-        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters = '0123456789';
 
         $charactersLength = strlen($characters);
 

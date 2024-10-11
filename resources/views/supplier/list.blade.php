@@ -160,7 +160,7 @@
         <form action="{{ route('supplier.list') }} " method="POST">
             @csrf
             <div class="card-body py-3">
-                <div class="table-responsive">
+                <div class="table-responsive rounded">
                     <table class="table align-middle gs-0 gy-4">
                         <thead class="bg-success">
                             <tr>

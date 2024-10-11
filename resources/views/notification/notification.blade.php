@@ -174,10 +174,10 @@
             @csrf
             <input type="hidden" name="action_type" id="action_type" value="">
             <div class="card-body py-3">
-                <div class="table-responsive">
+                <div class="table-responsive rounded">
                     <table class="table align-middle gs-0 gy-4">
                         <thead>
-                            <tr class="bg-success text-center">
+                            <tr class="fw-bolder bg-success">
                                 <th class="ps-4">
                                     <input type="checkbox" id="selectAll" />
                                 </th>
@@ -194,7 +194,7 @@
                         </thead>
                         <tbody>
                             @forelse ($AllNotification as $item)
-                                <tr class="hover-table pointer text-center">
+                                <tr class="hover-table pointer">
                                     <td>
                                         <input type="checkbox" name="notification_codes[]" value="{{ $item->code }}"
                                             class="row-checkbox" />
@@ -218,52 +218,31 @@
                                     </td>
                                     <td class="text-center">
                                         @if ($item->status == 1)
-                                            <span
-                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
-                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #45ff07; color: white;">
-                                                Hiển thị
-                                            </span>
+                                            <div style="font-size: 10px;" class="badge bg-success rounded-pill">Hiển thị</div>
                                         @else
-                                            <span
-                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
-                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #dc3545; color: white;">
-                                                Không hiển thị
-                                            </span>
+                                            <div style="font-size: 10px;" class="badge bg-danger rounded-pill">Không hiển thị</div>
                                         @endif
                                     </td>
 
                                     <td class="text-center">
                                         @if ($item->important == 1)
-                                            <span
-                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
-                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #45ff07; color: #ffffff;">
-                                                Có
-                                            </span>
+                                            <div class="rounded px-2 py-1 text-white bg-warning text-center rounded-pill"
+                                                style="font-size: 10px;"> Có</div>
                                         @else
-                                            <span
-                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
-                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #dc3545; color: white;">
-                                                Không
-                                            </span>
+                                            <div class="rounded px-2 py-1 text-white bg-danger text-center rounded-pill"
+                                                style="font-size: 10px;"> Không</div>
                                         @endif
                                     </td>
 
                                     <td class="text-center">
                                         @if ($item->lock_warehouse == 1)
-                                            <span
-                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
-                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #45ff07; color: #ffffff;">
-                                                Có
-                                            </span>
+                                            <div class="rounded px-2 py-1 text-white bg-warning text-center rounded-pill"
+                                                style="font-size: 10px;"> Có</div>
                                         @else
-                                            <span
-                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
-                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #dc3545; color: white;">
-                                                Không
-                                            </span>
+                                            <div class="rounded px-2 py-1 text-white bg-danger text-center rounded-pill"
+                                                style="font-size: 10px;"> Không</div>
                                         @endif
                                     </td>
-
 
                                     <td class="text-center">
                                         <div class="btn-group">
@@ -292,12 +271,12 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
-                                                <div class="modal-body pb-0">
+                                                <div class="modal-body">
                                                     <strong>
                                                         {!! $item->content !!}
                                                     </strong>
                                                 </div>
-                                                <div class="modal-footer pt-0">
+                                                <div class="modal-footer">
                                                     <button type="button" class="btn rounded-pill btn-sm btn-secondary"
                                                         data-bs-dismiss="modal">Đóng</button>
                                                 </div>
@@ -356,16 +335,15 @@
                                                     @csrf
                                                     <input type="hidden" name="delete_notification"
                                                         value="{{ $item->code }}">
-                                                    <div class="modal-body pb-0 text-center pb-0">
-                                                        <p class="text-danger mb-4">Bạn chắc chắn xóa thông báo này?</p>
+                                                    <div class="modal-body pb-0 text-center">
+                                                        <p class="text-danger mb-4">Xóa Thông Báo Này?</p>
                                                     </div>
-                                                    <div class="modal-footer justify-content-center border-0 pt-0">
+                                                    <div class="modal-footer justify-content-center border-0">
                                                         <button type="button"
                                                             class="btn rounded-pill btn-sm btn-secondary px-4"
                                                             data-bs-dismiss="modal">Đóng</button>
                                                         <button type="submit"
-                                                            class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Xóa
-                                                        </button>
+                                                            class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Xóa</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -386,6 +364,7 @@
                                             <div class="text-center">
                                                 <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Không Có Dữ
                                                     Liệu</h5>
+                                                </p>
                                             </div>
                                         </div>
                                     </td>
@@ -417,7 +396,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $AllNotification->links('pagination::bootstrap-4') }}
+                        {{ $AllNotification->links('pagination::bootstrap-5') }}
                     </ul>
                 </div>
             @endif
@@ -432,9 +411,9 @@
                                 aria-label="Close"></button>
                         </div>
                         <div class="modal-body text-center" style="padding-bottom: 0px;">
-                            <p class="text-dark mb-4">Bạn có chắc chắn muốn duyệt thông báo đã chọn?</p>
+                            <p class="text-danger mb-4">Bạn có chắc chắn muốn duyệt thông báo đã chọn?</p>
                         </div>
-                        <div class="modal-footer justify-content-center border-0 pt-0">
+                        <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn rounded-pill btn-sm btn-secondary btn-sm px-4"
                                 data-bs-dismiss="modal">Đóng</button>
                             <button type="submit" class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">
@@ -454,10 +433,10 @@
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
-                        <div class="modal-body text-center pb-0" style="padding-bottom: 0px;">
+                        <div class="modal-body text-center" style="padding-bottom: 0px;">
                             <p class="text-danger mb-4">Bạn có chắc chắn muốn xóa thông báo đã chọn?</p>
                         </div>
-                        <div class="modal-footer justify-content-center border-0 pt-0">
+                        <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
                                 data-bs-dismiss="modal">Đóng</button>
                             <button type="submit" class="btn rounded-pill btn-sm btn-danger px-4 load_animation">

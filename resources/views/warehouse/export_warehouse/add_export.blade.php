@@ -66,7 +66,7 @@
 
 
                         <!-- Bảng danh sách thiết bị đã thêm -->
-                        <div class="table-responsive">
+                        <div class="table-responsive rounded">
                             <table class="table table-bordered" id="equipment-list">
                                 <thead class="table-dark">
                                     <tr>

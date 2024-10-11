@@ -24,7 +24,7 @@
             @csrf
             <input type="hidden" name="action_type" id="action_type" value="">
             <div class="card-body py-3">
-                <div class="table-responsive">
+                <div class="table-responsive rounded">
                     <table class="table align-middle gs-0 gy-4">
                         <thead>
                             <tr class="bg-success">

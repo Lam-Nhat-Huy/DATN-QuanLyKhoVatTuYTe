@@ -13,8 +13,6 @@
 
         $button_text = 'Tạo Phiếu';
 
-        $title_form = 'Tạo Phiếu Yêu Cầu Mua Hàng';
-
         $required = 'required';
 
         $d_none_save = '';
@@ -27,8 +25,6 @@
 
         $button_text = 'Cập Nhật';
 
-        $title_form = 'Cập Nhật Phiếu Yêu Cầu Mua Hàng';
-
         $required = '';
 
         $d_none_save = 'd-none';
@@ -40,10 +36,10 @@
 @endphp
 
 @section('content')
-    <div class="card mb-5 mb-xl-8 pb-5">
+    <div class="card mb-5 mb-xl-8 pb-5 shadow">
         <div class="card-header border-0 pt-5">
             <h3 class="card-title align-items-start flex-column">
-                <span class="card-label fw-bolder fs-3 mb-1">{{ $title_form }}</span>
+                <span class="card-label fw-bolder fs-3 mb-1">Thông Tin Phiếu Yêu Cầu Mua Hàng</span>
             </h3>
             <div class="card-toolbar">
                 <a href="{{ route('equipment_request.import') }}" class="btn btn-sm btn-dark rounded-pill">
@@ -54,7 +50,7 @@
                 </a>
             </div>
         </div>
-        <div class="py-5 px-lg-17">
+        <div class="py-3 px-lg-17">
             <div class="me-n7 pe-7">
                 <div class="row align-items-center">
                     <div class="col-md-6 fv-row">
@@ -92,9 +88,13 @@
         </div>
     </div>
 
-    <div class="card mb-xl-8 pt-5">
-        <div class="py-5 px-lg-17">
-            <h3 class="mb-7">Chọn Thiết Bị Cần Mua</h3>
+    <div class="card mb-xl-8 pt-5 shadow">
+        <div class="card-header border-0 pt-5">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label fw-bolder fs-3 mb-1">Thêm Thiết Bị Yêu Cầu</span>
+            </h3>
+        </div>
+        <div class="py-3 px-lg-17">
             <div class="me-n7 pe-7">
                 <div class="row align-items-center">
                     <div class="col-md-6 fv-row">
@@ -103,15 +103,15 @@
                             class="form-select form-select-sm border border-success rounded-pill ps-5">
                             <option value="" selected>Chọn Thiết Bị...</option>
                             @foreach ($AllEquipment as $item)
-                                @if ($item->inventories->sum('current_quantity') <= 10)
-                                    <option value="{{ $item->code }}" class="text-danger"
-                                        {{ in_array($item->code, $checkList ?? []) ? 'd-none' : '' }}">
+                                @if ($item->inventories->sum('current_quantity') <= 25)
+                                    <option value="{{ $item->code }}"
+                                        class="text-danger {{ in_array($item->code, $checkList ?? []) ? 'd-none' : '' }}">
                                         {{ $item->name }} - (Tổng Tồn:
                                         {{ $item->inventories->sum('current_quantity') ?? 0 }})
                                     </option>
                                 @else
                                     <option value="{{ $item->code }}"
-                                        {{ in_array($item->code, $checkList ?? []) ? 'd-none' : '' }}">
+                                        class="{{ in_array($item->code, $checkList ?? []) ? 'd-none' : '' }}">
                                         {{ $item->name }} - (Tổng Tồn:
                                         {{ $item->inventories->sum('current_quantity') ?? 0 }})
                                     </option>
@@ -131,8 +131,8 @@
                 </div>
             </div>
 
-            <div class="modal-footer flex-right pe-0 pb-0">
-                <button type="butotn" class="btn btn-success btn-sm rounded-pill" id="btn_add_equipment">
+            <div class="modal-footer flex-right pe-0 pb-4">
+                <button type="butotn" class="btn btn-danger btn-sm rounded-pill" id="btn_add_equipment">
                     <i class="fa fa-plus" style="margin-bottom: 2px;"></i>Thêm
                 </button>
             </div>
@@ -140,15 +140,18 @@
     </div>
 
     {{-- Danh sách thiết bị yêu cầu --}}
-    <div class="card mb-5 mb-xl-8 pt-0">
+    <div class="card mb-5 mb-xl-8 pt-0 shadow">
+        <div class="card-header border-0 pt-5">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label fw-bolder fs-3 mb-1">Danh Sách Thiết Bị Yêu Cầu</span>
+            </h3>
+        </div>
         <div class="card-body py-3 px-17">
-            <h4 class="fw-bold m-0 fw-bolder mb-5 mt-5">Danh Sách Thiết Bị Yêu Cầu
-            </h4>
-            <div class="table-responsive">
+            <div class="table-responsive rounded">
                 <table class="table table-striped align-middle gs-0 gy-4" id="table_list_equipment">
-                    <thead>
+                    <thead class="table-dark">
                         <tr class="fw-bolder bg-success">
-                            <th class="ps-3" style="width: 35%;">Thiết Bị</th>
+                            <th class="ps-10" style="width: 35%;">Thiết Bị</th>
                             <th class="" style="width: 20%;">Đơn Vị</th>
                             <th class="" style="width: 25%;">Số Lượng</th>
                             <th class="pe-3 text-center" style="width: 20%;">Hành Động</th>
@@ -194,7 +197,7 @@
                                         <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Danh sách thiết bị
                                             trống</h5>
                                         <p style="font-size: 14px; color: #6c757d; margin: 0;">
-                                            Hiện chưa có thiết bị nào được thêm vào hệ thống. Vui lòng thêm thiết bị mới.
+                                            Hiện chưa có thiết bị nào được thêm vào danh sách yêu cầu.
                                         </p>
                                     </div>
                                 </div>
@@ -453,7 +456,7 @@
                         this.disabled = false;
                     });
 
-            }, 2000);
+            }, 500);
         }
 
         let addedEquipments = [];
@@ -472,7 +475,7 @@
                 let equipment = document.getElementById('equipment').value;
                 let quantity = document.getElementById('quantity').value;
                 let equipment_error = document.getElementById('equipment_error');
-                let _list = document.getElementById('quantity_error');
+                let quantity_error = document.getElementById('quantity_error');
 
                 equipment_error.innerText = '';
                 quantity_error.innerText = '';
@@ -508,7 +511,7 @@
                         if (data.success) {
                             // Kiểm tra xem thiết bị đã được thêm chưa
                             if (!addedEquipments.includes(data.equipment_code)) {
-                                addedEquipments.push(data.equipment_code); // Add to addedEquipments
+                                addedEquipments.push(data.equipment_code);
                             }
 
                             noDataAlert.classList.add('d-none');
@@ -564,7 +567,7 @@
                         document.getElementById('loading-overlay').style.display = 'none';
                         this.disabled = false;
                     });
-            }, 1000);
+            }, 500);
         });
 
         // Xóa thiết bị trong danh sách
@@ -603,7 +606,7 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('loading-overlay').style.display = 'none';
                 this.disabled = false;
-            }, 1000);
+            }, 500);
         }
 
         // Thêm nhà cung cấp
@@ -697,7 +700,7 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('loading-overlay').style.display = 'none';
                 this.disabled = false;
-            }, 1000);
+            }, 500);
         });
 
         // Xóa nhà cung cấp
@@ -744,7 +747,7 @@
                         document.getElementById('loading-overlay').style.display = 'none';
                         this.disabled = false;
                     });
-            }, 1000);
+            }, 500);
         });
 
         function changeEquipment() {

@@ -108,7 +108,7 @@ class NotificationController extends Controller
 
             if ($request->action_type === 'restore') {
 
-                $this->callModel::withTrashed()
+                $this->callModel::onlyTrashed()
                     ->whereIn('code', $request->notification_codes)
                     ->update([
                         'important' => 0,
@@ -122,7 +122,7 @@ class NotificationController extends Controller
                 return redirect()->back();
             } elseif ($request->action_type === 'delete') {
 
-                $this->callModel::withTrashed()->whereIn('code', $request->notification_codes)->forceDelete();
+                $this->callModel::onlyTrashed()->whereIn('code', $request->notification_codes)->forceDelete();
 
                 toastr()->success('Xóa thành công');
 
@@ -132,7 +132,7 @@ class NotificationController extends Controller
 
         if (isset($request->restore_notification)) {
 
-            $this->callModel::withTrashed()
+            $this->callModel::onlyTrashed()
                 ->where('code', $request->restore_notification)
                 ->update([
                     'important' => 0,
@@ -149,7 +149,7 @@ class NotificationController extends Controller
 
         if (isset($request->delete_notification)) {
 
-            $notification = $this->callModel::withTrashed()->where('code', $request->delete_notification)->forceDelete();
+            $notification = $this->callModel::onlyTrashed()->where('code', $request->delete_notification)->forceDelete();
 
             toastr()->success('Xóa vĩnh viễn thành công');
 
@@ -315,7 +315,7 @@ class NotificationController extends Controller
 
     function generateRandomString($length = 9)
     {
-        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters = '0123456789';
 
         $charactersLength = strlen($characters);
 

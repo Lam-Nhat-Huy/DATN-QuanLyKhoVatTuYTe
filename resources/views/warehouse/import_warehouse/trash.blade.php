@@ -19,9 +19,17 @@
 
 @section('content')
     <div class="card mb-5 pb-5 mb-xl-8 shadow">
-        @include('warehouse.import_warehouse.filter')
-
-        <form action="{{ route('warehouse.import') }}" method="POST">
+        <div class="card-header border-0 pt-5">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label fw-bolder fs-3 mb-1">Thùng Rác</span>
+            </h3>
+            <div class="card-toolbar">
+                <a href="{{ route('warehouse.import') }}" class="btn btn-sm btn-dark rounded-pill">
+                    <i class="fas fa-arrow-left" style="margin-bottom: 2px;"></i> Trở Lại
+                </a>
+            </div>
+        </div>
+        <form action="{{ route('warehouse.trash') }}" method="POST">
             @csrf
             <input type="hidden" name="action_type" id="action_type" value="">
             <div class="card-body py-3">
@@ -45,7 +53,7 @@
 
                         <!-- Trong phần <tbody> của bảng -->
                         <tbody>
-                            @forelse ($receipts as $item)
+                            @forelse ($receiptTrash as $item)
                                 @if ($item->status == 3 && $item->created_by != session('user_code'))
                                     <tr class="hover-table pointer">
                                         <td></td>
@@ -54,7 +62,7 @@
                                         <td class="custom-w">{{ $item->supplier->name }}</td>
                                         <td>{{ $item->user->last_name . ' ' . $item->user->first_name }}</td>
                                         <td>
-                                            {{ \Carbon\Carbon::parse($item->receipt_date)->format('d/m/Y') }}
+                                            {{ $item->receipt_date }}
                                         </td>
                                         <td class="text-center">
                                             @if ($item['status'] == 3)
@@ -155,7 +163,6 @@
                                                                     </tbody>
                                                                 </table>
                                                             </div>
-
                                                             @php
                                                                 $totalPrice = 0;
                                                                 $totalDiscount = 0;
@@ -289,7 +296,7 @@
                                             {{ $item->user->last_name . ' ' . $item->user->first_name }}
                                         </td>
                                         <td>
-                                            {{ \Carbon\Carbon::parse($item->receipt_date)->format('d/m/Y') }}
+                                            {{ $item->receipt_date }}
                                         </td>
                                         <td class="text-center">
                                             @if ($item['status'] == 3)
@@ -324,7 +331,8 @@
                                                     <div class="card-header d-flex justify-content-between align-items-center p-3 pb-0"
                                                         style="padding-top: 0 !important; padding-bottom: 0px !important;">
                                                         <h4 class="fw-bold m-0 text-uppercase fw-bolder">Chi tiết phiếu
-                                                            nhập kho
+                                                            nhập
+                                                            kho
                                                         </h4>
                                                         <div class="card-toolbar">
                                                             @if ($item->status == 3)
@@ -457,17 +465,14 @@
                                                                 <table class="table table-striped table-sm table-hover">
                                                                     <thead class="fw-bolder bg-danger">
                                                                         <tr class="text-center">
-                                                                            <th class="ps-3" style="width: 25%;">Tên
-                                                                                thiết bị
-                                                                            </th>
-                                                                            <th style="width: 10%;">Số lượng</th>
-                                                                            <th style="width: 15%;">Giá nhập</th>
-                                                                            <th style="width: 10%;">Số lô</th>
-                                                                            <th style="width: 10%;">Chiết khấu (%)</th>
-                                                                            <th style="width: 10%;">VAT (%)</th>
-                                                                            <th class="pe-3" style="width: 20%;">Thành
-                                                                                tiền
-                                                                            </th>
+                                                                            <th class="ps-3">Mã thiết bị</th>
+                                                                            <th>Tên thiết bị</th>
+                                                                            <th>Số lượng</th>
+                                                                            <th>Giá nhập</th>
+                                                                            <th>Số lô</th>
+                                                                            <th>Chiết khấu (%)</th>
+                                                                            <th>VAT (%)</th>
+                                                                            <th class="pe-3">Thành tiền</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -484,6 +489,7 @@
                                                                                     $totalPrice * (1 + $vat / 100);
                                                                             @endphp
                                                                             <tr class="text-center">
+                                                                                <td>{{ $detail->equipments->code }}</td>
                                                                                 <td>{{ $detail->equipments->name }}</td>
                                                                                 <td>{{ $detail->quantity }}</td>
                                                                                 <td>{{ number_format($detail->price) }} VND
@@ -507,59 +513,18 @@
 
                                                 <div class="card-body py-1 text-end bg-white pb-5">
                                                     <div class="button-group">
-                                                        <!-- Nút Duyệt đơn, chỉ hiển thị khi là Phiếu Tạm -->
-                                                        @if ($item->status == 0)
-                                                            <button class="btn btn-sm btn-twitter rounded-pill me-2"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#browse-{{ $item->code }}"
-                                                                type="button">
-                                                                <i class="fas fa-clipboard-check"
-                                                                    style="margin-bottom: 2px;"></i>Duyệt Phiếu
-                                                            </button>
+                                                        <button class="btn btn-sm btn-twitter rounded-pill me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#restore-{{ $item->code }}" type="button">
+                                                            <i class="fas fa-rotate-right"
+                                                                style="margin-bottom: 2px;"></i>Khôi Phục
+                                                        </button>
 
-                                                            <a href="{{ route('warehouse.edit_import', $item->code) }}"
-                                                                class="btn btn-dark btn-sm me-2 rounded-pill">
-                                                                <i class="fa fa-edit" style="margin-bottom: 2px;"></i>Sửa
-                                                                Phiếu
-                                                            </a>
-                                                        @endif
-
-                                                        @if ($item->status == 3)
-                                                            <button class="btn btn-sm btn-twitter rounded-pill me-2"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#create-{{ $item->code }}"
-                                                                type="button">
-                                                                <i class="fas fa-save" style="margin-bottom: 2px;"></i>Tạo
-                                                                Phiếu
-                                                            </button>
-
-                                                            <a href="{{ route('warehouse.edit_import', $item->code) }}"
-                                                                class="btn btn-dark btn-sm me-2 rounded-pill">
-                                                                <i class="fa fa-edit" style="margin-bottom: 2px;"></i>Sửa
-                                                                Phiếu
-                                                            </a>
-                                                        @endif
-
-                                                        @if ($item->status == 1)
-                                                            <!-- Nút In Phiếu -->
-                                                            <button class="btn btn-sm btn-dark me-2 rounded-pill"
-                                                                id="printPdfBtn" type="button">
-                                                                <i class="fa fa-print"
-                                                                    style="margin-bottom: 2px;"></i>Xuất
-                                                                PDF
-                                                            </button>
-                                                        @endif
-
-                                                        @if ($item->status == 0 || $item->status == 3)
-                                                            <!-- Nút hủy, có thể nằm trong danh sách hoặc bảng -->
-                                                            <button type="button"
-                                                                class="btn btn-danger btn-sm rounded-pill"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#delete-{{ $item->code }}">
-                                                                <i class="fa fa-trash" style="margin-bottom: 2px;"></i>Hủy
-                                                                phiếu
-                                                            </button>
-                                                        @endif
+                                                        <button class="btn btn-sm btn-danger rounded-pill me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#delete-{{ $item->code }}" type="button">
+                                                            <i class="fas fa-trash" style="margin-bottom: 2px;"></i>Xóa
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -573,15 +538,14 @@
                                             role="alert"
                                             style="border: 2px dashed #6c757d; background-color: #f8f9fa; color: #495057;">
                                             <div class="mb-3">
-                                                <i class="fas fa-file-invoice"
-                                                    style="font-size: 36px; color: #6c757d;"></i>
+                                                <i class="fas fa-trash" style="font-size: 36px; color: #6c757d;"></i>
                                             </div>
                                             <div class="text-center">
-                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Không Có Dữ
-                                                    Liệu
+                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">
+                                                    Thùng Rác Rỗng
                                                 </h5>
                                                 <p style="font-size: 14px; color: #6c757d; margin: 0;">
-                                                    Không Tìm Thấy Dữ Liệu Nào Về Phiếu Nhập
+                                                    Không Có Phiếu Nhập Nào Bị Hủy
                                                 </p>
                                             </div>
                                         </div>
@@ -623,7 +587,7 @@
                 </div>
             @endif
 
-            @if ($receipts->count() > 0)
+            @if ($receiptTrash->count() > 0)
                 <div class="card-body py-3 d-flex justify-content-between align-items-center">
                     <div class="dropdown" id="action_delete_all">
                         <button class="btn btn-info btn-sm dropdown-toggle rounded-pill" id="dropdownMenuButton1"
@@ -633,58 +597,58 @@
                         <ul class="dropdown-menu shadow" aria-labelledby="dropdownMenuButton1">
                             <li>
                                 <a class="dropdown-item pointer d-flex align-items-center" data-bs-toggle="modal"
-                                    data-bs-target="#browseAll">
-                                    <i class="fas fa-clipboard-check me-2 text-twitter"></i>
-                                    <span>Duyệt phiếu</span>
+                                    data-bs-target="#restoreAll">
+                                    <i class="fas fa-rotate-right me-2 text-twitter"></i>
+                                    <span>Khôi Phục</span>
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item pointer d-flex align-items-center" data-bs-toggle="modal"
                                     data-bs-target="#deleteAll">
                                     <i class="fas fa-trash me-2 text-danger"></i>
-                                    <span class="text-danger">Hủy phiếu</span>
+                                    <span class="text-danger">Xóa Vĩnh Viễn</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $receipts->links('pagination::bootstrap-5') }}
+                        {{ $receiptTrash->links('pagination::bootstrap-5') }}
                     </ul>
                 </div>
             @endif
 
-            {{-- Modal Duyệt Tất Cả --}}
-            <div class="modal fade" id="browseAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                aria-labelledby="browseAllModal" aria-hidden="true">
+            {{-- Modal Khôi Phục Tất Cả --}}
+            <div class="modal fade" id="restoreAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="restoreAllModal" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-md">
                     <div class="modal-content border-0 shadow">
                         <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title text-white" id="browseAllModal">Duyệt Phiếu Nhập</h5>
+                            <h5 class="modal-title text-white" id="restoreAllModal">Khôi Phục Phiếu Nhập</h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
                         <div class="modal-body text-center" style="padding-bottom: 0px;">
-                            <p class="text-primary mb-4">Bạn có chắc chắn muốn duyệt phiếu nhập đã chọn?
+                            <p class="text-primary mb-4">Bạn có chắc chắn muốn khôi phục phiếu nhập đã chọn?
                             </p>
                         </div>
                         <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn rounded-pill btn-sm btn-secondary btn-sm px-4"
                                 data-bs-dismiss="modal">Đóng</button>
                             <button type="submit" class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">
-                                Duyệt</button>
+                                Khôi Phục</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Modal Xác Nhận Hủy Tất Cả --}}
+            {{-- Modal Xác Nhận Xóa Vĩnh Viễn Tất Cả --}}
             <div class="modal fade" id="deleteAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
                 aria-labelledby="deleteAllLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-md">
                     <div class="modal-content border-0 shadow">
                         <div class="modal-header bg-danger text-white">
-                            <h5 class="modal-title text-white" id="deleteAllLabel">Xác Nhận Hủy Phiếu Nhập</h5>
+                            <h5 class="modal-title text-white" id="deleteAllLabel">Xác Nhận Xóa Vĩnh Viễn Phiếu Nhập</h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
@@ -694,8 +658,8 @@
                         <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
                                 data-bs-dismiss="modal">Đóng</button>
-                            <button type="submit"
-                                class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Hủy</button>
+                            <button type="submit" class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Xóa Vĩnh
+                                Viễn</button>
                         </div>
                     </div>
                 </div>
@@ -703,24 +667,23 @@
         </form>
     </div>
 
-    @foreach ($receipts as $item)
-        <!-- Modal Duyệt Phiếu -->
-        <div class="modal fade" id="browse-{{ $item->code }}" data-bs-backdrop="static" data-bs-keyboard="false"
-            tabindex="-1" aria-labelledby="browseLabel-{{ $item->code }}" aria-hidden="true">
+    @foreach ($receiptTrash as $item)
+        <!-- Modal Khôi Phục Phiếu -->
+        <div class="modal fade" id="restore-{{ $item->code }}" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="restoreLabel-{{ $item->code }}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-md">
                 <div class="modal-content border-0 shadow">
                     <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title text-white" id="browseLabel-{{ $item->code }}">
-                            Duyệt
-                            Phiếu Nhập Kho</h5>
+                        <h5 class="modal-title text-white" id="restoreLabel-{{ $item->code }}">
+                            Khôi Phục Phiếu Nhập Kho</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('receipts.approve') }}" method="POST">
+                    <form action="{{ route('warehouse.trash') }}" method="POST">
                         @csrf
-                        <input type="hidden" name="browse_code" value="{{ $item->code }}">
+                        <input type="hidden" name="restore_value" value="{{ $item->code }}">
                         <div class="modal-body text-center" style="padding-bottom: 0px;">
-                            <p class="text-primary mb-4">Bạn có chắc chắn muốn duyệt phiếu nhập kho
+                            <p class="text-primary mb-4">Bạn có chắc chắn muốn khôi phục phiếu nhập kho
                                 này?
                             </p>
                         </div>
@@ -728,7 +691,7 @@
                             <button type="button" class="btn btn-sm btn-secondary px-4 rounded-pill"
                                 data-bs-dismiss="modal">Đóng</button>
                             <button type="submit" class="btn btn-sm btn-twitter px-4 rounded-pill load_animation">
-                                Duyệt
+                                Khôi Phục
                             </button>
                         </div>
                     </form>
@@ -736,62 +699,28 @@
             </div>
         </div>
 
-        <!-- Modal Tạo Phiếu -->
-        <div class="modal fade" id="create-{{ $item->code }}" data-bs-backdrop="static" data-bs-keyboard="false"
-            tabindex="-1" aria-labelledby="createLabel-{{ $item->code }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-md">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title text-white" id="createLabel-{{ $item->code }}">
-                            Tạo Phiếu Nhập Kho
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
-                    <form action="{{ route('receipts.approve') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="create_code" value="{{ $item->code }}">
-                        <div class="modal-body text-center" style="padding-bottom: 0px;">
-                            <p class="text-primary mb-4">Bạn có chắc chắn muốn tạo phiếu nhập kho
-                                này?
-                            </p>
-                        </div>
-                        <div class="modal-footer justify-content-center border-0">
-                            <button type="button" class="btn btn-sm btn-secondary px-4 rounded-pill"
-                                data-bs-dismiss="modal">Đóng</button>
-                            <button type="submit" class="btn btn-sm btn-twitter px-4 rounded-pill load_animation">
-                                Tạo
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Hủy Phiếu -->
+        <!-- Modal Xóa Vĩnh Viễn Phiếu -->
         <div class="modal fade" id="delete-{{ $item->code }}" data-bs-backdrop="static" data-bs-keyboard="false"
             tabindex="-1" aria-labelledby="deleteLabel-{{ $item->code }}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-md">
                 <div class="modal-content border-0 shadow">
                     <div class="modal-header bg-danger text-white">
                         <h5 class="modal-title text-white" id="deleteLabel-{{ $item->code }}">
-                            Xác
-                            Nhận Hủy Phiếu</h5>
+                            Xác Nhận Xóa Vĩnh Viễn Phiếu</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('receipts.delete') }}" method="POST"
-                        id="deleteForm-{{ $item->code }}">
+                    <form action="{{ route('warehouse.trash') }}" method="POST">
                         @csrf
-                        <input type="hidden" name="delete_code" value="{{ $item->code }}">
+                        <input type="hidden" name="delete_value" value="{{ $item->code }}">
                         <div class="modal-body text-center" style="padding-bottom: 0px;">
-                            <p class="text-danger mb-4">Bạn có chắc chắn muốn hủy phiếu này?</p>
+                            <p class="text-danger mb-4">Bạn có chắc chắn muốn xóa vĩnh viễn phiếu này?</p>
                         </div>
                         <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn btn-sm btn-secondary px-4 rounded-pill"
                                 data-bs-dismiss="modal">Đóng</button>
                             <button type="submit" class="btn btn-sm btn-danger px-4 rounded-pill load_animation">
-                                Hủy
+                                Xóa Vĩnh Viễn
                             </button>
                         </div>
                     </form>
@@ -906,8 +835,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             toggleDeleteAction();
 
-            document.querySelector('#browseAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'browse';
+            document.querySelector('#restoreAll').addEventListener('show.bs.modal', function() {
+                document.getElementById('action_type').value = 'restore';
             });
 
             document.querySelector('#deleteAll').addEventListener('show.bs.modal', function() {

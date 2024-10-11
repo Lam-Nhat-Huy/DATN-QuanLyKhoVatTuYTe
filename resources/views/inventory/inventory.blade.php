@@ -27,7 +27,7 @@
         @include('inventory.filter')
 
         <div class="card-body py-3">
-            <div class="table-responsive">
+            <div class="table-responsive rounded">
                 <table class="table table-hover table-bordered align-middle text-center"
                     style="width: 100%; border-collapse: collapse;">
                     <thead>
