@@ -236,7 +236,7 @@ class EquipmentsController extends Controller
         $equipment->update($data);
 
         toastr()->success('Thiết bị đã được cập nhật thành công!');
-        
+
         return redirect()->route('equipments.index');
     }
 

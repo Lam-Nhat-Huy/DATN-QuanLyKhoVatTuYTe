@@ -106,7 +106,8 @@
                         </span>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                             <li><a class="dropdown-item pointer" data-bs-toggle="modal" data-bs-target="#restoreAll">
-                                    <i class="fas fa-rotate-right me-2 text-primary" style="margin-bottom: 2px;"></i>Khôi Phục
+                                    <i class="fas fa-rotate-right me-2 text-primary" style="margin-bottom: 2px;"></i>Khôi
+                                    Phục
                                 </a>
                             </li>
                             <li><a class="dropdown-item pointer" data-bs-toggle="modal" data-bs-target="#deleteAll">
@@ -117,7 +118,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $AllEquipmentGroupTrash->links('pagination::bootstrap-5') }}
+                        {{ $AllEquipmentGroupTrash->links('pagination::bootstrap-4') }}
                     </ul>
                 </div>
             @endif
@@ -128,7 +129,8 @@
                 <div class="modal-dialog modal-dialog-centered modal-md">
                     <div class="modal-content border-0 shadow">
                         <div class="modal-header bg-danger text-white">
-                            <h5 class="modal-title text-white" id="deleteAllLabel">Xác Nhận Xóa Vĩnh Viễn Nhóm Thiết Bị</h5>
+                            <h5 class="modal-title text-white" id="deleteAllLabel">Xác Nhận Xóa Vĩnh Viễn Nhóm Thiết Bị
+                            </h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
@@ -191,7 +193,8 @@
                                 <input type="hidden" name="restore_value" value="{{ $item->code }}">
                                 <button type="button" class="btn btn-sm btn-secondary me-1 rounded-pill"
                                     data-bs-dismiss="modal">Hủy</button>
-                                <button type="submit" class="btn btn-sm btn-twitter rounded-pill load_animation">Khôi Phục</button>
+                                <button type="submit" class="btn btn-sm btn-twitter rounded-pill load_animation">Khôi
+                                    Phục</button>
                             </form>
                         </div>
                     </div>
@@ -218,7 +221,8 @@
                                 <input type="hidden" name="delete_value" value="{{ $item->code }}">
                                 <button type="button" class="btn btn-sm btn-secondary me-1 rounded-pill"
                                     data-bs-dismiss="modal">Hủy</button>
-                                <button type="submit" class="btn btn-sm btn-danger rounded-pill load_animation">Xóa Vĩnh Viễn</button>
+                                <button type="submit" class="btn btn-sm btn-danger rounded-pill load_animation">Xóa Vĩnh
+                                    Viễn</button>
                             </form>
                         </div>
                     </div>

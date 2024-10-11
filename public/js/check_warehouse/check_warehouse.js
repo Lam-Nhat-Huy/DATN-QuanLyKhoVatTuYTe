@@ -107,7 +107,7 @@ function addProductToTable(
         <td>${batch_number}</td>
         <td>${current_quantity}</td>
         <td>
-            <input type="number" class="actual-quantity-input" style="width: 70px; height: 40px; border-radius: 8px;" oninput="updateProduct(${rowCount}, this.value)">
+            <input type="number" min="0" class="actual-quantity-input" style="width: 70px; height: 40px; border-radius: 8px;" oninput="updateProduct(${rowCount}, this.value)">
         </td>
         <td class="unequal-count" id="unequal-count-${rowCount}">0</td>
         <td>

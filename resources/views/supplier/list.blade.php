@@ -162,7 +162,7 @@
             <div class="card-body py-3">
                 <div class="table-responsive">
                     <table class="table align-middle gs-0 gy-4">
-                        <thead class="fw-bolder bg-success">
+                        <thead class="bg-success">
                             <tr>
                                 <th class="ps-3"><input type="checkbox" id="selectAll" /></th>
                                 <th style="width: 47%;">Nhà cung cấp</th>
@@ -307,7 +307,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $allSupplier->links('pagination::bootstrap-5') }}
+                        {{ $allSupplier->links('pagination::bootstrap-4') }}
                     </ul>
                 </div>
             @endif
@@ -328,7 +328,8 @@
                         <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
                                 data-bs-dismiss="modal">Đóng</button>
-                            <button type="submit" class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Xóa</button>
+                            <button type="submit"
+                                class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Xóa</button>
                         </div>
                     </div>
                 </div>

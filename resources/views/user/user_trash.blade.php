@@ -275,7 +275,8 @@
                                                 <button type="button" class="btn btn-sm btn-twitter rounded-pill me-2"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#restoreModal_{{ $item->code }}">
-                                                    <i class="fa fa-rotate-right" style="margin-bottom: 2px;"></i> Khôi Phục
+                                                    <i class="fa fa-rotate-right" style="margin-bottom: 2px;"></i> Khôi
+                                                    Phục
                                                 </button>
 
                                                 <button type="button" class="btn btn-sm btn-danger rounded-pill"
@@ -330,7 +331,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $allUserTrash->links('pagination::bootstrap-5') }}
+                        {{ $allUserTrash->links('pagination::bootstrap-4') }}
                     </ul>
                 </div>
             @endif

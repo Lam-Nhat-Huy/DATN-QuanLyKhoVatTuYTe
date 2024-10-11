@@ -62,7 +62,7 @@
                 <div class="table-responsive">
                     <table class="table align-middle gs-0 gy-4">
                         <thead>
-                            <tr class="fw-bolder bg-success">
+                            <tr class="bg-success">
                                 <th class="ps-3" style="width: 5%;"><input type="checkbox" id="selectAll" /></th>
                                 <th class="" style="width: 10%;">Mã</th>
                                 <th class="" style="width: 25%;">Tên</th>
@@ -100,13 +100,17 @@
                                         <td>{{ $item->description ?? 'Không có mô tả' }}</td>
                                         <td class="text-center">
                                             @if ($item->status)
-                                                <span class="bg-success text-white rounded-pill"
-                                                    style="padding: 5px 5px; display: inline-block; min-width: 80px; font-size: 10px;">Hoạt
-                                                    động</span>
+                                                <span
+                                                    style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
+                                                     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #45ff07; color: white;">
+                                                    Hoạt động
+                                                </span>
                                             @else
-                                                <span class="bg-danger text-white rounded-pill"
-                                                    style="padding: 5px 5px; display: inline-block; min-width: 80px; font-size: 10px;">Không
-                                                    hoạt động</span>
+                                                <span
+                                                    style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
+                                                     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #dc3545; color: white;">
+                                                    Không hoạt động
+                                                </span>
                                             @endif
                                         </td>
                                         <td class="text-center">
@@ -162,7 +166,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $AllEquipmentGroup->links('pagination::bootstrap-5') }}
+                        {{ $AllEquipmentGroup->links('pagination::bootstrap-4') }}
                     </ul>
                 </div>
             @endif
@@ -214,7 +218,8 @@
                                 @method('DELETE')
                                 <button type="button" class="btn btn-sm btn-secondary me-1 rounded-pill"
                                     data-bs-dismiss="modal">Hủy</button>
-                                <button type="submit" class="btn btn-sm btn-danger rounded-pill load_animation">Xóa</button>
+                                <button type="submit"
+                                    class="btn btn-sm btn-danger rounded-pill load_animation">Xóa</button>
                             </form>
                         </div>
                     </div>

@@ -254,7 +254,10 @@
 
                                                         <div class="row mb-5 justify-content-center">
                                                             <div class="col-md-3">
-                                                                <img src="{{ $item->avatar ? asset('storage/' . $item->avatar) : 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png' }}" class="rounded border border-dark" style="width: 175px !important; height: 175px !important;" alt="">
+                                                                <img src="{{ $item->avatar ? asset('storage/' . $item->avatar) : 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png' }}"
+                                                                    class="rounded border border-dark"
+                                                                    style="width: 175px !important; height: 175px !important;"
+                                                                    alt="">
                                                             </div>
                                                             <div class="col-md-9">
                                                                 <div class="row">
@@ -269,23 +272,26 @@
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td class="fw-semibold">Email:</td>
-                                                                                    <td class="text-dark">{{ $item->email }}
+                                                                                    <td class="text-dark">
+                                                                                        {{ $item->email }}
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td class="fw-semibold">Phone:</td>
-                                                                                    <td class="text-dark">{{ $item->phone }}
+                                                                                    <td class="text-dark">
+                                                                                        {{ $item->phone }}
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td class="fw-semibold">Địa Chỉ:</td>
-                                                                                    <td class="text-dark">{{ $item->address }}
+                                                                                    <td class="text-dark">
+                                                                                        {{ $item->address }}
                                                                                     </td>
                                                                                 </tr>
                                                                             </tbody>
                                                                         </table>
                                                                     </div>
-    
+
                                                                     <div class="col-md-6">
                                                                         <table class="table table-borderless">
                                                                             <tbody>
@@ -296,7 +302,8 @@
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td class="fw-semibold">Giới Tính:</td>
-                                                                                    <td class="text-dark">{{ $item->gender }}
+                                                                                    <td class="text-dark">
+                                                                                        {{ $item->gender }}
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr>
@@ -305,7 +312,8 @@
                                                                                         {{ $item->position }}</td>
                                                                                 </tr>
                                                                                 <tr>
-                                                                                    <td class="fw-semibold">Ngày Tạo Tài Khoản:</td>
+                                                                                    <td class="fw-semibold">Ngày Tạo Tài
+                                                                                        Khoản:</td>
                                                                                     <td class="text-dark">
                                                                                         {{ $item->created_at->format('d-m-Y') }}
                                                                                     </td>
@@ -375,7 +383,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $allUser->links('pagination::bootstrap-5') }}
+                        {{ $allUser->links('pagination::bootstrap-4') }}
                     </ul>
                 </div>
             @endif

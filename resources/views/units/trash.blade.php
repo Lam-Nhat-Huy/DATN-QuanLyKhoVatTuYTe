@@ -97,7 +97,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $allUnitTrash->links('pagination::bootstrap-5') }}
+                        {{ $allUnitTrash->links('pagination::4') }}
                     </ul>
                 </div>
             @endif

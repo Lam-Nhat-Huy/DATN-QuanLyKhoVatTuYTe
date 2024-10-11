@@ -132,7 +132,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $AllReportTrash->links('pagination::bootstrap-5') }}
+                        {{ $AllReportTrash->links('pagination::bootstrap-4') }}
                     </ul>
                 </div>
             @endif

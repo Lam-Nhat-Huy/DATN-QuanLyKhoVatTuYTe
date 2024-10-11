@@ -221,7 +221,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $AllNotificationTrash->links('pagination::bootstrap-5') }}
+                        {{ $AllNotificationTrash->links('pagination::bootstrap-4') }}
                     </ul>
                 </div>
             @endif

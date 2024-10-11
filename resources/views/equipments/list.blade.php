@@ -210,11 +210,16 @@
                                                         </div>
                                                         <div class="col-auto">
                                                             @if ($item->inventories->sum('current_quantity') > 25)
-                                                                <span class="fw-bolder text-white bg-success py-1 px-2 rounded-pill" style="font-size: 10px;">Còn Hàng</span>
+                                                                <span
+                                                                    class="fw-bolder text-white bg-success py-1 px-2 rounded-pill"
+                                                                    style="font-size: 10px;">Còn Hàng</span>
                                                             @elseif ($item->inventories->sum('current_quantity') <= 25 && $item->inventories->sum('current_quantity') > 0)
-                                                                <span class="fw-bolder bg-warning py-1 px-2 rounded-pill" style="font-size: 10px;">Sắp Hết Hàng</span>
+                                                                <span class="fw-bolder bg-warning py-1 px-2 rounded-pill"
+                                                                    style="font-size: 10px;">Sắp Hết Hàng</span>
                                                             @else
-                                                                <span class="fw-bolder text-white bg-danger py-1 px-2 rounded-pill" style="font-size: 10px;">Hết Hàng</span>
+                                                                <span
+                                                                    class="fw-bolder text-white bg-danger py-1 px-2 rounded-pill"
+                                                                    style="font-size: 10px;">Hết Hàng</span>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -239,11 +244,16 @@
                                                             class="d-flex justify-content-between align-items-center mb-3">
                                                             <h6 class="card-title fw-bold">Chi Tiết</h6>
                                                             @if ($item->inventories->sum('current_quantity') > 25)
-                                                                <span class="fw-bolder text-white bg-success py-1 px-2 rounded-pill" style="font-size: 10px;">Còn Hàng</span>
+                                                                <span
+                                                                    class="fw-bolder text-white bg-success py-1 px-2 rounded-pill"
+                                                                    style="font-size: 10px;">Còn Hàng</span>
                                                             @elseif ($item->inventories->sum('current_quantity') <= 25 && $item->inventories->sum('current_quantity') > 0)
-                                                                <span class="fw-bolder bg-warning py-1 px-2 rounded-pill" style="font-size: 10px;">Sắp Hết Hàng</span>
+                                                                <span class="fw-bolder bg-warning py-1 px-2 rounded-pill"
+                                                                    style="font-size: 10px;">Sắp Hết Hàng</span>
                                                             @else
-                                                                <span class="fw-bolder text-white bg-danger py-1 px-2 rounded-pill" style="font-size: 10px;">Hết Hàng</span>
+                                                                <span
+                                                                    class="fw-bolder text-white bg-danger py-1 px-2 rounded-pill"
+                                                                    style="font-size: 10px;">Hết Hàng</span>
                                                             @endif
                                                         </div>
                                                         <!-- Chi tiết Thiết Bị -->
@@ -376,7 +386,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $AllEquipment->links('pagination::bootstrap-5') }}
+                        {{ $AllEquipment->links('pagination::bootstrap-4') }}
                     </ul>
                 </div>
             @endif

@@ -87,7 +87,7 @@
                                                 class="btn btn-sm btn-info me-2 rounded-pill">
                                                 <i class="fa fa-edit" style="margin-bottom: 2px;"></i> Sửa
                                             </a>
-                                            
+
                                             @php
                                                 $linkedUnit = \App\Models\Equipments::where(
                                                     'unit_code',
@@ -103,8 +103,7 @@
                                                 </button>
                                             @else
                                                 <button type="button" class="btn btn-sm btn-secondary rounded-pill"
-                                                    disabled
-                                                    title="Đơn vị này đang liên kết với thiết bị, không thể xóa.">
+                                                    disabled title="Đơn vị này đang liên kết với thiết bị, không thể xóa.">
                                                     <i class="fa fa-lock" style="margin-bottom: 2px;"></i> Xóa
                                                 </button>
                                             @endif
@@ -147,7 +146,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $allUnits->links('pagination::bootstrap-5') }}
+                        {{ $allUnits->links('pagination::bootstrap-4') }}
                     </ul>
                 </div>
             @endif

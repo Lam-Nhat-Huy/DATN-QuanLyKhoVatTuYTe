@@ -417,7 +417,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $AllNotification->links('pagination::bootstrap-5') }}
+                        {{ $AllNotification->links('pagination::bootstrap-4') }}
                     </ul>
                 </div>
             @endif
@@ -432,9 +432,9 @@
                                 aria-label="Close"></button>
                         </div>
                         <div class="modal-body text-center" style="padding-bottom: 0px;">
-                            <p class="text-danger mb-4">Bạn có chắc chắn muốn duyệt thông báo đã chọn?</p>
+                            <p class="text-dark mb-4">Bạn có chắc chắn muốn duyệt thông báo đã chọn?</p>
                         </div>
-                        <div class="modal-footer justify-content-center border-0">
+                        <div class="modal-footer justify-content-center border-0 pt-0">
                             <button type="button" class="btn rounded-pill btn-sm btn-secondary btn-sm px-4"
                                 data-bs-dismiss="modal">Đóng</button>
                             <button type="submit" class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">
@@ -454,10 +454,10 @@
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
-                        <div class="modal-body text-center" style="padding-bottom: 0px;">
+                        <div class="modal-body text-center pb-0" style="padding-bottom: 0px;">
                             <p class="text-danger mb-4">Bạn có chắc chắn muốn xóa thông báo đã chọn?</p>
                         </div>
-                        <div class="modal-footer justify-content-center border-0">
+                        <div class="modal-footer justify-content-center border-0 pt-0">
                             <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
                                 data-bs-dismiss="modal">Đóng</button>
                             <button type="submit" class="btn rounded-pill btn-sm btn-danger px-4 load_animation">
