@@ -292,12 +292,12 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
-                                                <div class="modal-body">
+                                                <div class="modal-body pb-0">
                                                     <strong>
                                                         {!! $item->content !!}
                                                     </strong>
                                                 </div>
-                                                <div class="modal-footer">
+                                                <div class="modal-footer pt-0">
                                                     <button type="button" class="btn rounded-pill btn-sm btn-secondary"
                                                         data-bs-dismiss="modal">Đóng</button>
                                                 </div>
@@ -356,15 +356,16 @@
                                                     @csrf
                                                     <input type="hidden" name="delete_notification"
                                                         value="{{ $item->code }}">
-                                                    <div class="modal-body pb-0 text-center">
-                                                        <p class="text-danger mb-4">Xóa Thông Báo Này?</p>
+                                                    <div class="modal-body pb-0 text-center pb-0">
+                                                        <p class="text-danger mb-4">Bạn chắc chắn xóa thông báo này?</p>
                                                     </div>
-                                                    <div class="modal-footer justify-content-center border-0">
+                                                    <div class="modal-footer justify-content-center border-0 pt-0">
                                                         <button type="button"
                                                             class="btn rounded-pill btn-sm btn-secondary px-4"
                                                             data-bs-dismiss="modal">Đóng</button>
                                                         <button type="submit"
-                                                            class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Xóa</button>
+                                                            class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Xóa
+                                                        </button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -385,7 +386,6 @@
                                             <div class="text-center">
                                                 <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Không Có Dữ
                                                     Liệu</h5>
-                                                </p>
                                             </div>
                                         </div>
                                     </td>

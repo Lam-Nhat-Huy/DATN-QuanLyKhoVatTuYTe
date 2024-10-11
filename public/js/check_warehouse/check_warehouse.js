@@ -33,10 +33,13 @@ function filterProducts() {
     } else {
         filteredProducts.forEach(function (product) {
             product.inventories.forEach(function (inventory) {
+                var imageUrl = product.image
+                    ? `/storage/${product.image}`
+                    : "https://st4.depositphotos.com/14953852/24787/v/380/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg";
                 var item = `
                     <a class="dropdown-item d-flex align-items-center" href="#"
                         onclick="selectProduct(this, '${product.name}', '${inventory.equipment_code}', ${inventory.current_quantity}, '${inventory.batch_number}')">
-                        <img src="https://png.pngtree.com/template/20190316/ourlarge/pngtree-medical-health-logo-image_79595.jpg" alt="Product Image" class="me-2" style="width: 40px; height: 40px;">
+                        <img src="${imageUrl}" alt="Product Image" class="me-2" style="width: 40px; height: 40px;">
                         <div>
                             <div class="fw-bold">${product.name}</div>
                             <small>${inventory.equipment_code} - Tồn kho: ${inventory.current_quantity} - Lô: ${inventory.batch_number}</small>

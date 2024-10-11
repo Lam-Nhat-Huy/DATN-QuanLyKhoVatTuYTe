@@ -12,7 +12,7 @@ class NotificationTypesSeeder extends Seeder
     {
         DB::table('notification_types')->insert([
             [
-                'name' => 'Hao Hụt Thiết Bị',
+                'name' => 'Lưu ý',
             ],
         ]);
     }

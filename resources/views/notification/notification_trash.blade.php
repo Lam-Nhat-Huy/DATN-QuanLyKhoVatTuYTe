@@ -126,7 +126,7 @@
                                                                 báo này?
                                                             </p>
                                                         </div>
-                                                        <div class="modal-footer justify-content-center border-0">
+                                                        <div class="modal-footer justify-content-center border-0 pt-0">
                                                             <button type="button"
                                                                 class="btn rounded-pill btn-sm btn-secondary px-4"
                                                                 data-bs-dismiss="modal">Đóng</button>
@@ -159,10 +159,10 @@
                                                         @csrf
                                                         <input type="hidden" name="delete_notification"
                                                             value="{{ $item->code }}">
-                                                        <div class="modal-body pb-0 text-center">
+                                                        <div class="modal-body pb-0 text-center pb-0">
                                                             <p class="text-danger mb-4">Xóa Vĩnh Viễn Thông Báo Này?</p>
                                                         </div>
-                                                        <div class="modal-footer justify-content-center border-0">
+                                                        <div class="modal-footer justify-content-center border-0 pt-0">
                                                             <button type="button"
                                                                 class="btn rounded-pill btn-sm btn-secondary px-4"
                                                                 data-bs-dismiss="modal">Đóng</button>
@@ -178,7 +178,8 @@
                                 </tr>
                             @empty
                                 <tr id="noDataAlert">
-                                    <td colspan="10" class="text-center">
+                                    <td colspan="10" class="text-center align-middle">
+                                        <!-- align-middle để căn giữa dọc -->
                                         <div class="alert alert-secondary d-flex flex-column align-items-center justify-content-center p-4"
                                             role="alert"
                                             style="border: 2px dashed #6c757d; background-color: #f8f9fa; color: #495057;">
@@ -188,7 +189,6 @@
                                             <div class="text-center">
                                                 <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Không Có Dữ
                                                     Liệu</h5>
-                                                </p>
                                             </div>
                                         </div>
                                     </td>
