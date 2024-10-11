@@ -209,6 +209,9 @@ class CheckWarehouseController extends Controller
                 $this->updateInventoryByCheck($material);
             }
 
+            // Gọi hàm tạo thông báo sau khi duyệt phiếu
+            $this->createNotificationAfterUpdateInventory($inventoryCheck->code, $inventoryCheck->user_code);
+
             toastr()->success('Đã duyệt phiếu kiểm kho thành công với mã ' . $inventoryCheck->code);
             return redirect()->back();
         }
@@ -289,7 +292,7 @@ class CheckWarehouseController extends Controller
             'created_at' => now(),
             'updated_at' => null,
             'important' => 0,
-            'status' => 1
+            'status' => 2
         ];
 
         Notifications::create($payload);

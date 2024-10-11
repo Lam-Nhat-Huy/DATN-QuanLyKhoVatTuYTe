@@ -28,9 +28,10 @@ class AppServiceProvider extends ServiceProvider
             $getNotifications = Notifications::with('users')
                 ->orderBy('created_at', 'DESC')
                 ->where('created_at', '>', now()->subDays(7))
-                ->where('status', 1)
+                ->whereIn('status', [1, 2]) // Sử dụng whereIn để lọc theo nhiều giá trị
                 ->whereNull('deleted_at')
                 ->get();
+
 
             $data['getNotification'] = $getNotifications;
 

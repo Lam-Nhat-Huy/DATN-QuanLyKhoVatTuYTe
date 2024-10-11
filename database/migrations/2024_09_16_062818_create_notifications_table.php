@@ -16,6 +16,7 @@ return new class extends Migration
             $table->boolean('important')->default(0)->nullable();
             $table->boolean('status')->default(0);
             $table->boolean('lock_warehouse')->default(0);
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
             $table->softDeletes();
 

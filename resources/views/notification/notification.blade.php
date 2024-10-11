@@ -177,7 +177,7 @@
                 <div class="table-responsive">
                     <table class="table align-middle gs-0 gy-4">
                         <thead>
-                            <tr class="fw-bolder bg-success">
+                            <tr class="bg-success text-center">
                                 <th class="ps-4">
                                     <input type="checkbox" id="selectAll" />
                                 </th>
@@ -194,7 +194,7 @@
                         </thead>
                         <tbody>
                             @forelse ($AllNotification as $item)
-                                <tr class="hover-table pointer">
+                                <tr class="hover-table pointer text-center">
                                     <td>
                                         <input type="checkbox" name="notification_codes[]" value="{{ $item->code }}"
                                             class="row-checkbox" />
@@ -218,31 +218,52 @@
                                     </td>
                                     <td class="text-center">
                                         @if ($item->status == 1)
-                                            <span style="font-size: 10px;" class="badge bg-success">Hiển thị</span>
+                                            <span
+                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
+                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #45ff07; color: white;">
+                                                Hiển thị
+                                            </span>
                                         @else
-                                            <span style="font-size: 10px;" class="badge bg-danger">Không hiển thị</span>
+                                            <span
+                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
+                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #dc3545; color: white;">
+                                                Không hiển thị
+                                            </span>
                                         @endif
                                     </td>
 
                                     <td class="text-center">
                                         @if ($item->important == 1)
-                                            <span class="rounded px-2 py-1 text-white bg-warning text-center"
-                                                style="font-size: 10px;"> Có</span>
+                                            <span
+                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
+                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #45ff07; color: #ffffff;">
+                                                Có
+                                            </span>
                                         @else
-                                            <span class="rounded px-2 py-1 text-white bg-danger text-center"
-                                                style="font-size: 10px;"> Không</span>
+                                            <span
+                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
+                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #dc3545; color: white;">
+                                                Không
+                                            </span>
                                         @endif
                                     </td>
 
                                     <td class="text-center">
                                         @if ($item->lock_warehouse == 1)
-                                            <span class="rounded px-2 py-1 text-white bg-warning text-center"
-                                                style="font-size: 10px;"> Có</span>
+                                            <span
+                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
+                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #45ff07; color: #ffffff;">
+                                                Có
+                                            </span>
                                         @else
-                                            <span class="rounded px-2 py-1 text-white bg-danger text-center"
-                                                style="font-size: 10px;"> Không</span>
+                                            <span
+                                                style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
+                                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #dc3545; color: white;">
+                                                Không
+                                            </span>
                                         @endif
                                     </td>
+
 
                                     <td class="text-center">
                                         <div class="btn-group">

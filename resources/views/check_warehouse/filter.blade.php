@@ -33,9 +33,9 @@
             <select name="status" id="status"
                 class="form-select form-select-sm border-success setupSelect2 rounded-pill">
                 <option value="" selected>--Theo Trạng Thái--</option>
-                <option value="0">Phiếu lưu Tạm</option>
+                <option value="0">Phiếu lưu tạm</option>
                 <option value="1">Đã cân bằng</option>
-                <option value="3">Phiếu hủy</option>
+                <option value="3">Phiếu đã hủy</option>
             </select>
         </div>
 

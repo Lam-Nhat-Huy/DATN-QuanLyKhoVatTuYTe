@@ -31,6 +31,7 @@ class NotificationController extends Controller
 
         $AllNotification = $this->callModel::with(['notification_types', 'users'])
             ->orderBy('created_at', 'DESC')
+            ->whereIn('status', [0, 1])
             ->where('deleted_at', null);
 
         if (isset($request->ur)) {
@@ -211,29 +212,32 @@ class NotificationController extends Controller
     public function notification_update(UpdateNotificationRequest $request, $code)
     {
         $data = $request->validated();
-
         if ($data) {
             $data['updated_at'] = now();
 
+            // Thiết lập thông báo là mới nếu cần
             $data['important'] = $request->has('important') ? 1 : 0;
-
-            $data['status'] = $request->has('status') ? 1 : 0;
+            $data['status'] = $request->has('status') ? 1 : 0; // hoặc bạn có thể đặt cố định 'status' => 0 để đánh dấu là mới
 
             $data['lock_warehouse'] = $request->has('lock_warehouse') ? 1 : 0;
 
+            // Đảm bảo chỉ có 1 thông báo "quan trọng" cùng lúc
             if ($request->important == 1) {
                 $this->callModel::where('important', 1)
                     ->update(['important' => 0]);
             }
 
+            // Đảm bảo chỉ có 1 thông báo "khóa kho" cùng lúc
             if ($request->lock_warehouse == 1) {
                 $this->callModel::where('lock_warehouse', 1)
                     ->update(['lock_warehouse' => 0]);
             }
 
+            // Cập nhật thông báo
             $rs = $this->callModel::where('code', $code)->update($data);
 
             if ($rs) {
+                // Cập nhật thành công
                 toastr()->success('Đã cập nhật thông báo');
                 return redirect()->route('notification.index');
             }
@@ -242,6 +246,7 @@ class NotificationController extends Controller
             return redirect()->route('notification.index');
         }
     }
+
 
     public function notification_edit($code)
     {
@@ -322,5 +327,24 @@ class NotificationController extends Controller
         }
 
         return $randomString;
+    }
+
+    public function getNewNotificationCount(Request $request)
+    {
+        // Lấy số lượng thông báo mới cho người dùng hiện tại
+        $count = $this->callModel::where('user_code', session('user_code'))
+            ->where('is_read', false) // Chưa đọc (cột is_read là false)
+            ->count();
+
+        return response()->json(['count' => $count]);
+    }
+
+    public function markNotificationsAsRead(Request $request)
+    {
+        $this->callModel::where('user_code', session('user_code'))
+            ->where('is_read', false) // Các thông báo chưa đọc
+            ->update(['is_read' => true]); // Đánh dấu là đã đọc
+
+        return response()->json(['success' => true]);
     }
 }

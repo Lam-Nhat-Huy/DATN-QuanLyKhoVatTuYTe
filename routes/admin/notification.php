@@ -26,4 +26,8 @@ Route::prefix('notification')->middleware(CheckLogin::class)->group(function () 
     Route::post('/create_notification_type', [NotificationController::class, 'create_notification_type'])->name('notification.create_notification_type');
 
     Route::post('/delete_notification_type/{id}', [NotificationController::class, 'delete_notification_type'])->name('notification.delete_notification_type');
+
+    Route::get('notifications/count', [NotificationController::class, 'getNewNotificationCount'])->name('notifications.count');
+
+    Route::get('/notifications/markAsRead', [NotificationController::class, 'markNotificationsAsRead'])->name('notifications.markAsRead');
 });

@@ -18,6 +18,49 @@
             background: #d1c4e9;
             /* Màu nền khi hàng được nhấp vào */
         }
+
+        .pagination .page-link {
+            background-color: #50cd89;
+            /* Màu xanh chủ đề */
+            color: white;
+            border-radius: 5px;
+            /* Bo tròn góc */
+            border: none;
+            margin: 0 4px;
+            /* Tạo khoảng cách giữa các nút */
+            transition: all 0.3s ease;
+            /* Hiệu ứng chuyển động mượt */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            /* Đổ bóng nhẹ */
+        }
+
+        .pagination .page-link:hover {
+            background-color: #45b07c;
+            /* Chuyển sang màu nhạt hơn khi hover */
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            /* Tăng cường đổ bóng khi hover */
+            transform: translateY(-2px);
+            /* Tạo hiệu ứng nâng nút khi hover */
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #3aa06d;
+            /* Màu xanh đậm hơn cho trang hiện tại */
+            border-color: #3aa06d;
+            color: white;
+            font-weight: bold;
+            /* Làm đậm chữ cho trang hiện tại */
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            /* Đổ bóng mạnh hơn */
+        }
+
+        .pagination {
+            justify-content: center;
+            /* Canh giữa các nút phân trang */
+            padding: 10px 0;
+            /* Tạo không gian trên dưới */
+        }
     </style>
 @endsection
 
@@ -38,7 +81,7 @@
                         <tr class="bg-success text-center">
                             <th class="ps-3" style="width: 5%;"></th>
                             <th style="width: 15%;" class="ps-3">Mã kiểm kho</th>
-                            <th style="width: 15%;">Thời gian</th>
+                            <th style="width: 15%;">Ngày cân bằng</th>
                             <th style="width: 15%;">Tổng chênh lệch</th>
                             <th style="width: 15%;">Số lượng lệch tăng</th>
                             <th style="width: 15%;">Số lượng lệch giảm</th>

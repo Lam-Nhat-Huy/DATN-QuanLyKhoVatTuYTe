@@ -1,3 +1,119 @@
+<style>
+    /* Bell styling based on Uiverse.io */
+    .bell {
+        border: 2.17px solid white;
+        border-radius: 10px 10px 0 0;
+        width: 15px;
+        height: 17px;
+        background: transparent;
+        display: block;
+        position: relative;
+        top: -3px;
+    }
+
+    .bell::before,
+    .bell::after {
+        content: "";
+        background: white;
+        display: block;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 2.17px;
+    }
+
+    .bell::before {
+        top: 100%;
+        width: 20px;
+    }
+
+    .bell::after {
+        top: calc(100% + 4px);
+        width: 7px;
+    }
+
+    /* Container styling based on Uiverse.io */
+    .notification {
+        background: transparent;
+        border: none;
+        padding: 15px 15px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: 300ms;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .notification::before {
+        content: "";
+        display: none;
+    }
+
+    .notification:hover {
+        background: rgba(170, 170, 170, 0.062);
+    }
+
+    .notification:hover>.bell-container {
+        animation: bell-animation 650ms ease-out 0s 1 normal both;
+    }
+
+    /* Bell animation */
+    @keyframes bell-animation {
+        20% {
+            transform: rotate(15deg);
+        }
+
+        40% {
+            transform: rotate(-15deg);
+            scale: 1.1;
+        }
+
+        60% {
+            transform: rotate(10deg);
+            scale: 1.1;
+        }
+
+        80% {
+            transform: rotate(-10deg);
+        }
+
+        0%,
+        100% {
+            transform: rotate(0deg);
+        }
+    }
+
+    /* Badge styling */
+    #notification-count {
+        color: white;
+        font-size: 10px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: red;
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    #kt_activities_toggle {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    #kt_activities_toggle:hover {
+        transform: scale(1.1);
+    }
+
+    .badge-hidden {
+        display: none;
+    }
+</style>
 <div id="kt_header" style="" class="header align-items-stretch">
     <div class="container-fluid d-flex align-items-stretch justify-content-between">
         <div class="d-flex align-items-center d-lg-none ms-n3 me-1" title="Show aside menu">
@@ -131,14 +247,17 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="d-flex align-items-center ms-1 ms-lg-3 me-3">
-                        <div class="btn btn-icon btn-active-light-primary w-30px h-30px w-md-40px h-md-40px"
-                            id="kt_activities_toggle">
-                            <span class="svg-icon svg-icon-1">
-                                <i class="fa fa-bell" style="font-size: 17px;"></i>
-                            </span>
+                        <div class="notification position-relative" id="kt_activities_toggle">
+                            <div class="bell-container">
+                                <i class="fa fa-bell" style="font-size: 18px;"></i>
+                            </div>
+                            <span id="notification-count" class="badge badge-danger position-absolute"
+                                style="font-size: 8px;"></span>
                         </div>
                     </div>
+
                     <div class="d-flex align-items-center ms-1 ms-lg-3" id="kt_header_user_menu_toggle">
                         <div class="cursor-pointer symbol symbol-30px symbol-md-40px" data-kt-menu-trigger="click"
                             data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
@@ -222,5 +341,44 @@
 
             noResults.style.display = hasResults ? 'none' : 'block';
         }
+    });
+</script>
+
+<script>
+    function updateNotificationCount() {
+        fetch('{{ route('notifications.count') }}')
+            .then(response => response.json())
+            .then(data => {
+                const notificationCountElement = document.querySelector(
+                    '#notification-count');
+
+                if (data.count > 0) {
+                    notificationCountElement.textContent = data.count;
+                    notificationCountElement.classList.remove('badge-hidden');
+                } else {
+                    notificationCountElement.classList.add('badge-hidden');
+                    notificationCountElement.textContent = '';
+                }
+            })
+            .catch(error => console.error('Error fetching notification count:', error));
+    }
+
+    // Xử lý khi nhấp vào biểu tượng thông báo
+    document.querySelector('#kt_activities_toggle').addEventListener('click', function() {
+        fetch('{{ route('notifications.markAsRead') }}')
+            .then(response => response.json())
+            .then(() => {
+                const notificationCountElement = document.querySelector('#notification-count');
+                notificationCountElement.classList.add('badge-hidden');
+                notificationCountElement.textContent = '';
+            })
+            .catch(error => console.error('Error marking notifications as read:', error));
+    });
+
+    setInterval(updateNotificationCount, 5000);
+
+    // Gọi hàm ngay khi trang được tải
+    document.addEventListener('DOMContentLoaded', function() {
+        updateNotificationCount();
     });
 </script>

@@ -332,7 +332,8 @@
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted" style="font-size: 13px;">Trạng thái</span>
-                                <span class="badge bg-primary py-2 px-4 rounded-pill" style="font-size: 9px">Đang
+                                <span class="badge"
+                                    style="background-color: #ff4081; color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 9px;">Đang
                                     kiểm</span>
                             </div>
                         </div>
