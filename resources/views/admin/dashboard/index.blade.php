@@ -57,8 +57,8 @@
                 var msg = new SpeechSynthesisUtterance();
                 msg.text = content;
                 msg.lang = 'vi-VN'; // Chọn ngôn ngữ, ở đây là tiếng Việt
-                msg.rate = 0.75; // Tốc độ đọc
-                msg.pitch = 0.5; // Cao độ giọng nói
+                msg.rate = 0.8; // Tốc độ đọc
+                msg.pitch = 1.5; // Cao độ giọng nói
 
                 // Khi bắt đầu nói
                 msg.onstart = function() {

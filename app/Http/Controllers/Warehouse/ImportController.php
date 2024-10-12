@@ -117,7 +117,7 @@ class ImportController extends Controller
                     ]);
                 }
 
-                toastr()->success('Duyệt mảng phiếu nhập thành công');
+                toastr()->success('Duyệt phiếu chờ thành công');
 
                 return redirect()->back();
             } elseif ($request->action_type === 'delete') {
@@ -617,9 +617,9 @@ class ImportController extends Controller
         return redirect()->back();
     }
 
-    public function delete($code)
+    public function delete(Request $request)
     {
-        $receipt = Receipts::find($code)->first();
+        $receipt = Receipts::where('code', $request->delete_code)->first();
 
         if (!$receipt) {
             toastr()->error('Không tìm thấy phiếu nhập kho.');

@@ -63,6 +63,7 @@
                         <label for="receipt_no" class="{{ $required }} form-label fw-semibold">Nhà cung cấp</label>
                         <div class="d-flex align-items-center">
                             <select name="supplier_code" id="supplier_code" {{ !empty($infoIER) ? 'disabled' : '' }}
+                                onchange="cSupplier()"
                                 class="form-select form-select-sm border border-success rounded-pill ps-5">
                                 <option value="0">Chọn Nhà Cung Cấp...</option>
                                 @foreach ($suppliers as $item)
@@ -84,7 +85,7 @@
 
                     <div class="mb-3 col-6">
                         <label for="receipt_no" class="{{ $required }} form-label fw-semibold">Số hóa đơn</label>
-                        <input type="text" tabindex="3"
+                        <input type="text" tabindex="3" onchange="cReceiptNo()"
                             class="form-control form-control-sm border border-success rounded-pill" id="receipt_no"
                             name="receipt_no" placeholder="Nhập số hóa đơn" {{ !empty($infoIER) ? 'disabled' : '' }}
                             value="{{ !empty($infoIER) ? $infoIER->code : old('receipt_no', $editForm->receipt_no ?? null) }}">
@@ -113,7 +114,7 @@
                     <div class="mb-4 col-6">
                         <label for="equipment_code" class="{{ $required }} form-label fw-semibold">Thiết
                             bị</label>
-                        <select name="equipment" id="equipment"
+                        <select name="equipment" id="equipment" onchange="cEquipment()"
                             class="form-select form-select-sm border border-success rounded-pill ps-5">
                             <option value="" selected>Chọn Thiết Bị...</option>
                             @foreach ($equipmentsWithStock as $item)
@@ -138,7 +139,7 @@
                     <div class="col-6 mb-4">
                         <label for="price" class="{{ $required }} form-label fw-semibold" id="price_label">Giá
                             nhập</label>
-                        <input type="number" tabindex="10"
+                        <input type="number" tabindex="10" onchange="cPrice()"
                             class="form-control form-control-sm border border-success rounded-pill" id="price"
                             name="price" placeholder="Nhập đơn giá">
                         <div class="message_error" id="price_error"></div>
@@ -148,7 +149,7 @@
                         <label for="product_date" class="{{ $required }} form-label fw-semibold"
                             id="product_date_label">Ngày sản
                             xuất</label>
-                        <input type="date" tabindex="8"
+                        <input type="date" tabindex="8" onchange="cProductDate()"
                             class="form-control form-control-sm border border-success rounded-pill" id="product_date"
                             name="product_date">
                         <div class="message_error" id="product_date_error"></div>
@@ -157,7 +158,7 @@
                     <div class="col-6 mb-4">
                         <label for="expiry_date" class="form-label fw-semibold" id="expiry_date_label">Ngày hết
                             hạn</label>
-                        <input type="date" tabindex="9"
+                        <input type="date" tabindex="9" onchange="cExpiryDate()"
                             class="form-control form-control-sm border border-success rounded-pill" id="expiry_date"
                             name="expiry_date">
                         <div class="message_error" id="expiry_date_error"></div>
@@ -166,7 +167,7 @@
                     <div class="col-3 mb-4">
                         <label for="batch_number" class="{{ $required }} form-label fw-semibold"
                             id="batch_number_label">Số lô</label>
-                        <input type="text" tabindex="7"
+                        <input type="text" tabindex="7" onchange="cBatchNumber()"
                             class="form-control form-control-sm border border-success rounded-pill" id="batch_number"
                             name="batch_number" placeholder="Nhập số lô">
                         <div class="message_error" id="batch_number_error"></div>
@@ -175,7 +176,7 @@
                     <div class="col-3 mb-4">
                         <label for="quantity" class="{{ $required }} form-label fw-semibold" id="quantity_label">Số
                             lượng</label>
-                        <input type="number" tabindex="11"
+                        <input type="number" tabindex="11" onchange="cQuantity()"
                             class="form-control form-control-sm border border-success rounded-pill" id="quantity"
                             name="quantity" placeholder="Nhập số lượng">
                         <div class="message_error" id="quantity_error"></div>
@@ -185,7 +186,7 @@
                         <label for="discount_rate" class="{{ $required }} form-label fw-semibold"
                             id="discount_rate_label">Chiết khấu
                             (%)</label>
-                        <input type="text" tabindex="12"
+                        <input type="text" tabindex="12" onchange="cDiscountRate()"
                             class="form-control form-control-sm border border-success rounded-pill" id="discount_rate"
                             name="discount_rate" placeholder="Nhập chiết khấu (%)">
                         <div class="message_error" id="discount_rate_error"></div>
@@ -194,7 +195,7 @@
                     <div class="col-3 mb-4">
                         <label for="VAT" class="{{ $required }} form-label fw-semibold" id="vat_label">VAT
                             (%)</label>
-                        <input type="text" tabindex="13"
+                        <input type="text" tabindex="13" onchange="cVAT()"
                             class="form-control form-control-sm border border-success rounded-pill" id="VAT"
                             name="VAT" placeholder="Nhập thuế VAT (%)">
                         <div class="message_error" id="VAT_error"></div>
@@ -1621,6 +1622,96 @@
                 })
                 .replace("₫", "VND")
                 .replace(",00", "");
+        }
+
+        function cSupplier() {
+            const cSupplier = document.getElementById('supplier_code').value;
+            const cSupplierErr = document.getElementById('supplier_code_error');
+
+            if (cSupplier !== '') {
+                cSupplierErr.innerText = '';
+            }
+        }
+
+        function cReceiptNo() {
+            const cReceiptNo = document.getElementById('receipt_no').value;
+            const cReceiptNoErr = document.getElementById('receipt_no_error');
+
+            if (cReceiptNo !== '') {
+                cReceiptNoErr.innerText = '';
+            }
+        }
+
+        function cEquipment() {
+            const cEquipment = document.getElementById('equipment').value;
+            const cEquipmentErr = document.getElementById('equipment_error');
+
+            if (cEquipment !== '') {
+                cEquipmentErr.innerText = '';
+            }
+        }
+
+        function cPrice() {
+            const cPrice = document.getElementById('price').value;
+            const cPriceErr = document.getElementById('price_error');
+
+            if (cPrice !== '') {
+                cPriceErr.innerText = '';
+            }
+        }
+
+        function cProductDate() {
+            const cProductDate = document.getElementById('product_date').value;
+            const cProductDateErr = document.getElementById('product_date_error');
+
+            if (cProductDate !== '') {
+                cProductDateErr.innerText = '';
+            }
+        }
+
+        function cExpiryDate() {
+            const cExpiryDate = document.getElementById('expiry_Date').value;
+            const cExpiryDateErr = document.getElementById('expiry_Date_error');
+
+            if (cExpiryDate !== '') {
+                cExpiryDateErr.innerText = '';
+            }
+        }
+
+        function cBatchNumber() {
+            const cBatchNumber = document.getElementById('batch_number').value;
+            const cBatchNumberErr = document.getElementById('batch_number_error');
+
+            if (cBatchNumber !== '') {
+                cBatchNumberErr.innerText = '';
+            }
+        }
+
+        function cQuantity() {
+            const cQuantity = document.getElementById('quantity').value;
+            const cQuantityErr = document.getElementById('quantity_error');
+
+            if (cQuantity !== '') {
+                cQuantityErr.innerText = '';
+            }
+        }
+
+        function cDiscountRate() {
+            const cDiscountRate = document.getElementById('discount_rate').value;
+            const cDiscountRateErr = document.getElementById('discount_rate_error');
+
+            if (cDiscountRate !== '') {
+                cDiscountRateErr.innerText = '';
+            }
+        }
+
+        function cVAT() {
+            const cVAT = document.getElementById('VAT').value;
+            const cVATErr = document.getElementById('VAT_error');
+
+            if (cVAT !== '') {
+                cVATErr.innerText = '';
+            }
         }
     </script>
     <script>

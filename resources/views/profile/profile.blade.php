@@ -11,8 +11,8 @@
         }
 
         .image-overlay img {
-            width: 100%;
-            height: 100%;
+            width: 150px;
+            height: 150px;
             transition: filter 0.3s;
         }
 
@@ -21,9 +21,10 @@
             border-radius: 50rem !important;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 150px;
+            height: 150px;
             background-color: rgba(44, 44, 44, 0.5);
+            object-fit: cover
         }
 
         .darken.show {
@@ -194,7 +195,7 @@
                     <div class="mt-md-7 ms-md-7 position-relative image-overlay">
                         <img class="border border-dark rounded-pill shadow mt-5 mt-md-0"
                             src="{{ !empty($getUserProfile->avatar) ? asset('storage/' . $getUserProfile->avatar) : 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png' }}"
-                            alt="Image" style="width: 150px; height: 150px; object-fit: cover;">
+                            alt="Image">
 
                         <div class="darken rounded-3 d-none"></div>
                         <div class="change-avatar d-none input-edit">

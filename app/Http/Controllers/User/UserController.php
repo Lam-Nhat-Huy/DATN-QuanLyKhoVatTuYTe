@@ -299,7 +299,9 @@ class UserController extends Controller
 
             $nameUser = $this->callModel::where('code', session('user_code_request'))->first();
 
-            session()->put('avatar', $nameUser->avatar);
+            if ($nameUser->code == session('user_code')) {
+                session()->put('avatar', $nameUser->avatar);
+            }
 
             $nameUser = $nameUser->last_name . ' ' . $nameUser->first_name;
 
