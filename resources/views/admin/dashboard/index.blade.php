@@ -31,13 +31,51 @@
                         {!! $importantNotification->content !!}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button class="position-absolute btn btn-sm btn-warning m-0 py-2 px-3" style="left: 30px;"
+                            title="Đọc Văn Bản">
+                            <i id="speaker-icon" class="fa-solid fa-volume-high text-dark" onclick="speak()"
+                                style="font-size: 18px;"></i>
+                            <img id="speaker-gif" class="d-none" src="{{ asset('image/speaker.gif') }}"
+                                style="width: 27px; height: 18px;" alt="" onclick="cancelSpeak()">
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal">Đóng</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <script>
+            function cancelSpeak() {
+                window.speechSynthesis.cancel();
+                document.getElementById('speaker-icon').classList.remove('d-none'); // Hiện icon lại
+                document.getElementById('speaker-gif').classList.add('d-none'); // Ẩn gif đi
+            }
+
+            function speak() {
+                window.speechSynthesis.cancel();
+                var content = document.getElementById('notification_content').innerText;
+                var msg = new SpeechSynthesisUtterance();
+                msg.text = content;
+                msg.lang = 'vi-VN'; // Chọn ngôn ngữ, ở đây là tiếng Việt
+                msg.rate = 0.75; // Tốc độ đọc
+                msg.pitch = 0.5; // Cao độ giọng nói
+
+                // Khi bắt đầu nói
+                msg.onstart = function() {
+                    document.getElementById('speaker-icon').classList.add('d-none'); // Ẩn icon
+                    document.getElementById('speaker-gif').classList.remove('d-none'); // Hiện gif
+                };
+
+                // Khi kết thúc nói
+                msg.onend = function() {
+                    document.getElementById('speaker-icon').classList.remove('d-none'); // Hiện icon lại
+                    document.getElementById('speaker-gif').classList.add('d-none'); // Ẩn gif đi
+                };
+
+                // Bắt đầu đọc giọng nói
+                window.speechSynthesis.speak(msg);
+            }
+
             $(document).ready(function() {
                 $('#importantNotificationModal').modal('show');
             });

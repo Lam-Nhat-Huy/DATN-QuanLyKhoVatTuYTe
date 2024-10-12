@@ -117,6 +117,8 @@
 
     {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
 
+    <script src="{{ asset('js/cancelVoice.js') }}"></script>
+
     <script src="{{ asset('js/main.js') }}"></script>
 
     <script src="{{ asset('js/plugins.bundle.js') }}"></script>

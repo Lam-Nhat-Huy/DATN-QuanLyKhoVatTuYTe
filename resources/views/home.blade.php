@@ -125,6 +125,7 @@
         </div>
     </div>
 
+    <script src="{{ asset('js/cancelVoice.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/plugins.bundle.js') }}"></script>
     <script src="{{ asset('js/scripts.bundle.js') }}"></script>
