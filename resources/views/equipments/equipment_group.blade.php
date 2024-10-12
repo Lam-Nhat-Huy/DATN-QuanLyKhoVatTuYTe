@@ -100,17 +100,13 @@
                                         <td>{{ $item->description ?? 'Không có mô tả' }}</td>
                                         <td class="text-center">
                                             @if ($item->status)
-                                                <span
-                                                    style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
-                                                     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #45ff07; color: white;">
+                                                <div class="rounded-pill px-2 py-1 text-white bg-success">
                                                     Hoạt động
-                                                </span>
+                                                </div>
                                             @else
-                                                <span
-                                                    style="font-size: 9px; font-weight: 500; padding: 4px 8px; border-radius: 6px; 
-                                                     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); background-color: #dc3545; color: white;">
+                                                <div class="rounded-pill px-2 py-1 text-white bg-danger">
                                                     Không hoạt động
-                                                </span>
+                                                </div>
                                             @endif
                                         </td>
                                         <td class="text-center">

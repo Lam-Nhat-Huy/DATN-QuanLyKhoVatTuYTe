@@ -250,8 +250,7 @@
                                                     Chờ Duyệt
                                                 </div>
                                             @elseif ($item->status == 1)
-                                                <div
-                                                    class="label label-final bg-success rounded-pill text-white px-2 py-1">
+                                                <div class="label label-final bg-success rounded-pill text-white px-2 py-1">
                                                     Đã duyệt
                                                 </div>
                                             @endif
@@ -289,7 +288,8 @@
                                                                     Duyệt
                                                                 </div>
                                                             @elseif ($item->status == 1)
-                                                                <div class="rounded-pill px-2 py-1 text-white bg-success">Đã
+                                                                <div class="rounded-pill px-2 py-1 text-white bg-success">
+                                                                    Đã
                                                                     Duyệt
                                                                 </div>
                                                             @endif

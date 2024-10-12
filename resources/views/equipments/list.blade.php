@@ -214,7 +214,8 @@
                                                                     class="fw-bolder text-white bg-success py-1 px-2 rounded-pill"
                                                                     style="font-size: 10px;">Còn Hàng</span>
                                                             @elseif ($item->inventories->sum('current_quantity') <= 25 && $item->inventories->sum('current_quantity') > 0)
-                                                                <span class="fw-bolder bg-warning py-1 px-2 rounded-pill"
+                                                                <span
+                                                                    class="fw-bolder bg-warning py-1 text-white px-2 rounded-pill"
                                                                     style="font-size: 10px;">Sắp Hết Hàng</span>
                                                             @else
                                                                 <span

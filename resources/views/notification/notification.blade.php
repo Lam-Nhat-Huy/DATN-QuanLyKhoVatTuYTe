@@ -218,29 +218,37 @@
                                     </td>
                                     <td class="text-center">
                                         @if ($item->status == 1)
-                                            <div style="font-size: 10px;" class="badge bg-success rounded-pill">Hiển thị</div>
+                                            <div class="rounded-pill px-2 py-1 text-white bg-success">
+                                                Hiển thị
+                                            </div>
                                         @else
-                                            <div style="font-size: 10px;" class="badge bg-danger rounded-pill">Không hiển thị</div>
+                                            <div class="rounded-pill px-2 py-1 text-white bg-danger">
+                                                Không hiển thị
+                                            </div>
                                         @endif
                                     </td>
 
                                     <td class="text-center">
                                         @if ($item->important == 1)
-                                            <div class="rounded px-2 py-1 text-white bg-warning text-center rounded-pill"
-                                                style="font-size: 10px;"> Có</div>
+                                            <div class="rounded-pill px-2 py-1 text-white bg-success">
+                                                Có
+                                            </div>
                                         @else
-                                            <div class="rounded px-2 py-1 text-white bg-danger text-center rounded-pill"
-                                                style="font-size: 10px;"> Không</div>
+                                            <div class="rounded-pill px-2 py-1 text-white bg-danger">
+                                                Không
+                                            </div>
                                         @endif
                                     </td>
 
                                     <td class="text-center">
                                         @if ($item->lock_warehouse == 1)
-                                            <div class="rounded px-2 py-1 text-white bg-warning text-center rounded-pill"
-                                                style="font-size: 10px;"> Có</div>
+                                            <div class="rounded-pill px-2 py-1 text-white bg-warning">
+                                                Khóa
+                                            </div>
                                         @else
-                                            <div class="rounded px-2 py-1 text-white bg-danger text-center rounded-pill"
-                                                style="font-size: 10px;"> Không</div>
+                                            <div class="rounded-pill px-2 py-1 text-white bg-danger">
+                                                Không
+                                            </div>
                                         @endif
                                     </td>
 
