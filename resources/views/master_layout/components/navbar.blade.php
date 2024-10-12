@@ -109,10 +109,6 @@
     #kt_activities_toggle:hover {
         transform: scale(1.1);
     }
-
-    .badge-hidden {
-        display: none;
-    }
 </style>
 <div id="kt_header" style="" class="header align-items-stretch">
     <div class="container-fluid d-flex align-items-stretch justify-content-between">
@@ -253,7 +249,7 @@
                             <div class="bell-container">
                                 <i class="fa fa-bell" style="font-size: 18px;"></i>
                             </div>
-                            <span id="notification-count" class="badge badge-danger position-absolute"
+                            <span id="notification-count" class="badge badge-danger position-absolute d-none"
                                 style="font-size: 8px;"></span>
                         </div>
                     </div>
@@ -345,18 +341,18 @@
 </script>
 
 <script>
+    const notificationCountElement = document.querySelector(
+        '#notification-count');
+
     function updateNotificationCount() {
         fetch('{{ route('notifications.count') }}')
             .then(response => response.json())
             .then(data => {
-                const notificationCountElement = document.querySelector(
-                    '#notification-count');
-
                 if (data.count > 0) {
+                    notificationCountElement.classList.remove('d-none');
                     notificationCountElement.textContent = data.count;
-                    notificationCountElement.classList.remove('badge-hidden');
                 } else {
-                    notificationCountElement.classList.add('badge-hidden');
+                    notificationCountElement.classList.add('d-none');
                     notificationCountElement.textContent = '';
                 }
             })
@@ -369,7 +365,7 @@
             .then(response => response.json())
             .then(() => {
                 const notificationCountElement = document.querySelector('#notification-count');
-                notificationCountElement.classList.add('badge-hidden');
+                notificationCountElement.classList.add('d-none');
                 notificationCountElement.textContent = '';
             })
             .catch(error => console.error('Error marking notifications as read:', error));
@@ -377,8 +373,5 @@
 
     setInterval(updateNotificationCount, 5000);
 
-    // Gọi hàm ngay khi trang được tải
-    document.addEventListener('DOMContentLoaded', function() {
-        updateNotificationCount();
-    });
+    updateNotificationCount();
 </script>

@@ -66,8 +66,7 @@
                                                     Chờ Duyệt
                                                 </div>
                                             @elseif ($item->status == 1)
-                                                <div
-                                                    class="label label-final bg-success rounded-pill text-white px-2 py-1">
+                                                <div class="label label-final bg-success rounded-pill text-white px-2 py-1">
                                                     Đã duyệt
                                                 </div>
                                             @endif
@@ -273,8 +272,10 @@
                                 @else
                                     <tr class="hover-table pointer">
                                         <td>
-                                            <input type="checkbox" name="import_codes[]" value="{{ $item->code }}"
-                                                class="row-checkbox" />
+                                            @if ($item->status != 1)
+                                                <input type="checkbox" name="import_codes[]" value="{{ $item->code }}"
+                                                    class="row-checkbox" />
+                                            @endif
                                         </td>
                                         <td>
                                             #{{ $item->code }}
@@ -780,8 +781,7 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('receipts.delete') }}" method="POST"
-                        id="deleteForm-{{ $item->code }}">
+                    <form action="{{ route('receipts.delete') }}" method="POST" id="deleteForm-{{ $item->code }}">
                         @csrf
                         <input type="hidden" name="delete_code" value="{{ $item->code }}">
                         <div class="modal-body text-center" style="padding-bottom: 0px;">

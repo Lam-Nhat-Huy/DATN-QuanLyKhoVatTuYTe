@@ -78,9 +78,46 @@ class ImportController extends Controller
 
             if ($request->action_type === 'browse') {
 
-                Receipts::whereIn('code', $request->import_codes)->update(['status' => 1]);
+                $getReceipt = Receipts::whereIn('code', $request->import_codes)->where('status', 0);
 
-                toastr()->success('Duyệt thành công');
+                $getReceipt->update(['status' => 1]);
+
+                $receiptDetails = Receipt_details::whereIn('receipt_code', $request->import_codes)->get();
+
+                foreach ($receiptDetails as $item) {
+                    // Tìm bản ghi inventory theo batch_number và equipment_code từ $item
+                    $countQuantityInventoryWhere = Inventories::where('batch_number', $item->batch_number)
+                        ->where('equipment_code', $item->equipment_code)
+                        ->first();
+
+                    // Nếu tìm thấy trong Inventories thì cộng số lượng
+                    $current_quantity = $countQuantityInventoryWhere ? $countQuantityInventoryWhere->current_quantity + $item->quantity : $item->quantity;
+
+                    // Cập nhật hoặc tạo mới Inventory
+                    Inventories::updateOrCreate(
+                        [
+                            'batch_number' => $item->batch_number,
+                            'equipment_code' => $item->equipment_code
+                        ],
+                        [
+                            'code' => $countQuantityInventoryWhere ? $countQuantityInventoryWhere->code : 'TK' . $this->generateRandomString(8),
+                            'batch_number' => $item->batch_number,
+                            'current_quantity' => $current_quantity,
+                            'import_code' => $item->receipt_code,
+                            'expiry_date' => !empty($item->expiry_date) ? $item->expiry_date : null,
+                            'manufacture_date' => $item->manufacture_date,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]
+                    );
+
+                    // Cập nhật giá cho thiết bị
+                    Equipments::where('code', $item->equipment_code)->update([
+                        'price' => $item->price,
+                    ]);
+                }
+
+                toastr()->success('Duyệt mảng phiếu nhập thành công');
 
                 return redirect()->back();
             } elseif ($request->action_type === 'delete') {
@@ -547,13 +584,13 @@ class ImportController extends Controller
                         'equipment_code' => $item['equipment_code']
                     ],
                     [
-                        'code' => 'TK' . $this->generateRandomString(8),
+                        'code' => $countQuantityInventoryWhere ? $countQuantityInventoryWhere->code : 'TK' . $this->generateRandomString(8),
                         'batch_number' => $item['batch_number'],
                         'current_quantity' => $current_quantity,
                         'import_code' => $request->browse_code,
                         'expiry_date' => !empty($item['expiry_date']) ? $item['expiry_date'] : null,
                         'manufacture_date' => $item['manufacture_date'],
-                        'created_at' => $record->receipt_date,
+                        'created_at' => now(),
                         'updated_at' => now(),
                     ]
                 );

@@ -62,7 +62,7 @@
                                         <td class="custom-w">{{ $item->supplier->name }}</td>
                                         <td>{{ $item->user->last_name . ' ' . $item->user->first_name }}</td>
                                         <td>
-                                            {{ $item->receipt_date }}
+                                            {{ \Carbon\Carbon::parse($item->receipt_date)->format('d/m/Y') }}
                                         </td>
                                         <td class="text-center">
                                             @if ($item['status'] == 3)
@@ -296,7 +296,7 @@
                                             {{ $item->user->last_name . ' ' . $item->user->first_name }}
                                         </td>
                                         <td>
-                                            {{ $item->receipt_date }}
+                                            {{ \Carbon\Carbon::parse($item->receipt_date)->format('d/m/Y') }}
                                         </td>
                                         <td class="text-center">
                                             @if ($item['status'] == 3)

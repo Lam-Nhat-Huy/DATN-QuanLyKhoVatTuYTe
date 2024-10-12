@@ -331,8 +331,10 @@
                                 @else
                                     <tr class="hover-table pointer">
                                         <td>
-                                            <input type="checkbox" name="import_reqest_codes[]"
-                                                value="{{ $item->code }}" class="row-checkbox" />
+                                            @if ($item->status != 1)
+                                                <input type="checkbox" name="import_reqest_codes[]"
+                                                    value="{{ $item->code }}" class="row-checkbox" />
+                                            @endif
                                         </td>
                                         <td>
                                             #{{ $item->code }}

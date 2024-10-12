@@ -95,6 +95,7 @@ class EquipmentRequestController extends Controller
 
         if (!empty($request->browse_request)) {
             $this->callModel::where('code', $request->browse_request)
+                ->where('status', 0)
                 ->update([
                     'status' => 1,
                 ]);
@@ -111,7 +112,7 @@ class EquipmentRequestController extends Controller
 
             if ($request->action_type === 'browse') {
 
-                $this->callModel::whereIn('code', $request->import_reqest_codes)->update(['status' => 1]);
+                $this->callModel::whereIn('code', $request->import_reqest_codes)->where('status', 0)->update(['status' => 1]);
 
                 Import_equipment_request_details::whereIn('import_request_code', $request->import_reqest_codes)
                     ->update(['status' => 1]);

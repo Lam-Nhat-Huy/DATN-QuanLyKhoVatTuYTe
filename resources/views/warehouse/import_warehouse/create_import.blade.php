@@ -244,7 +244,7 @@
                                     @endif
                                 </tr>
                             </thead>
-                            <tbody id="equipmentList" class="align-baseline">
+                            <tbody id="equipmentList">
                                 @if (!empty($getListIERD))
                                     @foreach ($getListIERD as $item)
                                         @php
