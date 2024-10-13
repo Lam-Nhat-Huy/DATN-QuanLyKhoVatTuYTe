@@ -269,6 +269,7 @@
                                                 <div class="d-flex align-items-center">
                                                     <input type="number" id="price_change_{{ $item->equipment_code }}"
                                                         value="{{ number_format($item->price, 0, ',', '') }}"
+                                                        min="0"
                                                         class="form-control form-control-sm border border-success rounded-pill"
                                                         oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom();">
                                                 </div>
@@ -304,6 +305,7 @@
                                                     <input type="number"
                                                         id="discount_rate_change_{{ $item->equipment_code }}"
                                                         value="{{ number_format($item->discount, 0, ',', '') }}"
+                                                        min="0" max="100"
                                                         class="form-control form-control-sm border border-success rounded-pill"
                                                         oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom();">
                                                 </div>
@@ -312,6 +314,7 @@
                                                 <div class="d-flex align-items-center">
                                                     <input type="number" id="vat_change_{{ $item->equipment_code }}"
                                                         value="{{ number_format($item->VAT, 0, ',', '') }}"
+                                                        min="0" max="100"
                                                         class="form-control form-control-sm border border-success rounded-pill"
                                                         oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom();">
                                                 </div>
@@ -346,6 +349,7 @@
                                                 <div class="d-flex align-items-center">
                                                     <input type="number" id="price_change_{{ $item->equipment_code }}"
                                                         value="{{ number_format($item->price, 0, ',', '') }}"
+                                                        min="0"
                                                         class="form-control form-control-sm border border-success rounded-pill"
                                                         oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom();">
                                                 </div>
@@ -381,6 +385,7 @@
                                                     <input type="number"
                                                         id="discount_rate_change_{{ $item->equipment_code }}"
                                                         value="{{ number_format($item->discount, 0, ',', '') }}"
+                                                        min="0" max="100"
                                                         class="form-control form-control-sm border border-success rounded-pill"
                                                         oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom();">
                                                 </div>
@@ -389,6 +394,7 @@
                                                 <div class="d-flex align-items-center">
                                                     <input type="number" id="vat_change_{{ $item->equipment_code }}"
                                                         value="{{ number_format($item->VAT, 0, ',', '') }}"
+                                                        min="0" max="100"
                                                         class="form-control form-control-sm border border-success rounded-pill"
                                                         oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom();">
                                                 </div>

@@ -224,8 +224,18 @@
                         </thead>
                         <tbody>
                             @forelse ($AllEquipmentRequest as $item)
+                                @php
+                                    $checkExistsReceipt = \App\Models\Receipts::where(
+                                        'receipt_no',
+                                        $item->code,
+                                    )->count();
+                                    $checkStatusBrowse = \App\Models\Import_equipment_requests::where('status', 1)
+                                        ->where('code', $item->code)
+                                        ->count();
+                                @endphp
                                 @if ($item->status == 3 && $item->user_code != session('user_code'))
-                                    <tr class="hover-table pointer">
+                                    <tr
+                                        class="hover-table pointer {{ !empty($checkExistsReceipt == 0 && $checkStatusBrowse > 0) ? 'bg-gray-300' : '' }}">
                                         <td>
                                         </td>
                                         <td>
@@ -329,7 +339,8 @@
                                         </td>
                                     </tr>
                                 @else
-                                    <tr class="hover-table pointer">
+                                    <tr
+                                        class="hover-table pointer {{ !empty($checkExistsReceipt == 0 && $checkStatusBrowse > 0) ? 'bg-gray-300' : '' }}">
                                         <td>
                                             @if ($item->status != 1)
                                                 <input type="checkbox" name="import_reqest_codes[]"

@@ -140,7 +140,6 @@
     <script src="{{ asset('js/chat.js') }}"></script>
     <script src="{{ asset('js/create-app.js') }}"></script>
     <script src="{{ asset('js/upgrade-plan.js') }}"></script>
-    <script src="{{ asset('js/login/login.js') }}"></script>
 
     <script>
         document.getElementById('show-pass').addEventListener('change', function() {

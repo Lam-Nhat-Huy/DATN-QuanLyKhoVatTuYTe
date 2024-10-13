@@ -131,22 +131,12 @@
                 </div>
             </div>
 
-            <div class="modal-footer flex-right pe-0 pb-4">
+            <div class="modal-footer flex-right pe-0 py-5">
                 <button type="butotn" class="btn btn-danger btn-sm rounded-pill" id="btn_add_equipment">
-                    <i class="fa fa-plus" style="margin-bottom: 2px;"></i>Thêm
+                    <i class="fa fa-plus" style="margin-bottom: 2px;"></i>Thêm Vào Danh Sách
                 </button>
             </div>
-        </div>
-    </div>
 
-    {{-- Danh sách thiết bị yêu cầu --}}
-    <div class="card mb-5 mb-xl-8 pt-0 shadow">
-        <div class="card-header border-0 pt-5">
-            <h3 class="card-title align-items-start flex-column">
-                <span class="card-label fw-bolder fs-3 mb-1">Danh Sách Thiết Bị Yêu Cầu</span>
-            </h3>
-        </div>
-        <div class="card-body py-3 px-17">
             <div class="table-responsive rounded">
                 <table class="table table-striped align-middle gs-0 gy-4" id="table_list_equipment">
                     <thead class="table-dark">
@@ -177,7 +167,7 @@
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="btn btn-sm btn-danger pointer rounded-pill"
+                                        <span class="btn btn-sm btn-dark pointer rounded-pill"
                                             onclick="removeEquipment('{{ $item->equipment_code }}')">
                                             <i class="fa fa-trash p-0"></i>
                                         </span>
@@ -194,7 +184,8 @@
                                         <i class="fas fa-box-open" style="font-size: 36px; color: #6c757d;"></i>
                                     </div>
                                     <div class="text-center">
-                                        <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Danh sách thiết bị
+                                        <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Danh sách thiết
+                                            bị
                                             trống</h5>
                                         <p style="font-size: 14px; color: #6c757d; margin: 0;">
                                             Hiện chưa có thiết bị nào được thêm vào danh sách yêu cầu.
@@ -209,11 +200,13 @@
             </div>
 
             <div class="d-none mb-3" id="important_error"><strong class="text-danger">Lưu ý: </strong><span
-                    class="ms-1 fw-bolder">Các thiết bị được đánh dấu <span class="text-warning bg-dark">màu vàng</span>
-                    đã tồn tại trong lịch sử yêu cầu hoặc phiếu tạm của người khác, hoặc đã bị đưa vào thùng rác (trong 3
+                    class="ms-1 fw-bolder">Các thiết bị được đánh dấu <span class="text-warning bg-dark">màu
+                        vàng</span>
+                    đã tồn tại trong lịch sử yêu cầu hoặc phiếu tạm của người khác, hoặc đã bị đưa vào thùng rác (trong
+                    3
                     ngày gần đây). Vui lòng kiểm tra và thử lại.. (<span id="countdown">20</span>)</div>
 
-            <div class="modal-footer flex-right pe-0">
+            <div class="modal-footer flex-right pe-0 py-5">
                 <button type="button" class="btn btn-info btn-sm {{ $d_none_temp }} rounded-pill"
                     id="import_equipment_request_temp">
                     <i class="fa fa-cloud-arrow-down me-1" style="margin-bottom: 2px;"></i>Lưu Tạm
@@ -537,7 +530,7 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <span class="btn btn-sm btn-danger pointer rounded-pill" onclick="removeEquipment('${data.equipment_code}')">
+                                    <span class="btn btn-sm btn-dark pointer rounded-pill" onclick="removeEquipment('${data.equipment_code}')">
                                         <i class="fa fa-trash p-0"></i>
                                     </span>
                                 </td>

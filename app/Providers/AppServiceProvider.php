@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
         $data = [];
 
         if (Schema::hasTable('notifications')) {
+            // Lấy toàn bộ thông báo
             $getNotifications = Notifications::with('users')
                 ->orderBy('created_at', 'DESC')
                 ->where('created_at', '>', now()->subDays(7))
@@ -35,6 +36,16 @@ class AppServiceProvider extends ServiceProvider
 
             $data['getNotification'] = $getNotifications;
 
+            // Lấy thông báo quan trọng
+            $getImportantNotification = Notifications::with('users')
+                ->where('important', 1)
+                ->where('status', 1)
+                ->whereNull('deleted_at')
+                ->first();
+
+            $data['getImportantNotification'] = $getImportantNotification;
+
+            // Lấy trạng thái khóa kho khi thấy
             $firstLockWarehouse = Notifications::where('lock_warehouse', 1)
                 ->whereNull('deleted_at')
                 ->first();

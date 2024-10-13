@@ -18,7 +18,7 @@
 @endsection
 
 @section('content')
-    @if (!empty($importantNotification))
+    @if (!empty($getImportantNotification))
         {{-- Modal Thông Báo Quan Trọng --}}
         <div class="modal fade" id="importantNotificationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
             aria-labelledby="DetailModal" aria-hidden="true">
@@ -28,7 +28,7 @@
                         <h3 class="modal-title text-danger" id="DetailModal">BEESOFT THÔNG BÁO</h3>
                     </div>
                     <div class="modal-body" id="notification_content">
-                        {!! $importantNotification->content !!}
+                        {!! $getImportantNotification->content !!}
                     </div>
                     <div class="modal-footer">
                         <button class="position-absolute btn btn-sm btn-warning m-0 py-2 px-3" style="left: 30px;"
