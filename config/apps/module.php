@@ -190,11 +190,11 @@ return [
             'user_role' => [0, 1],
             'title' => 'Phòng ban',
             'icon' => 'fas fa-building',
-            'route' => ['department.list', 'department.create', 'department.edit'],
+            'route' => ['department.index', 'department.create', 'department.edit'],
             'subModule' => [
                 [
                     'title' => 'Danh Sách',
-                    'route' => 'department.list',
+                    'route' => 'department.index',
                     'route_action' => [
                         'department.create',
                         'department.edit',
