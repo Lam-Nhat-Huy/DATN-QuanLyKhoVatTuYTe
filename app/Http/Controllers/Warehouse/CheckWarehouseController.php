@@ -24,12 +24,26 @@ class CheckWarehouseController extends Controller
 
         $inventoryChecks = Inventory_checks::with(['details.equipment', 'user'])
             ->orderBy('created_at', 'DESC')
-            ->paginate(5);
+            ->paginate(10);
+
+        $countAll = Inventory_checks::count();
+        $countBalanced = Inventory_checks::where('status', 1)->count();
+        $countDraft = Inventory_checks::where('status', 0)->count();
+        $countCanceled = Inventory_checks::where('status', 3)->count();
 
         $users = Users::all();
 
-        return view("{$this->route}.check", compact('title', 'inventoryChecks', 'users'));
+        return view("{$this->route}.check", compact(
+            'title',
+            'inventoryChecks',
+            'users',
+            'countAll',
+            'countBalanced',
+            'countDraft',
+            'countCanceled'
+        ));
     }
+
 
     public function create()
     {

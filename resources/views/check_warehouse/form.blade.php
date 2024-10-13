@@ -412,7 +412,7 @@
                     <div class="card border-0 shadow-lg p-4 bg-body rounded-4" style="display: block;">
                         <div class="status-indicator">
                             <div class="status-item">
-                                <div class="color-box" style="border: 2px dashed red"></div>
+                                <div class="color-box" style="border: 1px solid black"></div>
                                 <span class="status-text small-text">Chưa kiểm kê (Màu gạch đỏ)</span>
                             </div>
                             <div class="status-item">
