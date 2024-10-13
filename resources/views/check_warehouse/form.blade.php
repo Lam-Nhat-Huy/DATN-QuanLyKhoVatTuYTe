@@ -202,9 +202,10 @@
                                     onkeyup="filterProducts()" onfocus="showDropdown()">
                                 <button type="button" class="btn" style="background-color: #ff0000;"
                                     onclick="addAllProducts()">
-                                    <i class="fas fa-list text-white"></i>
+                                    <i class="fas fa-tasks text-white"></i>
                                 </button>
                             </div>
+
                             <div class="dropdown-menu w-750px" id="productDropdown" style="display:none;"></div>
 
                             <div class="modal fade" id="importantNotificationModal" data-bs-backdrop="static"
@@ -299,7 +300,8 @@
                                                     <!-- Đổi biểu tượng ở đây -->
                                                 </div>
                                                 <div class="text-center">
-                                                    <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thông tin
+                                                    <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thông
+                                                        tin
                                                         danh sách kiểm kho trống</h5>
                                                     <p style="font-size: 14px; color: #6c757d; margin: 0;">
                                                         Hiện tại chưa có thiết bị nào được thêm vào danh sách kiểm kho. Vui
@@ -349,9 +351,10 @@
                         <!-- Ngày nhập -->
                         <div class="mb-4">
                             <label for="check_date" class="form-label fw-semibold text-dark"
-                                style="font-size: 13px;">Ngày nhập</label>
+                                style="font-size: 13px;">Ngày kiểm kho</label>
                             <input type="date" id="check_date" class="form-control form-control-sm rounded-pill"
-                                value="{{ \Carbon\Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d') }}">
+                                value="{{ \Carbon\Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d') }}" readonly
+                                style="pointer-events: none;">
                         </div>
 
 

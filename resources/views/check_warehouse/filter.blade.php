@@ -3,9 +3,8 @@
         <span class="card-label fw-bolder fs-3 mb-1">Danh Sách Kiểm Kho</span>
     </h3>
     <div class="card-toolbar">
-        <a href="{{ route('check_warehouse.create') }}" class="btn btn-sm btn-success rounded-pill"
-            style="font-size: 10px;">
-            <i style="font-size: 10px;" class="fas fa-plus"></i> Kiểm Kho
+        <a href="{{ route('check_warehouse.create') }}" class="btn btn-sm btn-success rounded-pill">
+            <i class="fas fa-plus"></i> Kiểm Kho
         </a>
     </div>
 </div>

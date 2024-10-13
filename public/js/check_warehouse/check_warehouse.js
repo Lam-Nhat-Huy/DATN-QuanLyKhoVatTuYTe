@@ -107,7 +107,9 @@ function addProductToTable(
         <td>${batch_number}</td>
         <td>${current_quantity}</td>
         <td>
-            <input type="number" min="0" class="actual-quantity-input" style="width: 70px; height: 40px; border-radius: 8px;" oninput="updateProduct(${rowCount}, this.value)">
+            <input type="number" min="0" class="actual-quantity-input" 
+                style="width: 70px; height: 40px; border-radius: 8px;" 
+                oninput="validateQuantity(this, ${rowCount})">
         </td>
         <td class="unequal-count" id="unequal-count-${rowCount}">0</td>
         <td>
@@ -155,6 +157,13 @@ function addProductToTable(
             }
         });
     });
+}
+
+function validateQuantity(input, rowCount) {
+    if (input.value < 0) {
+        input.value = 0;
+    }
+    updateProduct(rowCount, input.value);
 }
 
 function removeProduct(index) {

@@ -207,7 +207,10 @@
                                                                     <tr class="text-center">
                                                                         <td class="ps-4">{{ $detail['equipment_code'] }}
                                                                         </td>
-                                                                        <td>{{ $detail->equipment->name }}</td>
+                                                                        <td title="{{ $detail->equipment->name }}"
+                                                                            style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                                            {{ $detail->equipment->name }}
+                                                                        </td>
                                                                         <td>{{ $detail['batch_number'] }}</td>
                                                                         <td>{{ $detail['current_quantity'] }}</td>
                                                                         <td>{{ $detail['actual_quantity'] }}</td>
@@ -225,46 +228,42 @@
                                             <div class="button-group">
                                                 <!-- Nút Duyệt đơn, chỉ hiển thị khi là Phiếu Tạm -->
                                                 @if ($item['status'] == 0)
-                                                    <button style="font-size: 10px;"
-                                                        class="btn btn-sm btn-success me-2 rounded-pill"
+                                                    <button class="btn btn-sm btn-success me-2 rounded-pill"
                                                         data-bs-toggle="modal" data-bs-target="#browse-{{ $item->code }}"
                                                         type="button">
-                                                        <i style="font-size: 10px;" class="fas fa-clipboard-check"></i>
+                                                        <i class="fas fa-clipboard-check"></i>
                                                         Duyệt Phiếu
                                                     </button>
 
                                                     <!-- Nút Xóa phiếu tạm -->
-                                                    <button style="font-size: 10px;"
-                                                        class="btn btn-danger btn-sm me-2 rounded-pill"
+                                                    <button class="btn btn-danger btn-sm me-2 rounded-pill"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#delete-{{ $item->code }}">
-                                                        <i style="font-size: 10px;" class="fa fa-trash"></i> Xóa Phiếu
+                                                        <i class="fa fa-trash"></i> Xóa Phiếu
                                                     </button>
                                                 @endif
 
                                                 @if ($item['status'] == 1)
                                                     <!-- Nút In Phiếu -->
-                                                    <button style="font-size: 10px;"
-                                                        class="btn btn-sm btn-dark me-2 rounded-pill" id="printPdfBtn"
+                                                    <button class="btn btn-sm btn-dark me-2 rounded-pill" id="printPdfBtn"
                                                         type="button">
-                                                        <i style="font-size: 10px;" class="fa fa-print"></i> In Phiếu
+                                                        <i class="fa fa-print"></i> In Phiếu
                                                     </button>
 
                                                     <!-- Nút Hủy Phiếu -->
-                                                    <button style="font-size: 10px;"
-                                                        class="btn btn-danger btn-sm rounded-pill" data-bs-toggle="modal"
+                                                    <button class="btn btn-danger btn-sm rounded-pill"
+                                                        data-bs-toggle="modal"
                                                         data-bs-target="#cancel-{{ $item->code }}">
-                                                        <i style="font-size: 10px;" class="fa fa-times"></i> Hủy Phiếu
+                                                        <i class="fa fa-times"></i> Hủy Phiếu
                                                     </button>
                                                 @endif
 
                                                 @if ($item['status'] == 3)
                                                     <!-- Nút Xóa phiếu đã hủy -->
-                                                    <button style="font-size: 10px;"
-                                                        class="btn btn-danger btn-sm me-2 rounded-pill"
+                                                    <button class="btn btn-danger btn-sm me-2 rounded-pill"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#delete-{{ $item->code }}">
-                                                        <i style="font-size: 10px;" class="fa fa-trash"></i> Xóa Phiếu
+                                                        <i class="fa fa-trash"></i> Xóa Phiếu
                                                     </button>
                                                 @endif
 
