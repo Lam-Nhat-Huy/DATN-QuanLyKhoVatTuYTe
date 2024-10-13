@@ -91,10 +91,13 @@ class HomeController extends Controller
             session()->put('phone', $user->phone);
 
             toastr()->success('Đã gửi đường dẫn đặt lại mật khẩu về email mà bạn đăng ký số điện thoại này.');
+
+            return redirect()->route('home');
         } else {
             toastr()->error('Số điện thoại không tồn tại.');
+            
+            return redirect()->back();
         }
-        return redirect()->back();
     }
     public function resetPassword()
     {

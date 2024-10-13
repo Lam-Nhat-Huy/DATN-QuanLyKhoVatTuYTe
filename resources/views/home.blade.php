@@ -94,7 +94,8 @@
                             <div class="fv-row mb-10">
                                 <div class="d-flex flex-stack mb-2">
                                     <label class="form-label fw-bolder text-dark fs-6 mb-0">Mật Khẩu</label>
-                                    <a href="{{ route('home.forgot') }}" class="link-primary fs-6 fw-bolder">Quên Mật Khẩu?</a>
+                                    <a href="{{ route('home.forgot') }}" class="link-primary fs-6 fw-bolder">Quên Mật
+                                        Khẩu?</a>
                                 </div>
                                 <input class="form-control form-control-lg form-control-solid" type="password"
                                     name="password" id="password" autocomplete="off" />
@@ -109,10 +110,9 @@
                             </div>
 
                             <div class="text-center">
-                                <button type="submit" id="kt_sign_in_submit" class="btn btn-lg btn-twitter w-100 mb-5">
+                                <button type="submit" id="kt_sign_in_submit"
+                                    class="btn btn-lg btn-twitter w-100 mb-5 load_animation">
                                     <span class="indicator-label">Đăng Nhập</span>
-                                    <span class="indicator-progress">Đợi Chút...<span
-                                            class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                                 </button>
                             </div>
                         </form>
@@ -125,7 +125,13 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/cancelVoice.js') }}"></script>
+    <div id="loading">
+        <div aria-live="assertive" role="alert" class="loader"></div>
+    </div>
+
+    <div id="loading-overlay" class="loading-overlay"></div>
+
+    <script src="{{ asset('js/main.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/plugins.bundle.js') }}"></script>
     <script src="{{ asset('js/scripts.bundle.js') }}"></script>

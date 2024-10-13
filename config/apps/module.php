@@ -119,7 +119,7 @@ return [
                 [
                     'title' => 'Danh Sách Nhóm Thiết Bị',
                     'route' => 'equipments.equipments_group',
-                    'route_action' => ['equipments.equipments_group_trash', 'equipments.add_equipments_group' , 'equipments.update_equipments_group'],
+                    'route_action' => ['equipments.equipments_group_trash', 'equipments.add_equipments_group', 'equipments.update_equipments_group'],
                     'icon' => 'fa fa-box',
                     'user_role' => [0, 1],
                 ],
@@ -178,10 +178,28 @@ return [
             'route' => ['supplier.list', 'supplier.create', 'supplier.edit', 'supplier.trash'],
             'subModule' => [
                 [
-                    'title' => 'Nhà cung cấp ',
+                    'title' => 'Danh sách',
                     'route' => 'supplier.list',
                     'route_action' => ['supplier.create', 'supplier.edit', 'supplier.trash'],
-                    'icon' => 'fas fa-building',
+                    'icon' => 'fas fa-check-square',
+                    'user_role' => [0, 1],
+                ],
+            ]
+        ],
+        [
+            'user_role' => [0, 1],
+            'title' => 'Phòng ban',
+            'icon' => 'fas fa-building',
+            'route' => ['department.list', 'department.create', 'department.edit'],
+            'subModule' => [
+                [
+                    'title' => 'Danh Sách',
+                    'route' => 'department.list',
+                    'route_action' => [
+                        'department.create',
+                        'department.edit',
+                    ],
+                    'icon' => 'fas fa-check-square',
                     'user_role' => [0, 1],
                 ],
             ]
