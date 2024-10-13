@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Models\Departments;
 use App\Models\Equipments;
+use App\Models\Export_details;
+use App\Models\Exports;
 use App\Models\Inventories;
 use App\Models\Receipts;
 use App\Models\Users;
@@ -25,93 +27,94 @@ class ExportController extends Controller
         $this->inventories = Inventories::all();
         $this->equipments = Equipments::all();
         $this->departments = Departments::all();
-        $this->users = Users::where('code',session('user_code'))->first();
+        $this->users = Users::where('code', session('user_code'))->first();
     }
 
     public function export()
     {
         $title = 'Xuất Kho';
-
-        return view("{$this->route}.export_warehouse.export", compact('title'));
+        $exports = Exports::with('exportDetail')->get();
+        return view(
+            "{$this->route}.export_warehouse.export",
+            [
+                'title' => $title,
+                'exports' => $exports,
+                'departments' => $this->departments,
+            ]
+        );
     }
 
-    public function create_export()
+    public function create_export(Request $request)
     {
-        $title = 'Tạo Phiếu Xuất Kho';
+        $title = 'Tạo phiếu xuất kho';
+        if ($request->ajax()) {
+            $equipment_code = $request->input('equipment_code');
+            $inventories = Inventories::where('equipment_code', $equipment_code)->get();
 
-        return view("{$this->route}.export_warehouse.add_export", ['equipments' => $this->equipments, 'inventories' => $this->inventories, 'users' => $this->users, 'departments' => $this->departments, 'title']);
+            return response()->json($inventories);
+        }
+        return view(
+            "{$this->route}.export_warehouse.add_export",
+            [
+                'equipments' => $this->equipments,
+                'inventories' => $this->inventories,
+                'users' => $this->users,
+                'departments' => $this->departments,
+                'title' => $title
+            ]
+        );
     }
 
-    // public function store_export(Request $request)
-    // {
-    //     // Decode the list of equipments and batches
-    //     $equipmentList = json_decode($request->input('equipment_list'), true);
+    public function store_export(Request $request)
+    {
+        $materialList = json_decode($request->material_list, true);
+        if (empty($materialList)) {
+            return redirect()->back()->with('error', 'Danh sách vật tư không hợp lệ.');
+        }
+        $export = new Exports();
+        $export->code = 'EXP' . time();  
+        $export->note = $request->note;
+        $export->status = $request->input('status');
+        $export->export_date = $request->export_at;
+        $export->department_code = $request->department_code;
+        $export->save();
 
-    //     foreach ($equipmentList as $equipment) {
-    //         $equipment_code = $equipment['equipment_code'];
-    //         $department_code = $equipment['department_code'];
-    //         $created_by = $equipment['created_by'];
-    //         $batches = $equipment['batches'];
+        // Lưu thông tin chi tiết phiếu xuất và cập nhật kho
+        foreach ($materialList as $material) {
+            // Kiểm tra xem thông tin vật tư có hợp lệ không
+            if (!isset($material['equipment_code'], $material['quantity'], $material['batch_number'])) {
+                return redirect()->back()->with('error', 'Thông tin vật tư không đầy đủ.');
+            }
 
-    //         // Check if equipment exists
-    //         $equipmentData = collect($this->equipments)->firstWhere('code', $equipment_code);
-    //         if (!$equipmentData) {
-    //             return redirect()->route('warehouse.create_export')->with('error', 'Thiết bị không tồn tại.');
-    //         }
+            // Lưu thông tin chi tiết phiếu xuất
+            $exportDetail = new Export_details();
+            $exportDetail->export_code = $export->code;
+            $exportDetail->equipment_code = $material['equipment_code'];
+            $exportDetail->quantity = $material['quantity'];
+            $exportDetail->batch_number = $material['batch_number'];
+            $exportDetail->save();
 
-    //         // Check stock and process export
-    //         foreach ($batches as $batch) {
-    //             $batch_code = $batch['batch_code'];
-    //             $quantity = $batch['quantity'];
+            // Kiểm tra trạng thái trước khi cập nhật kho
+            if ($export->status == 1) { // Nếu trạng thái không bằng 1 thì trừ số lượng
+                // Cập nhật số lượng trong kho
+                $inventory = Inventories::where('equipment_code', $material['equipment_code'])
+                    ->where('batch_number', $material['batch_number'])
+                    ->first();
+                if ($inventory) {
+                    // Kiểm tra xem số lượng trong kho có đủ để xuất không
+                    if ($inventory->current_quantity >= $material['quantity']) {
+                        // Trừ số lượng đã xuất
+                        $inventory->current_quantity -= $material['quantity'];
+                        $inventory->save();
+                    } else {
+                        return redirect()->back()->with('error', 'Số lượng trong kho không đủ để xuất cho vật tư ' . $material['equipment_code'] . ' - Số lô: ' . $material['batch_number'] . '.');
+                    }
+                } else {
+                    return redirect()->back()->with('error', 'Không tìm thấy vật tư trong kho cho ' . $material['equipment_code'] . ' - Số lô: ' . $material['batch_number'] . '.');
+                }
+            }
+        }
 
-    //             $inventory = collect($this->inventories)->firstWhere('batch_code', $batch_code);
-    //             if (!$inventory || $inventory['current_quantity'] < $quantity) {
-    //                 return redirect()->route('warehouse.create_export')->with('error', "Không đủ số lượng tồn kho để xuất từ lô $batch_code.");
-    //             }
-    //         }
-
-    //         // Process export
-    //         $export_code = 'EXP' . (count($this->exports) + 1);
-    //         $export = [
-    //             'code' => $export_code,
-    //             'department_code' => $department_code,
-    //             'note' => $equipment['note'],
-    //             'price' => 0,
-    //             'status' => 1,
-    //             'export_at_date' => $equipment['export_at'],
-    //             'created_by' => $created_by,
-    //         ];
-    //         $this->exports[] = $export;
-
-    //         foreach ($batches as $batch) {
-    //             $batch_code = $batch['batch_code'];
-    //             $quantity = $batch['quantity'];
-
-    //             foreach ($this->inventories as &$inv) {
-    //                 if ($inv['batch_code'] === $batch_code) {
-    //                     $inv['current_quantity'] -= $quantity;
-    //                 }
-    //             }
-
-    //             $export_detail_code = 'EXD' . (count($this->exportDetails) + 1);
-    //             $export_detail = [
-    //                 'code' => $export_detail_code,
-    //                 'export_code' => $export_code,
-    //                 'batch_code' => $batch_code,
-    //                 'equipment_code' => $equipment_code,
-    //                 'quantity_int' => $quantity,
-    //                 'created_by' => $created_by,
-    //             ];
-    //             $this->exportDetails[] = $export_detail;
-    //         }
-    //     }
-
-    //     dd([
-    //         'exports' => $this->exports,
-    //         'export_details' => $this->exportDetails,
-    //         'inventories' => $this->inventories,
-    //     ]);
-
-    //     return redirect()->route('warehouse.export')->with('success', 'Xuất kho thành công!');
-    // }
+        return redirect()->route('warehouse.export')->with('success', 'Phiếu xuất đã được tạo thành công.');
+    }
 }

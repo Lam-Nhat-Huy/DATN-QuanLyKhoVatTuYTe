@@ -16,8 +16,6 @@ class ExportDetailsSeeder extends Seeder
                 'equipment_code' => 'E001',
                 'quantity' => 3,
                 'batch_number' => 'B001',
-                'unit_price' => 1500.00,
-                'required_quantity' => 3,
             ],
         ]);
     }

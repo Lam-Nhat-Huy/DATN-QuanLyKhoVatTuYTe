@@ -24,8 +24,10 @@ class Exports extends Model
         'note',
         'status',
         'export_date',
-        'created_at',
-        'updated_at',
-        'deleted_at',
     ];
+
+    public function exportDetail()
+    {
+        return $this->hasMany(Export_details::class, 'export_code', 'code'); 
+    }
 }
