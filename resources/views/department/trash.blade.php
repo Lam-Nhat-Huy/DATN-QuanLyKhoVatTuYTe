@@ -8,113 +8,6 @@
 @endsection
 
 @section('scripts')
-    <script>
-        // Đổi biểu tượng khi bấm vào td có chứa chevron
-        document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function(td) {
-            td.addEventListener('click', function(event) {
-                // Tìm phần tử <i> bên trong <td>
-                var icon = this.querySelector('i');
-
-                // Kiểm tra nếu có <i> thì thực hiện đổi biểu tượng
-                if (icon) {
-                    // Đổi icon khi click
-                    if (icon.classList.contains('fa-chevron-right')) {
-                        icon.classList.remove('fa-chevron-right');
-                        icon.classList.add('fa-chevron-down');
-                    } else {
-                        icon.classList.remove('fa-chevron-down');
-                        icon.classList.add('fa-chevron-right');
-                    }
-                }
-
-                // Ngăn chặn việc click ảnh hưởng đến hàng (row)
-                event.stopPropagation();
-            });
-        });
-
-        function toggleDeleteAction() {
-            var anyChecked = false;
-            document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    anyChecked = true;
-                }
-            });
-
-            if (anyChecked) {
-                document.getElementById('action_delete_all').style.display = 'block';
-            } else {
-                document.getElementById('action_delete_all').style.display = 'none';
-            }
-        }
-        document.getElementById('selectAll').addEventListener('change', function() {
-            var isChecked = this.checked;
-            var checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = isChecked;
-                var row = checkbox.closest('tr');
-                if (isChecked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-            });
-            toggleDeleteAction();
-        });
-        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var row = this.closest('tr');
-                if (this.checked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-
-                var allChecked = true;
-                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                    if (!cb.checked) {
-                        allChecked = false;
-                    }
-                });
-                document.getElementById('selectAll').checked = allChecked;
-                toggleDeleteAction();
-            });
-        });
-        document.querySelectorAll('tbody tr').forEach(function(row) {
-            row.addEventListener('click', function() {
-                var checkbox = this.querySelector('.row-checkbox');
-                if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    if (checkbox.checked) {
-                        this.classList.add('selected-row');
-                    } else {
-                        this.classList.remove('selected-row');
-                    }
-
-                    var allChecked = true;
-                    document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                        if (!cb.checked) {
-                            allChecked = false;
-                        }
-                    });
-                    document.getElementById('selectAll').checked = allChecked;
-                    toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('#restoreAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'restore';
-            });
-            document.querySelector('#deleteAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'delete';
-            });
-        });
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleDeleteAction();
-        });
-    </script>
 @endsection
 
 @section('content')
@@ -138,8 +31,8 @@
             <div class="card-body py-3">
                 <div class="table-responsive">
                     <table class="table align-middle gs-0 gy-4">
-                        <thead class="fw-bolder bg-success">
-                            <tr>
+                        <thead class="{{ $allDepartmentTrash->count() == 0 ? 'd-none' : '' }}">
+                            <tr class="fw-bolder bg-success">
                                 <th class="ps-3"><input type="checkbox" id="selectAll" /></th>
                                 <th style="width: 25%;">Phòng Ban</th>
                                 <th style="width: 35%;">Mô tả</th>
@@ -149,33 +42,33 @@
                         </thead>
                         <tbody>
                             @forelse ($allDepartmentTrash as $item)
-                            <tr class="text-center hover-table pointer">
-                                <td class="text-xl-start">
-                                    <input type="checkbox" class="row-checkbox" name="department_codes[]"
-                                        value="{{ $item->code }}" />
-                                </td>
-                                <td class="text-xl-start text-truncate" style="max-width: 150px;">
-                                    {{ $item->name }}
-                                </td>
-                                <td class="text-xl-start text-truncate" style="max-width: 150px;">
-                                    {{ $item->description }}
-                                </td>
-                                <td class="text-xl-start text-truncate" style="max-width: 150px;">
-                                    {{ $item->location }}
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group">
-                                        <a href="{{ route('department.edit', $item->code) }}?{{ request()->getQueryString() }}"
-                                            class="btn btn-sm btn-info me-2 rounded-pill">
-                                            <i class="fa fa-edit" style="margin-bottom: 2px;"></i> Sửa
-                                        </a>
-                                        <button class="btn rounded-pill btn-sm btn-danger me-2" data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal_{{ $item['code'] }}" type="button">
-                                        <i class="fa fa-trash"></i>Xóa
-                                    </button>
-                                    </div>
-                                </td>
-                            </tr>
+                                <tr class="text-center hover-table pointer">
+                                    <td class="text-xl-start">
+                                        <input type="checkbox" class="row-checkbox" name="department_codes[]"
+                                            value="{{ $item->code }}" />
+                                    </td>
+                                    <td class="text-xl-start text-truncate" style="max-width: 150px;">
+                                        {{ $item->name }}
+                                    </td>
+                                    <td class="text-xl-start text-truncate" style="max-width: 150px;">
+                                        {{ $item->description }}
+                                    </td>
+                                    <td class="text-xl-start text-truncate" style="max-width: 150px;">
+                                        {{ $item->location }}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a href="{{ route('department.edit', $item->code) }}?{{ request()->getQueryString() }}"
+                                                class="btn btn-sm btn-info me-2 rounded-pill">
+                                                <i class="fa fa-edit" style="margin-bottom: 2px;"></i> Sửa
+                                            </a>
+                                            <button class="btn rounded-pill btn-sm btn-danger me-2" data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal_{{ $item['code'] }}" type="button">
+                                                <i class="fa fa-trash"></i>Xóa
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
 
                                 {{-- Khôi phục --}}
                                 <div class="modal fade" id="restoreModal_{{ $item->code }}" data-bs-backdrop="static"
@@ -184,7 +77,8 @@
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content border-0 shadow">
                                             <div class="modal-header bg-primary">
-                                                <h5 class="modal-title text-white" id="deleteModalLabel">Khôi Phục Nhà cung cấp
+                                                <h5 class="modal-title text-white" id="deleteModalLabel">Khôi Phục Nhà cung
+                                                    cấp
                                                 </h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
@@ -216,7 +110,8 @@
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content border-0 shadow">
                                             <div class="modal-header bg-danger">
-                                                <h5 class="modal-title text-white" id="deleteModalLabel">Xóa Vĩnh Viễn Nhà Cung Cấp
+                                                <h5 class="modal-title text-white" id="deleteModalLabel">Xóa Vĩnh Viễn Nhà
+                                                    Cung Cấp
                                                 </h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
@@ -233,7 +128,8 @@
                                                         class="btn rounded-pill btn-sm btn-secondary px-4"
                                                         data-bs-dismiss="modal">Đóng</button>
                                                     <button type="submit"
-                                                        class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Xóa Vĩnh Viễn</button>
+                                                        class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Xóa
+                                                        Vĩnh Viễn</button>
                                                 </div>
                                             </form>
                                         </div>
@@ -325,11 +221,12 @@
                                             role="alert"
                                             style="border: 2px dashed #6c757d; background-color: #f8f9fa; color: #495057;">
                                             <div class="mb-3">
-                                                <i class="fas fa-truck" style="font-size: 36px; color: #6c757d;"></i>
+                                                <i class="fa-regular fa-trash-can"
+                                                    style="font-size: 36px; color: #6c757d;"></i>
                                             </div>
-                                            <div class="text-center mt-1">
-                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Không Có Dữ
-                                                    Liệu </h5>
+                                            <div class="text-center">
+                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thùng Rác
+                                                    Rỗng</h5>
                                             </div>
                                         </div>
                                     </td>
@@ -341,7 +238,7 @@
             </div>
             @if ($allDepartmentTrash->count() > 0)
                 <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                    <div class="dropdown" id="action_delete_all">
+                    <div class="dropdown d-none" id="action_delete_all">
                         <span class="btn rounded-pill btn-info btn-sm dropdown-toggle" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span>Chọn Thao Tác</span>
@@ -382,7 +279,8 @@
                         <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
                                 data-bs-dismiss="modal">Đóng</button>
-                            <button type="submit" class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">Khôi Phục</button>
+                            <button type="submit" class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">Khôi
+                                Phục</button>
                         </div>
                     </div>
                 </div>
@@ -404,7 +302,8 @@
                         <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
                                 data-bs-dismiss="modal">Đóng</button>
-                            <button type="submit" class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Xóa Vĩnh Viễn</button>
+                            <button type="submit" class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Xóa Vĩnh
+                                Viễn</button>
                         </div>
                     </div>
                 </div>

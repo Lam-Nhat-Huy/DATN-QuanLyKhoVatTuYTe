@@ -32,40 +32,6 @@
 
         {{-- Bộ lọc thiết bị --}}
         <div class="card-body py-1">
-            {{-- <form id="searchForm" class="row align-items-center">
-                <div class="col-4">
-                    <select name="equipment_type_code" id="equipment_type_code"
-                        class="mt-2 mb-2 form-select form-select-sm setupSelect2 rounded-pill">
-                        <option value="" selected>--Theo Nhóm Thiết Bị--</option>
-                        @foreach ($equipmentTypes as $type)
-                            <option value="{{ $type->code }}"
-                                {{ request()->equipment_type_code == $type->code ? 'selected' : '' }}>
-                                {{ $type->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-4">
-                    <select name="unit_code" id="unit_code"
-                        class="mt-2 mb-2 form-select form-select-sm setupSelect2 rounded-pill">
-                        <option value="" selected>--Theo Đơn Vị Tính--</option>
-                        @foreach ($units as $unit)
-                            <option value="{{ $unit->code }}" {{ request()->unit_code == $unit->code ? 'selected' : '' }}>
-                                {{ $unit->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-4">
-                    <div class="row">
-                        <div class="col-12">
-                            <input type="search" name="kw" id="kw" placeholder="Tìm Kiếm Theo Mã, Tên.."
-                                class="mt-2 mb-2 form-control form-control-sm border border-success rounded-pill"
-                                value="{{ request()->kw }}">
-                        </div>
-                    </div>
-                </div>
-            </form> --}}
             <form action="" method="GET" class="row align-items-center">
                 <div class="col-md-3">
                     <select name="et" class="mt-2 mb-2 form-select form-select-sm rounded-pill setupSelect2">
@@ -372,7 +338,7 @@
 
             @if ($AllEquipment->count() > 0)
                 <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                    <div class="dropdown" id="action_delete_all">
+                    <div class="dropdown d-none" id="action_delete_all">
                         <span class="btn rounded-pill btn-info btn-sm dropdown-toggle" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span>Chọn Thao Tác</span>
@@ -387,7 +353,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $AllEquipment->links('pagination::bootstrap-4') }}
+                        {{ $AllEquipment->links('pagination::bootstrap-5') }}
                     </ul>
                 </div>
             @endif
@@ -449,61 +415,4 @@
 @endsection
 
 @section('scripts')
-    <script>
-        function toggleDeleteAction() {
-            var anyChecked = false;
-            document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    anyChecked = true;
-                }
-            });
-
-            if (anyChecked) {
-                document.getElementById('action_delete_all').style.display = 'block';
-            } else {
-                document.getElementById('action_delete_all').style.display = 'none';
-            }
-        }
-
-        // Khi click vào checkbox "Chọn Tất Cả"
-        document.getElementById('selectAll').addEventListener('change', function() {
-            var isChecked = this.checked;
-            var checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = isChecked;
-                var parentDiv = checkbox.closest('.col-xl-12');
-                if (isChecked) {
-                    parentDiv.classList.add('selected-row');
-                } else {
-                    parentDiv.classList.remove('selected-row');
-                }
-            });
-            toggleDeleteAction();
-        });
-
-        // Khi checkbox của từng hàng thay đổi
-        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var parentDiv = this.closest('.col-xl-12');
-                if (this.checked) {
-                    parentDiv.classList.add('selected-row');
-                } else {
-                    parentDiv.classList.remove('selected-row');
-                }
-
-                var allChecked = true;
-                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                    if (!cb.checked) {
-                        allChecked = false;
-                    }
-                });
-                document.getElementById('selectAll').checked = allChecked;
-                toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleDeleteAction();
-        });
-    </script>
 @endsection

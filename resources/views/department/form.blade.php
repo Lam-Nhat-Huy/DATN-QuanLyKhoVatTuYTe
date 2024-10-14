@@ -52,7 +52,7 @@
                             <label class="required fs-6 fw-bold mb-3">Tên Phòng Ban</label>
 
                             <input type="text"
-                                class="form-control form-control-sm form-control-solid border border-success rounded-pill"
+                                class="form-control form-control-sm border border-success rounded-pill"
                                 placeholder="Tên phòng ban.." name="name"
                                 value="{{ !empty($firstDepartment->name) ? $firstDepartment->name : old('name') }}" />
                             @error('name')
@@ -66,8 +66,8 @@
                             <label class="required fs-6 fw-bold mb-3">Vị trí</label>
 
                             <input type="text"
-                                class="form-control form-control-sm form-control-solid border border-success rounded-pill"
-                                placeholder="Vị trí.." name="location"
+                                class="form-control form-control-sm border border-success rounded-pill"
+                                placeholder="Vị trí phòng ban.." name="location"
                                 value="{{ !empty($firstDepartment->location) ? $firstDepartment->location : old('location') }}" />
                             @error('location')
                                 <div class="message_error">{{ $message }}</div>
@@ -77,8 +77,8 @@
                         <div class="mb-5 col-12">
                             <label class="required fs-6 fw-bold mb-3">Mô tả</label>
                         
-                            <textarea class="form-control form-control-sm form-control-solid border border-success"
-                                placeholder="Mô tả.." name="description"
+                            <textarea class="form-control form-control-sm border border-success"
+                                placeholder="Mô tả phòng ban.." name="description"
                                 cols="" rows="5">{{ !empty($firstDepartment->description) ? $firstDepartment->description : old('description') }}</textarea>
                         
                             @error('description')

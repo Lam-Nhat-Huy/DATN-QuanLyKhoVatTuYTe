@@ -193,7 +193,7 @@
                                 12-09-2024
                             </td>
                             <td class="text-center" data-bs-toggle="collapse" data-bs-target="#collapse" id="toggleIcon">
-                                <i class="fa fa-chevron-right pointer">
+                                <i class="fa fa-caret-right pointer">
                                 </i>
                             </td>
                         </tr>
@@ -458,7 +458,7 @@
         </div>
 
         <div class="card-body py-3">
-            <div class="dropdown" id="action_delete_all">
+            <div class="dropdown d-none" id="action_delete_all">
                 <button class="btn btn-info btn-sm dropdown-toggle rounded-pill" id="dropdownMenuButton1"
                     data-bs-toggle="dropdown" aria-expanded="false">
                     <span>Chọn Thao Tác</span>
