@@ -28,7 +28,7 @@
                     } else {
                         $quantityColor = 'color: #28a745; font-weight: bold;';
                         $icon =
-                            '<i class="fa-solid fa-check-circle" style="color:#28a745; font-size:18px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Còn hàng"></i>';
+                            '<i class="fa-solid fa-check" style="color:#28a745; font-size:18px;" data-bs-toggle="tooltip" data-bs-placement="top" title="Còn hàng"></i>';
                         $bgColor = 'background-color: rgba(40, 167, 69, 0.1);';
                     }
                 @endphp
