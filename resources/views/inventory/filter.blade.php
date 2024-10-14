@@ -31,7 +31,8 @@
         </div>
 
         <div class="col-2">
-            <select class="mt-2 mb-2 form-select form-select-sm border border-success setupSelect2 rounded-pill" name="expiry_date">
+            <select class="mt-2 mb-2 form-select form-select-sm border border-success setupSelect2 rounded-pill"
+                name="expiry_date">
                 <option value="" selected>--Theo HSD--</option>
                 <option value="valid">Còn hạn</option>
                 <option value="expiring_soon">Cảnh báo</option>
@@ -39,11 +40,12 @@
             </select>
         </div>
         <div class="col-2">
-            <select class="mt-2 mb-2 form-select form-select-sm border border-success setupSelect2 rounded-pill" name="quantity">
+            <select class="mt-2 mb-2 form-select form-select-sm border border-success setupSelect2 rounded-pill"
+                name="quantity">
                 <option value="" selected>--Theo SL--</option>
-                <option value="enough">Số lượng đủ</option>
-                <option value="low">Số lượng sắp hết</option>
-                <option value="out_stock">Số lượng hết</option>
+                <option value="enough">Còn hàng</option>
+                <option value="low">Sắp hết</option>
+                <option value="out_stock">Hết hàng</option>
             </select>
         </div>
         <div class="col-3">

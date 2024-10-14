@@ -18,32 +18,49 @@ class InventoryController extends Controller
         $title = 'Tồn Kho';
         $equipmentType = Equipment_types::all();
         $totalEquipments = Equipments::with('inventories')->count();
-        $equipments = Equipments::with('inventories')->orderBy('created_at', 'desc')->paginate(5);
+
+        // Đừng ghi đè biến $equipments trong hàm index
+        $initialEquipments = Equipments::with('inventories')->orderBy('created_at', 'desc')->paginate(100);
+
+        $outOfStockCount = 0;
+        $lowStockCount = 0;
         $totalInventories = [];
 
-        foreach ($equipments as $equipment) {
+        foreach ($initialEquipments as $equipment) {
             $totalQuantity = $equipment->inventories->sum('current_quantity');
             $totalInventories[$equipment->code] = [
                 'inventories' => $equipment->inventories,
                 'total_quantity' => $totalQuantity,
             ];
+
+            if ($totalQuantity < 1) {
+                $outOfStockCount++;
+            } elseif ($totalQuantity <= 10) {
+                $lowStockCount++;
+            }
         }
 
         if ($request->ajax()) {
             return view('inventory.index', [
-                'equipments' => $equipments,
+                'equipments' => $initialEquipments,
                 'inventories' => $totalInventories,
+                'outOfStockCount' => $outOfStockCount,
+                'lowStockCount' => $lowStockCount,
             ]);
         }
 
         return view("{$this->route}.inventory", [
             'inventories' => $totalInventories,
-            'equipments' => $equipments,
+            'equipments' => $initialEquipments,
             'equipmentType' => $equipmentType,
             'totalEquipments' => $totalEquipments,
+            'outOfStockCount' => $outOfStockCount,
+            'lowStockCount' => $lowStockCount,
             'title' => $title,
         ]);
     }
+
+
     public function filter(Request $request)
     {
         $title = 'Tồn kho';
@@ -53,18 +70,21 @@ class InventoryController extends Controller
         $expiry_date = $request->input('expiry_date');
         $quantity = $request->input('quantity');
         $search = $request->input('search');
+
         $equipments = Equipments::with('inventories');
+
+        // Các điều kiện lọc
         if (!empty($search)) {
             $equipments->where('name', 'LIKE', "%{$search}%");
         }
-        if (!empty($start_date)) {
-            $equipments->whereHas('inventories', function ($subQuery) use ($start_date) {
-                $subQuery->whereDate('expiry_date', '>=', $start_date);
-            });
-        }
-        if (!empty($end_date)) {
-            $equipments->whereHas('inventories', function ($subQuery) use ($end_date) {
-                $subQuery->whereDate('expiry_date', '<=', $end_date);
+        if (!empty($start_date) || !empty($end_date)) {
+            $equipments->whereHas('inventories', function ($subQuery) use ($start_date, $end_date) {
+                if (!empty($start_date)) {
+                    $subQuery->whereDate('expiry_date', '>=', $start_date);
+                }
+                if (!empty($end_date)) {
+                    $subQuery->whereDate('expiry_date', '<=', $end_date);
+                }
             });
         }
         if (!empty($category)) {
@@ -88,49 +108,44 @@ class InventoryController extends Controller
             });
         }
         if (!empty($quantity)) {
-            if ($quantity === 'enough') {
-                $equipments->whereHas('inventories', function ($subQuery) {
+            $equipments->whereHas('inventories', function ($subQuery) use ($quantity) {
+                if ($quantity === 'enough') {
                     $subQuery->where('current_quantity', '>=', 25);
-                });
-            } elseif ($quantity === 'low') {
-                $equipments->whereHas('inventories', function ($subQuery) {
+                } elseif ($quantity === 'low') {
                     $subQuery->where('current_quantity', '<', 25);
-                });
-            } elseif ($quantity === 'out_stock') {
-                $equipments->whereDoesntHave('inventories', function ($subQuery) {
-                    $subQuery->where('current_quantity', '>', 0);
-                });
-            }
+                } elseif ($quantity === 'out_stock') {
+                    $subQuery->where('current_quantity', '=', 0);
+                }
+            });
         }
-        $equipments = $equipments->orderBy('created_at', 'desc')->paginate(5);
-        $totalInventories = [];
 
-        foreach ($equipments as $equipment) {
-            if (!empty($expiry_date)) {
-                $filteredInventories = $equipment->inventories->filter(function ($inventory) use ($expiry_date, $now, $fiveMonthsLater) {
-                    if ($expiry_date == 'valid') {
-                        return $inventory->expiry_date > $fiveMonthsLater;
-                    } elseif ($expiry_date == 'expiring_soon') {
-                        return $inventory->expiry_date > $now && $inventory->expiry_date <= $fiveMonthsLater;
-                    } elseif ($expiry_date == 'expired') {
-                        return $inventory->expiry_date <= $now;
-                    }
-                    return true;
-                });
-            } else {
-                $filteredInventories = $equipment->inventories;
-            }
-            $totalQuantity = $filteredInventories->sum('current_quantity');
+        // Lấy dữ liệu đã lọc
+        $filteredEquipments = $equipments->orderBy('created_at', 'desc');
+
+        // Kiểm tra số lượng bản ghi
+        $totalFiltered = $filteredEquipments->count();
+
+        // Phân trang chỉ khi có đủ 10 bản ghi
+        if ($totalFiltered > 10) {
+            $filteredEquipments = $filteredEquipments->paginate(100);
+        } else {
+            $filteredEquipments = $filteredEquipments->get(); // Lấy toàn bộ nếu ít hơn 10
+        }
+
+        $totalInventories = [];
+        foreach ($filteredEquipments as $equipment) {
+            $totalQuantity = $equipment->inventories->sum('current_quantity');
             $totalInventories[$equipment->code] = [
-                'inventories' => $filteredInventories,
+                'inventories' => $equipment->inventories,
                 'total_quantity' => $totalQuantity,
             ];
         }
+
         return view("{$this->route}.search", [
             'title' => $title,
             'inventories' => $totalInventories,
-            'equipments' => $equipments,
-            'totalEquipment' => Equipments::count()
+            'equipments' => $filteredEquipments,
+            'totalEquipment' => Equipments::count(),
         ]);
     }
 }

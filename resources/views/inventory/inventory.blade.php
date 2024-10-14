@@ -32,13 +32,14 @@
                     style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr class="fw-bolder bg-success text-white" style="background-color: #28a745;">
-                            <th class="ps-4" style="width: 5%;">
-                                <input type="checkbox" id="selectAll" />
+                            <th style="width: 5%;">
+                                STT
                             </th>
-                            <th class="ps-4">Tên sản phẩm</th>
-                            <th>Nhóm sản phẩm</th>
-                            <th>Tổng tồn</th>
-                            <th class="pe-3">Đơn vị tính</th>
+                            <th style="width: 10%;">Mã sàn phẩm</th>
+                            <th style="width: 40%;">Tên sản phẩm</th>
+                            <th style="width: 20%;">Nhóm sản phẩm</th>
+                            <th style="width: 10%;">Tổng tồn</th>
+                            <th style="width: 15%;">Đơn vị tính</th>
                         </tr>
                     </thead>
                     <tbody id="equipment-list">
@@ -47,20 +48,34 @@
                 </table>
             </div>
         </div>
-        <div class="card-body py-3 mb-3 d-flex justify-between flex-row-reverse">
-            <div class="action-bar">
-                {{ $equipments->links('pagination::bootstrap-4') }}
-            </div>
 
+        <div class="card-body py-3 d-flex justify-content-between align-items-center">
             <div class="filter-bar">
                 <ul class="nav nav-pills">
-                    <li class="nav-item">
-                        <p class="nav-link text-dark">Tất cả <span class="badge bg-info">({{ $totalEquipments }})</span>
+                    <li class="nav-item" style="font-size: 11px;">
+                        <p class="nav-link text-white rounded-pill" style="background-color: #0064ff;">
+                            Tất cả <span>({{ $totalEquipments }})</span>
+                        </p>
+                    </li>
+                    <li class="nav-item" style="font-size: 11px;">
+                        <p class="nav-link text-white rounded-pill" style="background-color: #dc3545;">
+                            Hết hàng <span>({{ $outOfStockCount }})</span>
+                        </p>
+                    </li>
+                    <li class="nav-item" style="font-size: 11px;">
+                        <p class="nav-link text-white rounded-pill" style="background-color: #ffc107;">
+                            Sắp hết hàng <span>({{ $lowStockCount }})</span>
                         </p>
                     </li>
                 </ul>
             </div>
+            <div class="DayNganCach"></div>
+            <ul class="pagination">
+                {{ $equipments->links('pagination::bootstrap-5') }}
+            </ul>
         </div>
+
+
     </div>
 @endsection
 
@@ -80,6 +95,8 @@
                     let equipmentGroup = $('select[name="category"]').val();
                     let expiryStatus = $('select[name="expiry_date"]').val();
                     let quantityStatus = $('select[name="quantity"]').val();
+
+                    // Check if no filters are applied, reload full list
                     if (!query && !startDate && !endDate && !equipmentGroup && !expiryStatus && !
                         quantityStatus) {
                         $.ajax({
@@ -90,6 +107,7 @@
                             }
                         });
                     } else {
+                        // Apply filters through AJAX request
                         $.ajax({
                             url: "{{ route('inventory.filter') }}",
                             type: "GET",
