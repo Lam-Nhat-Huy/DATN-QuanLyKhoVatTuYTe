@@ -4,111 +4,6 @@
 @endsection
 
 @section('scripts')
-    <script>
-        // Đổi biểu tượng khi bấm vào td có chứa chevron
-        document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function(td) {
-            td.addEventListener('click', function(event) {
-                // Tìm phần tử <i> bên trong <td>
-                var icon = this.querySelector('i');
-
-                // Kiểm tra nếu có <i> thì thực hiện đổi biểu tượng
-                if (icon) {
-                    // Đổi icon khi click
-                    if (icon.classList.contains('fa-chevron-right')) {
-                        icon.classList.remove('fa-chevron-right');
-                        icon.classList.add('fa-chevron-down');
-                    } else {
-                        icon.classList.remove('fa-chevron-down');
-                        icon.classList.add('fa-chevron-right');
-                    }
-                }
-
-                // Ngăn chặn việc click ảnh hưởng đến hàng (row)
-                event.stopPropagation();
-            });
-        });
-        // Hàm kiểm tra và ẩn/hiện nút xóa tất cả
-        function toggleDeleteAction() {
-            var anyChecked = false;
-            document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    anyChecked = true;
-                }
-            });
-
-            if (anyChecked) {
-                document.getElementById('action_delete_all').style.display = 'block';
-            } else {
-                document.getElementById('action_delete_all').style.display = 'none';
-            }
-        }
-
-        // Khi click vào checkbox "Select All"
-        document.getElementById('selectAll').addEventListener('change', function() {
-            var isChecked = this.checked;
-            var checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = isChecked;
-                var row = checkbox.closest('tr');
-                if (isChecked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-            });
-            toggleDeleteAction();
-        });
-
-        // Khi checkbox của từng hàng thay đổi
-        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var row = this.closest('tr');
-                if (this.checked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-
-                var allChecked = true;
-                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                    if (!cb.checked) {
-                        allChecked = false;
-                    }
-                });
-                document.getElementById('selectAll').checked = allChecked;
-                toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-            });
-        });
-
-        // Khi người dùng click vào hàng
-        document.querySelectorAll('tbody tr').forEach(function(row) {
-            row.addEventListener('click', function() {
-                var checkbox = this.querySelector('.row-checkbox');
-                if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    if (checkbox.checked) {
-                        this.classList.add('selected-row');
-                    } else {
-                        this.classList.remove('selected-row');
-                    }
-
-                    var allChecked = true;
-                    document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                        if (!cb.checked) {
-                            allChecked = false;
-                        }
-                    });
-                    document.getElementById('selectAll').checked = allChecked;
-                    toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-                }
-            });
-        });
-
-        // Kiểm tra trạng thái ban đầu khi trang được tải
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleDeleteAction();
-        });
-    </script>
 @endsection
 
 @section('title')
@@ -139,16 +34,19 @@
             </div>
         </div>
         <div class="card-body py-1">
-            <form class="d-flex align-items-center">
-                <div class="me-2 flex-grow-1">
-                    <input type="search" id="keyword" name="keyword" value="{{ request()->keyword }}"
-                        placeholder="Tìm Kiếm Tên Phòng Ban, Số Điện Thoại, Địa Chỉ, Email, Mã Số Thuế, Người Liên Hệ.."
-                        class="mt-2 mb-2 form-control form-control-sm rounded-pill border border-success w-100">
-                </div>
-                <div>
-                    <button class="btn rounded-pill btn-dark btn-sm mt-2 mb-2 w-100 load_animation" type="submit">
-                        <i class="fa fa-search" style="margin-bottom: 2px;"></i>Tìm
-                    </button>
+            <form action="" method="">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <input type="search" name="kw" placeholder="Tìm Kiếm Mã, Tên, Email Người Dùng.."
+                            class="mt-2 mb-2 form-control form-control-sm rounded-pill border border-success w-100"
+                            value="{{ request()->kw }}">
+                    </div>
+                    <div class="col-3 d-flex justify-content-between">
+                        <a class="btn rounded-pill btn-info btn-sm mt-2 mb-2 w-100 me-2" href="{{ route('department.index') }}"><i
+                                class="fas fa-times-circle" style="margin-bottom: 2px;"></i>Bỏ Lọc</a>
+                        <button class="btn rounded-pill btn-dark btn-sm mt-2 mb-2 w-100 load_animation" type="submit"><i
+                                class="fa fa-search" style="margin-bottom: 2px;"></i>Tìm</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -157,13 +55,13 @@
             <div class="card-body py-3">
                 <div class="table-responsive">
                     <table class="table align-middle gs-0 gy-4">
-                        <thead class="fw-bolder bg-success">
-                            <tr>
+                        <thead class="{{ $department->count() == 0 ? 'd-none' : '' }}">
+                            <tr class="fw-bolder bg-success">
                                 <th class="ps-3"><input type="checkbox" id="selectAll" /></th>
                                 <th style="width: 25%;">Phòng Ban</th>
-                                <th style="width: 35%;">Mô tả</th>
-                                <th style="width: 15%;">Vị trí</th>
-                                <th style="width: 25%;" class="pe-3 text-center">Hành Động</th>
+                                <th style="width: 30%;">Mô tả</th>
+                                <th style="width: 25%;">Vị trí</th>
+                                <th style="width: 20%;" class="pe-3 text-center">Hành Động</th>
                             </tr>
                         </thead>
                         <tbody id="supplierTableBody">
@@ -189,9 +87,9 @@
                                                 <i class="fa fa-edit" style="margin-bottom: 2px;"></i> Sửa
                                             </a>
                                             <button class="btn rounded-pill btn-sm btn-danger me-2" data-bs-toggle="modal"
-                                            data-bs-target="#deleteModal_{{ $item['code'] }}" type="button">
-                                            <i class="fa fa-trash"></i>Xóa
-                                        </button>
+                                                data-bs-target="#deleteModal_{{ $item['code'] }}" type="button">
+                                                <i class="fa fa-trash"></i>Xóa
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -202,10 +100,11 @@
                                             role="alert"
                                             style="border: 2px dashed #6c757d; background-color: #f8f9fa; color: #495057;">
                                             <div class="mb-3">
-                                                <i class="fas fa-truck" style="font-size: 36px; color: #6c757d;"></i>
+                                                <i class="fas fa-building" style="font-size: 36px; color: #6c757d;"></i>
                                             </div>
                                             <div class="text-center mt-1">
-                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Không có phòng ban </h5>
+                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Không có
+                                                    phòng ban </h5>
                                             </div>
                                         </div>
                                     </td>
@@ -218,7 +117,7 @@
 
             @if ($department->count() > 0)
                 <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                    <div class="dropdown" id="action_delete_all">
+                    <div class="dropdown d-none" id="action_delete_all">
                         <span class="btn rounded-pill btn-info btn-sm dropdown-toggle" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span>Chọn Thao Tác</span>

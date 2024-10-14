@@ -38,9 +38,6 @@
                             </div>
                             <div class="text-center">
                                 <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thùng Rác Rỗng</h5>
-                                <p style="font-size: 14px; color: #6c757d; margin: 0;">
-                                    Không Có Thiết Bị Nào Bị Xóa
-                                </p>
                             </div>
                         </div>
                     @else
@@ -197,7 +194,7 @@
 
             @if ($AllEquipmentTrash->count() > 0)
                 <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                    <div class="dropdown" id="action_delete_all">
+                    <div class="dropdown d-none" id="action_delete_all">
                         <span class="btn rounded-pill btn-info btn-sm dropdown-toggle" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span>Chọn Thao Tác</span>
@@ -217,7 +214,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $AllEquipmentTrash->links('pagination::bootstrap-4') }}
+                        {{ $AllEquipmentTrash->links('pagination::bootstrap-5') }}
                     </ul>
                 </div>
             @endif
@@ -330,71 +327,4 @@
 @endsection
 
 @section('scripts')
-    <script>
-        function toggleDeleteAction() {
-            var anyChecked = false;
-            document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    anyChecked = true;
-                }
-            });
-
-            if (anyChecked) {
-                document.getElementById('action_delete_all').style.display = 'block';
-            } else {
-                document.getElementById('action_delete_all').style.display = 'none';
-            }
-        }
-
-        // Khi click vào checkbox "Chọn Tất Cả"
-        document.getElementById('selectAll').addEventListener('change', function() {
-            var isChecked = this.checked;
-            var checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = isChecked;
-                var parentDiv = checkbox.closest('.col-xl-12');
-                if (isChecked) {
-                    parentDiv.classList.add('selected-row');
-                } else {
-                    parentDiv.classList.remove('selected-row');
-                }
-            });
-            toggleDeleteAction();
-        });
-
-        // Khi checkbox của từng hàng thay đổi
-        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var parentDiv = this.closest('.col-xl-12');
-                if (this.checked) {
-                    parentDiv.classList.add('selected-row');
-                } else {
-                    parentDiv.classList.remove('selected-row');
-                }
-
-                var allChecked = true;
-                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                    if (!cb.checked) {
-                        allChecked = false;
-                    }
-                });
-                document.getElementById('selectAll').checked = allChecked;
-                toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleDeleteAction();
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('#restoreAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'restore';
-            });
-
-            document.querySelector('#deleteAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'delete';
-            });
-        });
-    </script>
 @endsection

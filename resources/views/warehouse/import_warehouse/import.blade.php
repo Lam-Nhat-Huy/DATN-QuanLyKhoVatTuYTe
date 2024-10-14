@@ -28,7 +28,7 @@
                 <div class="table-responsive rounded">
                     <table class="table align-middle gs-0 gy-4">
                         <!-- Trong phần <thead> của bảng -->
-                        <thead>
+                        <thead class="{{ $receipts->count() == 0 ? 'd-none' : '' }}">
                             <tr class="bg-success">
                                 <th class="ps-3">
                                     <input type="checkbox" id="selectAll" />
@@ -72,17 +72,18 @@
                                             @endif
                                         </td>
                                         <td class="text-center" data-bs-toggle="collapse"
-                                            data-bs-target="#collapse{{ $item->code }}"
-                                            id="toggleIcon{{ $item->code }}">
-                                            Chi Tiết<i class="fa fa-chevron-right pointer ms-2"></i>
+                                            data-bs-target="#collapse_{{ $item->code }}" aria-expanded="false"
+                                            aria-controls="collapse_{{ $item->code }}">
+                                            Chi Tiết<i class="fa fa-caret-right pointer ms-2"></i>
                                         </td>
                                     </tr>
 
                                     <!-- Collapse content -->
-                                    <tr class="collapse multi-collapse" id="collapse{{ $item['code'] }}">
+                                    <tr>
                                         <td class="p-0" colspan="12"
-                                            style="border: 1px solid #dcdcdc; background-color: #fafafa; padding-top: 0 !important;">
-                                            <div class="flex-lg-row-fluid border-2 border-lg-1">
+                                            style="background-color: #fafafa; padding-top: 0 !important;">
+                                            <div class="flex-lg-row-fluid border-2 border-lg-1 collapse multi-collapse"
+                                                id="collapse_{{ $item->code }}">
                                                 <div class="card card-flush p-2"
                                                     style="padding-top: 0px !important; padding-bottom: 0px !important;">
                                                     <div class="card-header d-flex justify-content-between align-items-center p-3 pb-0"
@@ -219,7 +220,7 @@
                                                         <div class="col-md-12">
                                                             <div class="table-responsive rounded">
                                                                 <table class="table table-striped table-sm table-hover">
-                                                                    <thead class="fw-bolder bg-danger">
+                                                                    <thead class="fw-bolder bg-dark">
                                                                         <tr class="text-center">
                                                                             <th class="ps-3">Mã thiết bị</th>
                                                                             <th>Tên thiết bị</th>
@@ -309,17 +310,18 @@
                                             @endif
                                         </td>
                                         <td class="text-center" data-bs-toggle="collapse"
-                                            data-bs-target="#collapse{{ $item->code }}"
-                                            id="toggleIcon{{ $item->code }}">
-                                            Chi Tiết<i class="fa fa-chevron-right pointer ms-2"></i>
+                                            data-bs-target="#collapse_{{ $item->code }}" aria-expanded="false"
+                                            aria-controls="collapse_{{ $item->code }}">
+                                            Chi Tiết<i class="fa fa-caret-right pointer ms-2"></i>
                                         </td>
                                     </tr>
 
                                     <!-- Collapse content -->
-                                    <tr class="collapse multi-collapse" id="collapse{{ $item['code'] }}">
+                                    <tr>
                                         <td class="p-0" colspan="12"
-                                            style="border: 1px solid #dcdcdc; background-color: #fafafa; padding-top: 0 !important;">
-                                            <div class="flex-lg-row-fluid border-2 border-lg-1">
+                                            style="background-color: #fafafa; padding-top: 0 !important;">
+                                            <div class="flex-lg-row-fluid border-2 border-lg-1 collapse multi-collapse"
+                                                id="collapse_{{ $item->code }}">
                                                 <div class="card card-flush p-2"
                                                     style="padding-top: 0px !important; padding-bottom: 0px !important;">
                                                     <div class="card-header d-flex justify-content-between align-items-center p-3 pb-0"
@@ -456,7 +458,7 @@
                                                         <div class="col-md-12">
                                                             <div class="table-responsive rounded">
                                                                 <table class="table table-striped table-sm table-hover">
-                                                                    <thead class="fw-bolder bg-danger">
+                                                                    <thead class="fw-bolder bg-dark">
                                                                         <tr class="text-center">
                                                                             <th class="ps-3" style="width: 25%;">Tên
                                                                                 thiết bị
@@ -626,7 +628,7 @@
 
             @if ($receipts->count() > 0)
                 <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                    <div class="dropdown" id="action_delete_all">
+                    <div class="dropdown d-none" id="action_delete_all">
                         <button class="btn btn-info btn-sm dropdown-toggle rounded-pill" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span>Chọn Thao Tác</span>
@@ -802,119 +804,4 @@
 @endsection
 
 @section('scripts')
-    <script>
-        document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function(td) {
-            td.addEventListener('click', function(event) {
-                // Tìm phần tử <i> bên trong <td>
-                var icon = this.querySelector('i');
-
-                // Kiểm tra nếu có <i> thì thực hiện đổi biểu tượng
-                if (icon) {
-                    // Đổi icon khi click
-                    if (icon.classList.contains('fa-chevron-right')) {
-                        icon.classList.remove('fa-chevron-right');
-                        icon.classList.add('fa-chevron-down');
-                    } else {
-                        icon.classList.remove('fa-chevron-down');
-                        icon.classList.add('fa-chevron-right');
-                    }
-                }
-
-                // Ngăn chặn việc click ảnh hưởng đến hàng (row)
-                event.stopPropagation();
-            });
-        });
-
-        // Hàm kiểm tra và ẩn/hiện nút hủy tất cả
-        function toggleDeleteAction() {
-            var anyChecked = false;
-            document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    anyChecked = true;
-                }
-            });
-
-            if (anyChecked) {
-                document.getElementById('action_delete_all').style.display = 'block';
-            } else {
-                document.getElementById('action_delete_all').style.display = 'none';
-            }
-        }
-
-        // Khi click vào checkbox "Select All"
-        document.getElementById('selectAll').addEventListener('change', function() {
-            var isChecked = this.checked;
-            var checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = isChecked;
-                var row = checkbox.closest('tr');
-                if (isChecked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-            });
-            toggleDeleteAction();
-        });
-
-        // Khi checkbox của từng hàng thay đổi
-        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var row = this.closest('tr');
-                if (this.checked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-
-                var allChecked = true;
-                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                    if (!cb.checked) {
-                        allChecked = false;
-                    }
-                });
-                document.getElementById('selectAll').checked = allChecked;
-                toggleDeleteAction(); // Gọi hàm kiểm tra nút hủy tất cả
-            });
-        });
-
-        // Khi người dùng click vào hàng
-        document.querySelectorAll('tbody tr').forEach(function(row) {
-            row.addEventListener('click', function() {
-                var checkbox = this.querySelector('.row-checkbox');
-                if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    if (checkbox.checked) {
-                        this.classList.add('selected-row');
-                    } else {
-                        this.classList.remove('selected-row');
-                    }
-
-                    var allChecked = true;
-                    document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                        if (!cb.checked) {
-                            allChecked = false;
-                        }
-                    });
-                    document.getElementById('selectAll').checked = allChecked;
-                    toggleDeleteAction(); // Gọi hàm kiểm tra nút hủy tất cả
-                }
-            });
-        });
-
-        // Kiểm tra trạng thái ban đầu khi trang được tải
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleDeleteAction();
-
-            document.querySelector('#browseAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'browse';
-            });
-
-            document.querySelector('#deleteAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'delete';
-            });
-        });
-
-        toggleDeleteAction();
-    </script>
 @endsection

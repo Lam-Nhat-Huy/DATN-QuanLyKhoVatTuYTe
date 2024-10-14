@@ -30,7 +30,7 @@
             <div class="card-body py-3">
                 <div class="table-responsive rounded">
                     <table class="table align-middle gs-0 gy-4">
-                        <thead>
+                        <thead class="{{ $AllEquipmentGroupTrash->count() == 0 ? 'd-none' : '' }}">
                             <tr class="fw-bolder bg-success">
                                 <th class="ps-3" style="width: 5%;"><input type="checkbox" id="selectAll" /></th>
                                 <th class="" style="width: 10%;">Mã</th>
@@ -48,11 +48,12 @@
                                             role="alert"
                                             style="border: 2px dashed #6c757d; background-color: #f8f9fa; color: #495057;">
                                             <div class="mb-3">
-                                                <i class="fas fa-box" style="font-size: 36px; color: #6c757d;"></i>
+                                                <i class="fa-regular fa-trash-can"
+                                                    style="font-size: 36px; color: #6c757d;"></i>
                                             </div>
-                                            <div class="text-center mt-1">
-                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Không có dữ
-                                                    liệu về nhóm thiết bị </h5>
+                                            <div class="text-center">
+                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thùng Rác
+                                                    Rỗng</h5>
                                             </div>
                                         </div>
                                     </td>
@@ -99,7 +100,7 @@
             </div>
             @if ($AllEquipmentGroupTrash->count() > 0)
                 <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                    <div class="dropdown" id="action_delete_all">
+                    <div class="dropdown d-none" id="action_delete_all">
                         <span class="btn rounded-pill btn-info btn-sm dropdown-toggle" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span>Chọn Thao Tác</span>
@@ -118,7 +119,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $AllEquipmentGroupTrash->links('pagination::bootstrap-4') }}
+                        {{ $AllEquipmentGroupTrash->links('pagination::bootstrap-5') }}
                     </ul>
                 </div>
             @endif
@@ -233,97 +234,4 @@
 @endsection
 
 @section('scripts')
-    <script>
-        // Hàm kiểm tra và ẩn/hiện nút xóa tất cả
-        function toggleDeleteAction() {
-            var anyChecked = false;
-            document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    anyChecked = true;
-                }
-            });
-
-            if (anyChecked) {
-                document.getElementById('action_delete_all').style.display = 'block';
-            } else {
-                document.getElementById('action_delete_all').style.display = 'none';
-            }
-        }
-
-        // Khi click vào checkbox "Select All"
-        document.getElementById('selectAll').addEventListener('change', function() {
-            var isChecked = this.checked;
-            var checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = isChecked;
-                var row = checkbox.closest('tr');
-                if (isChecked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-            });
-            toggleDeleteAction();
-        });
-
-        // Khi checkbox của từng hàng thay đổi
-        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var row = this.closest('tr');
-                if (this.checked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-
-                var allChecked = true;
-                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                    if (!cb.checked) {
-                        allChecked = false;
-                    }
-                });
-                document.getElementById('selectAll').checked = allChecked;
-                toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-            });
-        });
-
-        // Khi người dùng click vào hàng
-        document.querySelectorAll('tbody tr').forEach(function(row) {
-            row.addEventListener('click', function() {
-                var checkbox = this.querySelector('.row-checkbox');
-                if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    if (checkbox.checked) {
-                        this.classList.add('selected-row');
-                    } else {
-                        this.classList.remove('selected-row');
-                    }
-
-                    var allChecked = true;
-                    document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                        if (!cb.checked) {
-                            allChecked = false;
-                        }
-                    });
-                    document.getElementById('selectAll').checked = allChecked;
-                    toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-                }
-            });
-        });
-
-        // Kiểm tra trạng thái ban đầu khi trang được tải
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleDeleteAction();
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('#restoreAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'restore';
-            });
-
-            document.querySelector('#deleteAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'delete';
-            });
-        });
-    </script>
 @endsection

@@ -61,7 +61,7 @@
             <div class="card-body py-3">
                 <div class="table-responsive rounded">
                     <table class="table align-middle gs-0 gy-4">
-                        <thead>
+                        <thead class="{{ $AllEquipmentGroup->count() == 0 ? 'd-none' : '' }}">
                             <tr class="bg-success">
                                 <th class="ps-3" style="width: 5%;"><input type="checkbox" id="selectAll" /></th>
                                 <th class="" style="width: 10%;">Mã</th>
@@ -149,7 +149,7 @@
             </div>
             @if ($AllEquipmentGroup->count() > 0)
                 <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                    <div class="dropdown" id="action_delete_all">
+                    <div class="dropdown d-none" id="action_delete_all">
                         <span class="btn rounded-pill btn-info btn-sm dropdown-toggle" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span>Chọn Thao Tác</span>
@@ -162,7 +162,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $AllEquipmentGroup->links('pagination::bootstrap-4') }}
+                        {{ $AllEquipmentGroup->links('pagination::bootstrap-5') }}
                     </ul>
                 </div>
             @endif
@@ -226,109 +226,4 @@
 @endsection
 
 @section('scripts')
-    <script>
-        // Đổi biểu tượng khi bấm vào td có chứa chevron
-        document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function(td) {
-            td.addEventListener('click', function(event) {
-                // Tìm phần tử <i> bên trong <td>
-                var icon = this.querySelector('i');
-
-                // Kiểm tra nếu có <i> thì thực hiện đổi biểu tượng
-                if (icon) {
-                    // Đổi icon khi click
-                    if (icon.classList.contains('fa-chevron-right')) {
-                        icon.classList.remove('fa-chevron-right');
-                        icon.classList.add('fa-chevron-down');
-                    } else {
-                        icon.classList.remove('fa-chevron-down');
-                        icon.classList.add('fa-chevron-right');
-                    }
-                }
-
-                // Ngăn chặn việc click ảnh hưởng đến hàng (row)
-                event.stopPropagation();
-            });
-        });
-        // Hàm kiểm tra và ẩn/hiện nút xóa tất cả
-        function toggleDeleteAction() {
-            var anyChecked = false;
-            document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    anyChecked = true;
-                }
-            });
-
-            if (anyChecked) {
-                document.getElementById('action_delete_all').style.display = 'block';
-            } else {
-                document.getElementById('action_delete_all').style.display = 'none';
-            }
-        }
-
-        // Khi click vào checkbox "Select All"
-        document.getElementById('selectAll').addEventListener('change', function() {
-            var isChecked = this.checked;
-            var checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = isChecked;
-                var row = checkbox.closest('tr');
-                if (isChecked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-            });
-            toggleDeleteAction();
-        });
-
-        // Khi checkbox của từng hàng thay đổi
-        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var row = this.closest('tr');
-                if (this.checked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-
-                var allChecked = true;
-                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                    if (!cb.checked) {
-                        allChecked = false;
-                    }
-                });
-                document.getElementById('selectAll').checked = allChecked;
-                toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-            });
-        });
-
-        // Khi người dùng click vào hàng
-        document.querySelectorAll('tbody tr').forEach(function(row) {
-            row.addEventListener('click', function() {
-                var checkbox = this.querySelector('.row-checkbox');
-                if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    if (checkbox.checked) {
-                        this.classList.add('selected-row');
-                    } else {
-                        this.classList.remove('selected-row');
-                    }
-
-                    var allChecked = true;
-                    document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                        if (!cb.checked) {
-                            allChecked = false;
-                        }
-                    });
-                    document.getElementById('selectAll').checked = allChecked;
-                    toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-                }
-            });
-        });
-
-        // Kiểm tra trạng thái ban đầu khi trang được tải
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleDeleteAction();
-        });
-    </script>
 @endsection

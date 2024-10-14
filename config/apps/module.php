@@ -46,6 +46,7 @@ return [
                 'warehouse.import',
                 'warehouse.export',
                 'check_warehouse.index',
+                'warehouse.trash',
                 'inventory.index',
                 'card_warehouse.index',
                 'warehouse.create_import',
@@ -57,7 +58,7 @@ return [
                 [
                     'title' => 'Nhập Kho',
                     'route' => 'warehouse.import',
-                    'route_action' => ['warehouse.create_import'],
+                    'route_action' => ['warehouse.create_import', 'warehouse.trash'],
                     'icon' => 'fa fa-download',
                     'user_role' => [0, 1],
                 ],

@@ -117,7 +117,7 @@ class EquipmentRequestController extends Controller
                 Import_equipment_request_details::whereIn('import_request_code', $request->import_reqest_codes)
                     ->update(['status' => 1]);
 
-                toastr()->success('Duyệt thành công');
+                toastr()->success('Duyệt phiếu chờ thành công');
 
                 return redirect()->back();
             } elseif ($request->action_type === 'delete') {

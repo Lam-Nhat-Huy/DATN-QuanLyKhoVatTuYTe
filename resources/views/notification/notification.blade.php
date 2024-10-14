@@ -8,98 +8,6 @@
 @endsection
 
 @section('scripts')
-    <script>
-        function toggleDeleteAction() {
-            var anyChecked = false;
-            document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    anyChecked = true;
-                }
-            });
-
-            if (anyChecked) {
-                document.getElementById('action_delete_all').style.display = 'block';
-            } else {
-                document.getElementById('action_delete_all').style.display = 'none';
-            }
-        }
-
-        // Khi click vào checkbox "Select All"
-        document.getElementById('selectAll').addEventListener('change', function() {
-            var isChecked = this.checked;
-            var checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = isChecked;
-                var row = checkbox.closest('tr');
-                if (isChecked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-            });
-            toggleDeleteAction();
-        });
-
-        // Khi checkbox của từng hàng thay đổi
-        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var row = this.closest('tr');
-                if (this.checked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-
-                var allChecked = true;
-                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                    if (!cb.checked) {
-                        allChecked = false;
-                    }
-                });
-                document.getElementById('selectAll').checked = allChecked;
-                toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-            });
-        });
-
-        // Khi người dùng click vào hàng
-        document.querySelectorAll('tbody tr').forEach(function(row) {
-            row.addEventListener('click', function() {
-                var checkbox = this.querySelector('.row-checkbox');
-                if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    if (checkbox.checked) {
-                        this.classList.add('selected-row');
-                    } else {
-                        this.classList.remove('selected-row');
-                    }
-
-                    var allChecked = true;
-                    document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                        if (!cb.checked) {
-                            allChecked = false;
-                        }
-                    });
-                    document.getElementById('selectAll').checked = allChecked;
-                    toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('#browseAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'browse';
-            });
-
-            document.querySelector('#deleteAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'delete';
-            });
-        });
-
-        // Kiểm tra trạng thái ban đầu khi trang được tải
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleDeleteAction();
-        });
-    </script>
 @endsection
 
 @section('content')
@@ -176,7 +84,7 @@
             <div class="card-body py-3">
                 <div class="table-responsive rounded">
                     <table class="table align-middle gs-0 gy-4">
-                        <thead>
+                        <thead class="{{ $AllNotification->count() == 0 ? 'd-none' : '' }}">
                             <tr class="fw-bolder bg-success">
                                 <th class="ps-4">
                                     <input type="checkbox" id="selectAll" />
@@ -205,7 +113,7 @@
                                     <td>
                                         {{ !empty($item->users->last_name && $item->users->first_name) ? $item->users->last_name . ' ' . $item->users->first_name : 'N/A' }}
                                     </td>
-                                    <td>
+                                    <td class="noPpg">
                                         <span class="text-primary pointer" data-bs-toggle="modal"
                                             data-bs-target="#detail_{{ $item->code }}">Xem
                                         </span>
@@ -273,16 +181,14 @@
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h3 class="modal-title" id="DetailModal">Nội Dung Thông Báo
+                                                    <h5 class="modal-title" id="DetailModal">Nội Dung Thông Báo
                                                         #{{ $item->code }}
-                                                    </h3>
+                                                    </h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                                 </div>
-                                                <div class="modal-body">
-                                                    <strong>
-                                                        {!! $item->content !!}
-                                                    </strong>
+                                                <div class="modal-body text-center">
+                                                    {!! $item->content !!}
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn rounded-pill btn-sm btn-secondary"
@@ -384,7 +290,7 @@
             </div>
             @if ($AllNotification->count() > 0)
                 <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                    <div class="dropdown" id="action_delete_all">
+                    <div class="dropdown d-none" id="action_delete_all">
                         <span class="btn rounded-pill btn-info btn-sm dropdown-toggle" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span>Chọn Thao Tác</span>

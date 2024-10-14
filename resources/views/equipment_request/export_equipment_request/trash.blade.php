@@ -152,7 +152,7 @@
                                 12-09-2024
                             </td>
                             <td class="text-center" data-bs-toggle="collapse" data-bs-target="#collapse" id="toggleIcon">
-                                <i class="fa fa-chevron-right pointer">
+                                <i class="fa fa-caret-right pointer">
                                 </i>
                             </td>
                         </tr>

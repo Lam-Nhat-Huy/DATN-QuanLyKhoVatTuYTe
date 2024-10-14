@@ -8,101 +8,6 @@
 @endsection
 
 @section('scripts')
-    <script>
-        // Hàm kiểm tra và ẩn/hiện nút xóa tất cả
-        function toggleDeleteAction() {
-            var anyChecked = false;
-            document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    anyChecked = true;
-                }
-            });
-
-            if (anyChecked) {
-                document.getElementById('action_delete_all').style.display = 'block';
-            } else {
-                document.getElementById('action_delete_all').style.display = 'none';
-            }
-        }
-
-        // Khi click vào checkbox "Select All"
-        document.getElementById('selectAll').addEventListener('change', function() {
-            var isChecked = this.checked;
-            var checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = isChecked;
-                var row = checkbox.closest('tr');
-                if (isChecked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-            });
-            toggleDeleteAction();
-        });
-
-        // Khi checkbox của từng hàng thay đổi
-        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var row = this.closest('tr');
-                if (this.checked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-
-                var allChecked = true;
-                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                    if (!cb.checked) {
-                        allChecked = false;
-                    }
-                });
-                document.getElementById('selectAll').checked = allChecked;
-                toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-            });
-        });
-
-        // Khi người dùng click vào hàng
-        document.querySelectorAll('tbody tr').forEach(function(row) {
-            row.addEventListener('click', function() {
-                var checkbox = this.querySelector('.row-checkbox');
-                if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    if (checkbox.checked) {
-                        this.classList.add('selected-row');
-                    } else {
-                        this.classList.remove('selected-row');
-                    }
-
-                    var allChecked = true;
-                    document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                        if (!cb.checked) {
-                            allChecked = false;
-                        }
-                    });
-                    document.getElementById('selectAll').checked = allChecked;
-                    toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Khi nhấn nút "Khôi Phục Tất Cả"
-            document.querySelector('#restoreAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'restore';
-            });
-
-            // Khi nhấn nút "Xóa Tất Cả"
-            document.querySelector('#deleteAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'delete';
-            });
-        });
-
-        // Kiểm tra trạng thái ban đầu khi trang được tải
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleDeleteAction();
-        });
-    </script>
 @endsection
 
 @section('content')
@@ -126,7 +31,7 @@
             <div class="card-body py-3">
                 <div class="table-responsive rounded">
                     <table class="table align-middle gs-0 gy-4">
-                        <thead>
+                        <thead class="{{ $allUnitTrash->count() == 0 ? 'd-none' : '' }}">
                             <tr class="fw-bolder bg-success">
                                 <th class="ps-3">
                                     <input type="checkbox" id="selectAll" />
@@ -176,92 +81,101 @@
                                         </div>
                                     </td>
                                     <td class="text-center" data-bs-toggle="collapse"
-                                        data-bs-target="#collapse_{{ $item['code'] }}" id="toggleIcon{{ $item['code'] }}">
-                                        Chi Tiết<i class="fa fa-chevron-right pointer ms-2"></i>
+                                        data-bs-target="#collapse_{{ $item->code }}" aria-expanded="false"
+                                        aria-controls="collapse_{{ $item->code }}">
+                                        Chi Tiết<i class="fa fa-caret-right pointer ms-2"></i>
                                     </td>
                                 </tr>
 
                                 <!-- Collapse content -->
                                 <tr class="collapse multi-collapse" id="collapse_{{ $item['code'] }}">
                                     <td class="p-0" colspan="12">
-                                        <div class="flex-lg-row-fluid border-2">
-                                            <div class="card card-flush p-2"
-                                                style="padding-top: 0px !important; padding-bottom: 0px !important;">
-                                                <div class="card-header justify-content-center p-2"
-                                                    style="padding-top: 0 !important; padding-bottom: 0px !important;">
-                                                    <div class="row px-5 w-100">
-                                                        <div class="col-md-12 my-3">
-                                                            <h4 class="fw-bold mt-3">Thông Tin Chi Tiết</h4>
-                                                        </div>
-
-                                                        <div class="row mb-5 justify-content-center">
-                                                            <div class="col-md-3">
-                                                                <img src="{{ $item->avatar ? asset('storage/' . $item->avatar) : 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png' }}"
-                                                                    class="rounded border border-dark"
-                                                                    style="width: 175px !important; height: 175px !important;"
-                                                                    alt="">
+                                        <div class="collapse multi-collapse" id="collapse_{{ $item->code }}">
+                                            <div class="flex-lg-row-fluid border-2">
+                                                <div class="card card-flush p-2"
+                                                    style="padding-top: 0px !important; padding-bottom: 0px !important;">
+                                                    <div class="card-header justify-content-center p-2"
+                                                        style="padding-top: 0 !important; padding-bottom: 0px !important;">
+                                                        <div class="row px-5 w-100">
+                                                            <div class="col-md-12 my-3">
+                                                                <h4 class="fw-bold mt-3">Thông Tin Chi Tiết</h4>
                                                             </div>
-                                                            <div class="col-md-9">
-                                                                <div class="row">
-                                                                    <div class="col-md-6">
-                                                                        <table class="table table-borderless">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td class="fw-semibold">Họ Và Tên:</td>
-                                                                                    <td class="text-dark">
-                                                                                        {{ $item->last_name . ' ' . $item->first_name }}
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td class="fw-semibold">Email:</td>
-                                                                                    <td class="text-dark">
-                                                                                        {{ $item->email }}
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td class="fw-semibold">Phone:</td>
-                                                                                    <td class="text-dark">
-                                                                                        {{ $item->phone }}
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td class="fw-semibold">Địa Chỉ:</td>
-                                                                                    <td class="text-dark">
-                                                                                        {{ $item->address }}
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
 
-                                                                    <div class="col-md-6">
-                                                                        <table class="table table-borderless">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td class="fw-semibold">Năm Sinh:</td>
-                                                                                    <td class="text-dark">
-                                                                                        {{ $item->birth_day }}</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td class="fw-semibold">Giới Tính:</td>
-                                                                                    <td class="text-dark">
-                                                                                        {{ $item->gender }}
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td class="fw-semibold">Vai Trò:</td>
-                                                                                    <td class="text-dark">
-                                                                                        {{ $item->position }}</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td class="fw-semibold">Ngày Xóa Tài
-                                                                                        Khoản:</td>
-                                                                                    <td class="text-dark">
-                                                                                        {{ $item->deleted_at->format('d-m-Y') }}
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
+                                                            <div class="row mb-5 justify-content-center">
+                                                                <div class="col-md-3">
+                                                                    <img src="{{ $item->avatar ? asset('storage/' . $item->avatar) : 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png' }}"
+                                                                        class="rounded border border-dark"
+                                                                        style="width: 175px !important; height: 175px !important;"
+                                                                        alt="">
+                                                                </div>
+                                                                <div class="col-md-9">
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+                                                                            <table class="table table-borderless">
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td class="fw-semibold">Họ Và Tên:
+                                                                                        </td>
+                                                                                        <td class="text-dark">
+                                                                                            {{ $item->last_name . ' ' . $item->first_name }}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="fw-semibold">Email:</td>
+                                                                                        <td class="text-dark">
+                                                                                            {{ $item->email }}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="fw-semibold">Phone:</td>
+                                                                                        <td class="text-dark">
+                                                                                            {{ $item->phone }}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="fw-semibold">Địa Chỉ:
+                                                                                        </td>
+                                                                                        <td class="text-dark">
+                                                                                            {{ $item->address }}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+
+                                                                        <div class="col-md-6">
+                                                                            <table class="table table-borderless">
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td class="fw-semibold">Năm Sinh:
+                                                                                        </td>
+                                                                                        <td class="text-dark">
+                                                                                            {{ $item->birth_day }}</td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="fw-semibold">Giới Tính:
+                                                                                        </td>
+                                                                                        <td class="text-dark">
+                                                                                            {{ $item->gender }}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="fw-semibold">Vai Trò:
+                                                                                        </td>
+                                                                                        <td class="text-dark">
+                                                                                            {{ $item->position }}</td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="fw-semibold">Ngày Xóa
+                                                                                            Tài
+                                                                                            Khoản:</td>
+                                                                                        <td class="text-dark">
+                                                                                            {{ $item->deleted_at->format('d-m-Y') }}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -269,21 +183,23 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="card-body py-3 border-top-0 border-2 text-end">
-                                            <div class="button-group">
-                                                <button type="button" class="btn btn-sm btn-twitter rounded-pill me-2"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#restoreModal_{{ $item->code }}">
-                                                    <i class="fa fa-rotate-right" style="margin-bottom: 2px;"></i> Khôi
-                                                    Phục
-                                                </button>
+                                            <div class="card-body py-3 border-top-0 border-2 text-end">
+                                                <div class="button-group">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-twitter rounded-pill me-2"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#restoreModal_{{ $item->code }}">
+                                                        <i class="fa fa-rotate-right" style="margin-bottom: 2px;"></i>
+                                                        Khôi
+                                                        Phục
+                                                    </button>
 
-                                                <button type="button" class="btn btn-sm btn-danger rounded-pill"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#deleteModal_{{ $item->code }}">
-                                                    <i class="fa fa-trash" style="margin-bottom: 2px;"></i> Xóa
-                                                </button>
+                                                    <button type="button" class="btn btn-sm btn-danger rounded-pill"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteModal_{{ $item->code }}">
+                                                        <i class="fa fa-trash" style="margin-bottom: 2px;"></i> Xóa
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -295,11 +211,12 @@
                                             role="alert"
                                             style="border: 2px dashed #6c757d; background-color: #f8f9fa; color: #495057;">
                                             <div class="mb-3">
-                                                <i class="fas fa-ban" style="font-size: 36px; color: #6c757d;"></i>
+                                                <i class="fa-regular fa-trash-can"
+                                                    style="font-size: 36px; color: #6c757d;"></i>
                                             </div>
                                             <div class="text-center">
-                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Không có dữ
-                                                    liệu</h5>
+                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thùng Rác
+                                                    Rỗng</h5>
                                             </div>
                                         </div>
                                     </td>
@@ -311,7 +228,7 @@
             </div>
             @if ($allUserTrash->count() > 0)
                 <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                    <div class="dropdown" id="action_delete_all">
+                    <div class="dropdown d-none" id="action_delete_all">
                         <span class="btn rounded-pill btn-info btn-sm dropdown-toggle" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span>Chọn Thao Tác</span>
@@ -331,7 +248,7 @@
                     </div>
                     <div class="DayNganCach"></div>
                     <ul class="pagination">
-                        {{ $allUserTrash->links('pagination::bootstrap-4') }}
+                        {{ $allUserTrash->links('pagination::bootstrap-5') }}
                     </ul>
                 </div>
             @endif

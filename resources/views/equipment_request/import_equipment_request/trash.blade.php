@@ -8,121 +8,6 @@
 @endsection
 
 @section('scripts')
-    <script>
-        document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function(td) {
-            td.addEventListener('click', function(event) {
-                // Tìm phần tử <i> bên trong <td>
-                var icon = this.querySelector('i');
-
-                // Kiểm tra nếu có <i> thì thực hiện đổi biểu tượng
-                if (icon) {
-                    // Đổi icon khi click
-                    if (icon.classList.contains('fa-chevron-right')) {
-                        icon.classList.remove('fa-chevron-right');
-                        icon.classList.add('fa-chevron-down');
-                    } else {
-                        icon.classList.remove('fa-chevron-down');
-                        icon.classList.add('fa-chevron-right');
-                    }
-                }
-
-                // Ngăn chặn việc click ảnh hưởng đến hàng (row)
-                event.stopPropagation();
-            });
-        });
-
-        // Hàm kiểm tra và ẩn/hiện nút xóa tất cả
-        function toggleDeleteAction() {
-            var anyChecked = false;
-            document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    anyChecked = true;
-                }
-            });
-
-            if (anyChecked) {
-                document.getElementById('action_delete_all').style.display = 'block';
-            } else {
-                document.getElementById('action_delete_all').style.display = 'none';
-            }
-        }
-
-        // Khi click vào checkbox "Select All"
-        document.getElementById('selectAll').addEventListener('change', function() {
-            var isChecked = this.checked;
-            var checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = isChecked;
-                var row = checkbox.closest('tr');
-                if (isChecked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-            });
-            toggleDeleteAction();
-        });
-
-        // Khi checkbox của từng hàng thay đổi
-        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var row = this.closest('tr');
-                if (this.checked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-
-                var allChecked = true;
-                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                    if (!cb.checked) {
-                        allChecked = false;
-                    }
-                });
-                document.getElementById('selectAll').checked = allChecked;
-                toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-            });
-        });
-
-        // Khi người dùng click vào hàng
-        document.querySelectorAll('tbody tr').forEach(function(row) {
-            row.addEventListener('click', function() {
-                var checkbox = this.querySelector('.row-checkbox');
-                if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    if (checkbox.checked) {
-                        this.classList.add('selected-row');
-                    } else {
-                        this.classList.remove('selected-row');
-                    }
-
-                    var allChecked = true;
-                    document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                        if (!cb.checked) {
-                            allChecked = false;
-                        }
-                    });
-                    document.getElementById('selectAll').checked = allChecked;
-                    toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
-                }
-            });
-        });
-
-        // Kiểm tra trạng thái ban đầu khi trang được tải
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleDeleteAction();
-
-            document.querySelector('#restoreAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'restore';
-            });
-
-            document.querySelector('#deleteAll').addEventListener('show.bs.modal', function() {
-                document.getElementById('action_type').value = 'delete';
-            });
-        });
-
-        toggleDeleteAction();
-    </script>
 @endsection
 
 @section('content')
@@ -146,7 +31,7 @@
             <div class="card-body py-3">
                 <div class="table-responsive rounded">
                     <table class="table align-middle gs-0 gy-4">
-                        <thead>
+                        <thead class="{{ $AllEquipmentRequestTrash->count() == 0 ? 'd-none' : '' }}">
                             <tr class="bg-success">
                                 <th class="ps-3">
                                     <input type="checkbox" id="selectAll" />
@@ -187,24 +72,24 @@
                                                     Chờ Duyệt
                                                 </div>
                                             @elseif ($item->status == 1)
-                                                <div
-                                                    class="label label-final bg-success rounded-pill text-white px-2 py-1">
+                                                <div class="label label-final bg-success rounded-pill text-white px-2 py-1">
                                                     Đã duyệt
                                                 </div>
                                             @endif
                                         </td>
                                         <td class="text-center" data-bs-toggle="collapse"
-                                            data-bs-target="#collapse{{ $item->code }}"
-                                            id="toggleIcon{{ $item->code }}">
-                                            Chi Tiết<i class="fa fa-chevron-right pointer ms-2"></i>
+                                            data-bs-target="#collapse_{{ $item->code }}" aria-expanded="false"
+                                            aria-controls="collapse_{{ $item->code }}">
+                                            Chi Tiết<i class="fa fa-caret-right pointer ms-2"></i>
                                         </td>
                                     </tr>
 
                                     <!-- Collapse content -->
-                                    <tr class="collapse multi-collapse" id="collapse{{ $item->code }}">
+                                    <tr>
                                         <td class="p-0" colspan="12"
-                                            style="border: 1px solid #dcdcdc !important;; background-color: #fafafa; padding-top: 0 !important;">
-                                            <div class="flex-lg-row-fluid border-lg-1">
+                                            style="background-color: #fafafa; padding-top: 0 !important;">
+                                            <div class="flex-lg-row-fluid border-2 border-lg-1 collapse multi-collapse"
+                                                id="collapse_{{ $item->code }}">
                                                 <div class="card card-flush px-5" style="padding-top: 0px !important;">
                                                     <div class="card-header d-flex justify-content-between align-items-center px-2"
                                                         style="padding-top: 0 !important; padding-bottom: 0px !important;">
@@ -293,98 +178,111 @@
                                                     Chờ Duyệt
                                                 </div>
                                             @elseif ($item->status == 1)
-                                                <div
-                                                    class="label label-final bg-success rounded-pill text-white px-2 py-1">
+                                                <div class="label label-final bg-success rounded-pill text-white px-2 py-1">
                                                     Đã duyệt
                                                 </div>
                                             @endif
                                         </td>
                                         <td class="text-center" data-bs-toggle="collapse"
-                                            data-bs-target="#collapse{{ $item->code }}"
-                                            id="toggleIcon{{ $item->code }}">
-                                            Chi Tiết<i class="fa fa-chevron-right pointer ms-2"></i>
+                                            data-bs-target="#collapse_{{ $item->code }}" aria-expanded="false"
+                                            aria-controls="collapse_{{ $item->code }}">
+                                            Chi Tiết<i class="fa fa-caret-right pointer ms-2"></i>
                                         </td>
                                     </tr>
 
                                     <!-- Collapse content -->
-                                    <tr class="collapse multi-collapse" id="collapse{{ $item->code }}">
+                                    <tr>
                                         <td class="p-0" colspan="12"
-                                            style="border: 1px solid #dcdcdc !important;; background-color: #fafafa; padding-top: 0 !important;">
-                                            <div class="flex-lg-row-fluid border-lg-1">
-                                                <div class="card card-flush px-5" style="padding-top: 0px !important;">
-                                                    <div class="card-header d-flex justify-content-between align-items-center px-2"
-                                                        style="padding-top: 0 !important; padding-bottom: 0px !important;">
-                                                        <h4 class="fw-bold m-0 text-uppercase fw-bolder">Danh Sách Thiết Bị
-                                                            Yêu Cầu
-                                                        </h4>
-                                                        <div class="card-toolbar">
-                                                            @if (($item->status == 0 || $item->status == 3) && \Carbon\Carbon::parse($item->request_date)->diffInDays(now()) > 3)
-                                                                <div class="rounded-pill px-2 py-1 text-white bg-warning">
-                                                                    Hết
-                                                                    Hạn
-                                                                </div>
-                                                            @elseif ($item->status == 3)
-                                                                <div class="rounded-pill px-2 py-1 text-white bg-info">Lưu
-                                                                    Tạm
-                                                                </div>
-                                                            @elseif ($item->status == 0)
-                                                                <div class="rounded-pill px-2 py-1 text-white bg-danger">Chờ
-                                                                    Duyệt
-                                                                </div>
-                                                            @elseif ($item->status == 1)
-                                                                <div class="rounded-pill px-2 py-1 text-white bg-success">Đã
-                                                                    Duyệt
-                                                                </div>
-                                                            @endif
+                                            style="background-color: #fafafa; padding-top: 0 !important;">
+                                            <div class="border-2 border-lg-1 collapse multi-collapse"
+                                                id="collapse_{{ $item->code }}">
+                                                <div class="flex-lg-row-fluid">
+                                                    <div class="card card-flush px-5" style="padding-top: 0px !important;">
+                                                        <div class="card-header d-flex justify-content-between align-items-center px-2"
+                                                            style="padding-top: 0 !important; padding-bottom: 0px !important;">
+                                                            <h4 class="fw-bold m-0 text-uppercase fw-bolder">Danh Sách Thiết
+                                                                Bị
+                                                                Yêu Cầu
+                                                            </h4>
+                                                            <div class="card-toolbar">
+                                                                @if (($item->status == 0 || $item->status == 3) && \Carbon\Carbon::parse($item->request_date)->diffInDays(now()) > 3)
+                                                                    <div
+                                                                        class="rounded-pill px-2 py-1 text-white bg-warning">
+                                                                        Hết
+                                                                        Hạn
+                                                                    </div>
+                                                                @elseif ($item->status == 3)
+                                                                    <div class="rounded-pill px-2 py-1 text-white bg-info">
+                                                                        Lưu
+                                                                        Tạm
+                                                                    </div>
+                                                                @elseif ($item->status == 0)
+                                                                    <div
+                                                                        class="rounded-pill px-2 py-1 text-white bg-danger">
+                                                                        Chờ
+                                                                        Duyệt
+                                                                    </div>
+                                                                @elseif ($item->status == 1)
+                                                                    <div
+                                                                        class="rounded-pill px-2 py-1 text-white bg-success">
+                                                                        Đã
+                                                                        Duyệt
+                                                                    </div>
+                                                                @endif
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="card-body p-0" style="padding-top: 0px !important">
-                                                        <!-- Begin::Receipt Items (Right column) -->
-                                                        <div class="col-md-12">
-                                                            <div class="table-responsive rounded">
-                                                                <table
-                                                                    class="table table-striped table-sm table-hover mb-0">
-                                                                    <thead class="fw-bolder bg-danger">
-                                                                        <tr>
-                                                                            <th class="ps-3">STT</th>
-                                                                            <th class="ps-3">Tên thiết bị</th>
-                                                                            <th>Đơn Vị Tính</th>
-                                                                            <th class="pe-3">Số lượng</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        @foreach ($item->import_equipment_request_details as $key => $detail)
-                                                                            <tr class="">
-                                                                                <td>{{ $key + 1 }}</td>
-                                                                                <td>{{ $detail->equipments->name }}</td>
-                                                                                <td>{{ $detail->equipments->units->name }}
-                                                                                </td>
-                                                                                <td>{{ $detail->quantity }}</td>
+                                                        <div class="card-body p-0" style="padding-top: 0px !important">
+                                                            <!-- Begin::Receipt Items (Right column) -->
+                                                            <div class="col-md-12">
+                                                                <div class="table-responsive rounded">
+                                                                    <table
+                                                                        class="table table-striped table-sm table-hover mb-0">
+                                                                        <thead class="fw-bolder bg-danger">
+                                                                            <tr>
+                                                                                <th class="ps-3">STT</th>
+                                                                                <th class="ps-3">Tên thiết bị</th>
+                                                                                <th>Đơn Vị Tính</th>
+                                                                                <th class="pe-3">Số lượng</th>
                                                                             </tr>
-                                                                        @endforeach
-                                                                    </tbody>
-                                                                </table>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @foreach ($item->import_equipment_request_details as $key => $detail)
+                                                                                <tr class="">
+                                                                                    <td>{{ $key + 1 }}</td>
+                                                                                    <td>{{ $detail->equipments->name }}
+                                                                                    </td>
+                                                                                    <td>{{ $detail->equipments->units->name }}
+                                                                                    </td>
+                                                                                    <td>{{ $detail->quantity }}</td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="card-body py-5 text-end bg-white">
-                                                <div class="button-group">
-                                                    <!-- Nút khôi phục đơn -->
-                                                    <button class="btn rounded-pill btn-sm btn-twitter me-2 rounded-pill"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#restore_{{ $item->code }}" type="button">
-                                                        <i class="fas fa-rotate-right"></i>Khôi Phục
-                                                    </button>
+                                                <div class="card-body py-5 text-end bg-white">
+                                                    <div class="button-group">
+                                                        <!-- Nút khôi phục đơn -->
+                                                        <button
+                                                            class="btn rounded-pill btn-sm btn-twitter me-2 rounded-pill"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#restore_{{ $item->code }}" type="button">
+                                                            <i class="fas fa-rotate-right"></i>Khôi Phục
+                                                        </button>
 
-                                                    <!-- Nút xóa vv đơn -->
-                                                    <button class="btn rounded-pill btn-sm btn-danger me-2 rounded-pill"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#deleteModal_{{ $item->code }}" type="button">
-                                                        <i class="fa fa-trash"></i>Xóa
-                                                    </button>
+                                                        <!-- Nút xóa vv đơn -->
+                                                        <button
+                                                            class="btn rounded-pill btn-sm btn-danger me-2 rounded-pill"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteModal_{{ $item->code }}"
+                                                            type="button">
+                                                            <i class="fa fa-trash"></i>Xóa
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
@@ -397,14 +295,12 @@
                                             role="alert"
                                             style="border: 2px dashed #6c757d; background-color: #f8f9fa; color: #495057;">
                                             <div class="mb-3">
-                                                <i class="fas fa-trash-alt" style="font-size: 36px; color: #6c757d;"></i>
+                                                <i class="fa-regular fa-trash-can"
+                                                    style="font-size: 36px; color: #6c757d;"></i>
                                             </div>
                                             <div class="text-center">
-                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thùng rác
-                                                    rỗng</h5>
-                                                <p style="font-size: 14px; color: #6c757d; margin: 0;">
-                                                    Hiện tại không có mục nào trong thùng rác.
-                                                </p>
+                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thùng Rác
+                                                    Rỗng</h5>
                                             </div>
                                         </div>
                                     </td>
@@ -417,7 +313,7 @@
 
             @if ($AllEquipmentRequestTrash->count() > 0)
                 <div class="card-body py-3 d-flex justify-content-between align-items-center">
-                    <div class="dropdown" id="action_delete_all">
+                    <div class="dropdown d-none" id="action_delete_all">
                         <span class="btn rounded-pill btn-info btn-sm dropdown-toggle" id="dropdownMenuButton1"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span>Chọn Thao Tác</span>
