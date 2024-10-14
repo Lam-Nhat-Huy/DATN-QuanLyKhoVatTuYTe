@@ -54,8 +54,10 @@ class CheckWarehouseController extends Controller
         $equipmentsWithStock = Equipments::whereHas('inventories', function ($query) {
             $query->where('current_quantity', '>', 0);
         })->with(['inventories' => function ($query) {
-            $query->select('equipment_code', 'current_quantity', 'batch_number');
+            $query->select('equipment_code', 'current_quantity', 'batch_number')
+                ->where('current_quantity', '>', 0);
         }])->get();
+
 
 
         return view("{$this->route}.form", compact('title', 'action', 'equipmentsWithStock'));

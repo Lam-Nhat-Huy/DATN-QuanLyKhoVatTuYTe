@@ -458,6 +458,7 @@
             if (event.altKey && event.key === 'f') {
                 event.preventDefault();
                 autoFillAllQuantities();
+                checkInputs();
             }
         });
 

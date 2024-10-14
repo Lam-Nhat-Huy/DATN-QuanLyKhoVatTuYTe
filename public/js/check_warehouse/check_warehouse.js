@@ -109,7 +109,7 @@ function addProductToTable(
         <td>
             <input type="number" min="0" class="actual-quantity-input" 
                 style="width: 70px; height: 40px; border-radius: 8px;" 
-                oninput="validateQuantity(this, ${rowCount})">
+                oninput="validateQuantity(this, ${rowCount}); checkInputs()">
         </td>
         <td class="unequal-count" id="unequal-count-${rowCount}">0</td>
         <td>
@@ -157,7 +157,62 @@ function addProductToTable(
             }
         });
     });
+
+    checkInputs(); // Check if all inputs are filled initially
 }
+
+function checkInputs() {
+    const actualQuantityInputs = document.querySelectorAll(
+        ".actual-quantity-input"
+    );
+    let allFilled = true;
+
+    actualQuantityInputs.forEach((input) => {
+        if (!input.value || input.value === "") {
+            allFilled = false;
+        }
+    });
+
+    const saveButton = document.querySelector(
+        'button[name="status"][value="0"]'
+    );
+    const completeButton = document.querySelector(
+        'button[data-bs-target="#completeModal"]'
+    );
+
+    if (allFilled) {
+        saveButton.disabled = false;
+        completeButton.disabled = false;
+        saveButton.textContent = "Lưu thông tin";
+        completeButton.textContent = "Hoàn thành";
+    } else {
+        saveButton.disabled = true;
+        completeButton.disabled = true;
+        saveButton.textContent = "Vui lòng nhập đủ số lượng";
+        completeButton.textContent = "Không thể hoàn thành";
+    }
+}
+
+document.addEventListener("keydown", function (event) {
+    if (event.altKey && event.key === "q") {
+        const focusedElement = document.activeElement;
+
+        if (
+            focusedElement &&
+            focusedElement.classList.contains("actual-quantity-input")
+        ) {
+            const rowIndex = focusedElement
+                .closest("tr")
+                .getAttribute("data-index");
+
+            const current_quantity = materialData[rowIndex].current_quantity;
+
+            focusedElement.value = current_quantity;
+            updateProduct(rowIndex, current_quantity);
+            checkInputs();
+        }
+    }
+});
 
 function validateQuantity(input, rowCount) {
     if (input.value < 0) {
@@ -415,23 +470,3 @@ function checkNoDataAlert() {
         document.getElementById("noDataAlert").style.display = "table-row";
     }
 }
-
-document.addEventListener("keydown", function (event) {
-    if (event.altKey && event.key === "q") {
-        const focusedElement = document.activeElement;
-
-        if (
-            focusedElement &&
-            focusedElement.classList.contains("actual-quantity-input")
-        ) {
-            const rowIndex = focusedElement
-                .closest("tr")
-                .getAttribute("data-index");
-
-            const current_quantity = materialData[rowIndex].current_quantity;
-
-            focusedElement.value = current_quantity;
-            updateProduct(rowIndex, current_quantity);
-        }
-    }
-});
