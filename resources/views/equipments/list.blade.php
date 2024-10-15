@@ -415,4 +415,42 @@
 @endsection
 
 @section('scripts')
+    <script>
+        // Khi click vào checkbox "Chọn Tất Cả"
+        document.getElementById('selectAll').addEventListener('change', function() {
+            var isChecked = this.checked;
+            var checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = isChecked;
+                var parentDiv = checkbox.closest('.col-xl-12');
+                if (isChecked) {
+                    parentDiv.classList.add('selected-row');
+                } else {
+                    parentDiv.classList.remove('selected-row');
+                }
+            });
+            toggleDeleteAction();
+        });
+
+        // Khi checkbox của từng hàng thay đổi
+        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                var parentDiv = this.closest('.col-xl-12');
+                if (this.checked) {
+                    parentDiv.classList.add('selected-row');
+                } else {
+                    parentDiv.classList.remove('selected-row');
+                }
+
+                var allChecked = true;
+                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
+                    if (!cb.checked) {
+                        allChecked = false;
+                    }
+                });
+                document.getElementById('selectAll').checked = allChecked;
+                toggleDeleteAction(); // Gọi hàm kiểm tra nút xóa tất cả
+            });
+        });
+    </script>
 @endsection
