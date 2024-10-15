@@ -45,13 +45,17 @@
                             <div class="row mb-3">
                                 <div class="col-12 mb-2">
                                     <label for="material_code" class="required form-label mb-2">Tên vật tư</label>
-                                    <select class="form-select setupSelect2 bg-white form-select-sm rounded-pill"
-                                        id="material_code" name="equipment_code" style="width: 100%;">
-                                        <option value="" selected>Chọn vật tư</option>
-                                        @foreach ($equipments as $equipment)
-                                            <option value="{{ $equipment['code'] }}">{{ $equipment['name'] }}</option>
-                                        @endforeach
-                                    </select>
+                                    <div class="d-flex align-items-center">
+                                        <select class="form-select setupSelect2 bg-white form-select-sm rounded-pill"
+                                            id="material_code" name="equipment_code" style="width: 100%;">
+                                            <option value="" selected>Chọn vật tư</option>
+                                            @foreach ($equipments as $equipment)
+                                                <option value="{{ $equipment->code }}">
+                                                    {{ $equipment->name }} - (Tổng tồn: {{ $equipment->total_inventory }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div class="col-12 mt-3">

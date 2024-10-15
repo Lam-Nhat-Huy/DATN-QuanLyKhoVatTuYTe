@@ -12,6 +12,7 @@ return new class extends Migration
             $table->char('code', 20)->primary();
             $table->text('note')->nullable();
             $table->boolean('status')->default(true);
+            $table->char('created_by')->nullable();
             $table->date('export_date')->nullable();
             $table->char('department_code', 20)->nullable();
             $table->char('export_request_code', 20)->nullable();

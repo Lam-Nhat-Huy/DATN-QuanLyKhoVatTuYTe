@@ -30,4 +30,8 @@ class Exports extends Model
     {
         return $this->hasMany(Export_details::class, 'export_code', 'code'); 
     }
+    public function creator()
+    {
+        return $this->belongsTo(Users::class, 'created_by');
+    }
 }

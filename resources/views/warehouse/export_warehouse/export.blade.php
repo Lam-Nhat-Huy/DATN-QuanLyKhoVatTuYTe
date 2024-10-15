@@ -105,6 +105,7 @@
                             </th>
                             <th class="ps-3">Mã Phiếu Xuất</th>
                             <th class="">Ngày Xuất</th>
+                            <th class="">Tạo bởi</th>
                             <th class="pe-3">Lý Do Xuất</th>
                             <th class="">Trạng thái</th>
                         </tr>
@@ -119,6 +120,9 @@
                                 </td>
                                 <td class="text-center">{{ $export->code }}</td>
                                 <td class="text-center">{{ \Carbon\Carbon::parse($export->export_date)->format('d/m/Y') }}
+                                </td>
+                                <td class="text-center">
+                                    {{ $export->creator ? $export->creator->last_name . ' ' . $export->creator->first_name : 'Không có' }}
                                 </td>
                                 <td class="text-center">{{ $export->note ?? 'Không có' }}</td>
                                 <td class="text-center">
@@ -201,216 +205,70 @@
                                     </div>
                                 </td>
                             </tr>
-                            {{-- Modal Duyệt Phiếu --}}
-                            <div class="modal fade" id="browse{{ $export->code }}" data-bs-backdrop="static"
-                                data-bs-keyboard="false" tabindex="-1" aria-labelledby="browseLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-md">
-                                    <div class="modal-content border-0 shadow">
-                                        <div class="modal-header bg-success text-white">
-                                            <h5 class="modal-title text-white" id="browseLabel">Duyệt Phiếu</h5>
-                                            <button type="button" class="btn-close btn-close-white"
-                                                data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body text-center" style="padding-bottom: 0px;">
-                                            <form action="" method="">
-                                                @csrf
-                                                <p class="text-danger mb-4">Bạn có chắc chắn muốn duyệt phiếu này?</p>
-                                            </form>
-                                        </div>
-                                        <div class="modal-footer justify-content-center border-0">
-                                            <button type="button" class="btn btn-sm btn-secondary btn-sm px-4"
-                                                data-bs-dismiss="modal">Đóng</button>
-                                            <button type="button" class="btn btn-sm btn-success px-4">
-                                                Duyệt</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Modal Xác Nhận Xóa --}}
-                            <div class="modal fade" id="deleteConfirm{{ $export->code }}" data-bs-backdrop="static"
-                                data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteConfirmLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-md">
-                                    <div class="modal-content border-0 shadow">
-                                        <div class="modal-header bg-danger text-white">
-                                            <h5 class="modal-title text-white" id="deleteConfirmLabel">Xác Nhận Xóa Phiếu
-                                            </h5>
-                                            <button type="button" class="btn-close btn-close-white"
-                                                data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body text-center" style="padding-bottom: 0px;">
-                                            <form action="" method="">
-                                                @csrf
-                                                <p class="text-danger mb-4">Bạn có chắc chắn muốn xóa phiếu này?</p>
-                                            </form>
-                                        </div>
-                                        <div class="modal-footer justify-content-center border-0">
-                                            <button type="button" class="btn btn-sm btn-secondary px-4"
-                                                data-bs-dismiss="modal">Đóng</button>
-                                            <button type="button" class="btn btn-sm btn-danger px-4"> Xóa</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Chỉnh sửa -->
-                            <div class="modal fade" id="editExportReceiptModal{{ $export->code }}" tabindex="-1"
-                                aria-labelledby="editExportReceiptModalLabel{{ $export->code }}" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content rounded">
-                                        <!-- Modal Header -->
-                                        <div class="modal-header border-0">
-                                            <h5 class="modal-title" id="editExportReceiptModalLabel{{ $export->code }}">
-                                                Chỉnh sửa phiếu xuất</h5>
-                                            <button type="button" class="btn btn-sm btn-icon btn-dark"
-                                                data-bs-dismiss="modal" aria-label="Close"><i
-                                                    class="fa-solid fa-xmark"></i></button>
-                                        </div>
-
-                                        <!-- Modal Body -->
-                                        <div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
-                                            <form action="" method="post">
-                                                @csrf
-                                                <!-- Export Receipt Info -->
-                                                <div class="mb-5">
-                                                    <h5 class="text-twitter mb-3">Thông tin phiếu xuất</h5>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label for="editExportCode{{ $export->code }}"
-                                                                    class="form-label">Mã phiếu:</label>
-                                                                <input type="text" class="form-control form-control-sm"
-                                                                    id="editExportCode{{ $export->code }}"
-                                                                    value="{{ $export->code }}" readonly>
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label for="editExportNumber{{ $export->code }}"
-                                                                    class="form-label">Phòng ban:</label>
-                                                                <select
-                                                                    class="form-select setupSelect2 bg-white form-select-sm rounded-pill"
-                                                                    id="editExportNumber{{ $export->code }}" name="department_code"
-                                                                    style="width: 100%;">
-                                                                    <option value="">-- Chọn phòng ban --</option>
-                                                                    @foreach ($departments as $department)
-                                                                        <option value="{{ $department['code'] }}"
-                                                                            {{ $department['code'] === $export->department_code ? 'selected' : '' }}>
-                                                                            {{ $department['name'] }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label for="editExportDate{{ $export->code }}"
-                                                                    class="form-label">Ngày:</label>
-                                                                <input type="date" class="form-control form-control-sm"
-                                                                    id="editExportDate{{ $export->code }}"
-                                                                    value="{{ $export->export_date }}">
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label for="editCreatedBy{{ $export->code }}"
-                                                                    class="form-label">Người tạo:</label>
-                                                                <input type="text" class="form-control form-control-sm"
-                                                                    id="editCreatedBy{{ $export->code }}"
-                                                                    value="{{ $export->created_by }}">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <div class="mb-3">
-                                                                <label for="editNote{{ $export->code }}"
-                                                                    class="form-label">Ghi chú:</label>
-                                                                <textarea name="note" class="form-control form-control-sm rounded-3 py-2 px-3" id="note" rows="3">{{ $export->note }}</textarea>
-                                                            </div>
-                                                        </div>
+                            {{-- Kiểm tra trạng thái của phiếu --}}
+                            @if ($export->status !== 1)
+                                {{-- Modal Duyệt Phiếu --}}
+                                <div class="modal fade" id="browse{{ $export->code }}" data-bs-backdrop="static"
+                                    data-bs-keyboard="false" tabindex="-1" aria-labelledby="browseLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-md">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-header bg-success text-white">
+                                                <h5 class="modal-title text-white" id="browseLabel">Duyệt Phiếu</h5>
+                                                <button type="button" class="btn-close btn-close-white"
+                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body text-center" style="padding-bottom: 0px;">
+                                                <form action="{{ route('warehouse.approve_export', $export->code) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    <p class="text-danger mb-4">Bạn có chắc chắn muốn duyệt phiếu này?</p>
+                                                    <input type="hidden" name="export_code"
+                                                        value="{{ $export->code }}">
+                                                    <div class="modal-footer justify-content-center border-0">
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-secondary btn-sm px-4"
+                                                            data-bs-dismiss="modal">Đóng</button>
+                                                        <button type="submit"
+                                                            class="btn btn-sm btn-success px-4">Duyệt</button>
                                                     </div>
-                                                </div>
-
-                                                <!-- Receipt Items -->
-                                                {{-- <div class="mb-5">
-                                                    <h5 class="text-twitter">Danh sách vật tư</h5>
-                                                    <div class="table-responsive">
-                                                        <table class="table table-striped">
-                                                            <thead>
-                                                                <tr class="fw-bold bg-success">
-                                                                    <th class="ps-3">Mã vật tư</th>
-                                                                    <th>Số lượng</th>
-                                                                    <th>Đơn giá</th>
-                                                                    <th>Số lô</th>
-                                                                    <th>Chiết khấu (%)</th>
-                                                                    <th>VAT (%)</th>
-                                                                    <th>Tổng giá</th>
-                                                                    <th class="pe-3">Hành động</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody id="editItemsTableBody{{ $export->code }}">
-                                                                <tr>
-                                                                    <td><input type="text"
-                                                                            class="form-control form-control-sm"
-                                                                            value="VT001" disabled></td>
-                                                                    <td><input type="number"
-                                                                            class="form-control form-control-sm"
-                                                                            value="10"></td>
-                                                                    <td><input type="text"
-                                                                            class="form-control form-control-sm"
-                                                                            value="50,000 VND"></td>
-                                                                    <td><input type="text"
-                                                                            class="form-control form-control-sm"
-                                                                            value="L001"></td>
-                                                                    <td><input type="number"
-                                                                            class="form-control form-control-sm"
-                                                                            value="5"></td>
-                                                                    <td><input type="number"
-                                                                            class="form-control form-control-sm"
-                                                                            value="10"></td>
-                                                                    <td><input type="text"
-                                                                            class="form-control form-control-sm"
-                                                                            value="55,000 VND" readonly></td>
-                                                                    <td><button type="button"
-                                                                            class="btn btn-danger btn-sm">Xóa</button></td>
-                                                                </tr>
-                                                                <!-- More rows as needed -->
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <button type="button" class="btn btn-twitter btn-sm">Thêm vật
-                                                        tư</button>
-                                                </div>
-
-                                                <!-- Summary -->
-                                                <div class="card p-3" style="background: #e1e9f4">
-                                                    <h5 class="card-title">Tổng kết</h5>
-                                                    <hr>
-                                                    <p class="mb-1">Tổng tiền hàng: <span class="fw-bold"
-                                                            id="editSubtotal{{ $export->code }}">12.000.000 VND</span></p>
-                                                    <p class="mb-1">Tổng chiết khấu: <span class="fw-bold"
-                                                            id="editTotalDiscount{{ $export->code }}">0 VND</span></p>
-                                                    <p class="mb-1">Tổng VAT: <span class="fw-bold"
-                                                            id="editTotalVat{{ $export->code }}">0 VND</span></p>
-                                                    <p class="mb-1">Chi phí vận chuyển: <span class="fw-bold"
-                                                            id="editShippingCost{{ $export->code }}">0 VND</span></p>
-                                                    <p class="mb-1">Phí khác: <span class="fw-bold"
-                                                            id="editOtherFees{{ $export->code }}">0 VND</span></p>
-                                                    <hr>
-                                                    <p class="fs-4 fw-bold text-success">Tổng giá: <span
-                                                            id="editFinalTotal{{ $export->code }}">12.000.000 VND</span>
-                                                    </p>
-                                                </div> --}}
-
-                                                <!-- Modal Footer -->
-                                                <div class="modal-footer border-0">
-                                                    <button type="submit" class="btn btn-sm btn-success">Lưu Thay
-                                                        Đổi</button>
-                                                    <button type="button" class="btn btn-sm btn-secondary"
-                                                        data-bs-dismiss="modal">Hủy</button>
-                                                </div>
-                                            </form>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+
+                                {{-- Modal Xác Nhận Xóa --}}
+                                <div class="modal fade" id="deleteConfirm{{ $export->code }}" data-bs-backdrop="static"
+                                    data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteConfirmLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-md">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title text-white" id="deleteConfirmLabel">Xác Nhận Xóa
+                                                    Phiếu</h5>
+                                                <button type="button" class="btn-close btn-close-white"
+                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body text-center" style="padding-bottom: 0px;">
+                                                <form action="" method="POST">
+                                                    @csrf
+                                                    <p class="text-danger mb-4">Bạn có chắc chắn muốn xóa phiếu này?</p>
+                                                    <input type="hidden" name="export_code"
+                                                        value="{{ $export->code }}">
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer justify-content-center border-0">
+                                                <button type="button" class="btn btn-sm btn-secondary px-4"
+                                                    data-bs-dismiss="modal">Đóng</button>
+                                                <button type="button" class="btn btn-sm btn-danger px-4"
+                                                    form="deleteConfirm{{ $export->code }}">Xóa</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
                         @empty
                             <tr id="noDataAlert">
                                 <td colspan="12" class="text-center">
