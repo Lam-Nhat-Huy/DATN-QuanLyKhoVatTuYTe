@@ -78,11 +78,24 @@
                                         style="background-color: {{ $inventory->current_quantity < 1 ? 'rgba(255, 0, 0, 0.1)' : ($inventory->current_quantity <= 10 ? 'rgba(255, 165, 0, 0.1)' : 'rgba(40, 167, 69, 0.1)') }};">
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $inventory->batch_number }}</td>
-                                        <td>{{ $inventory->current_quantity }}</td>
+                                        <td>
+                                            @if ($inventory->current_quantity > 0)
+                                                {{ $inventory->current_quantity }}
+                                            @else
+                                                <span class="text-danger">Hết hàng</span>
+                                            @endif
+                                        </td>
                                         <td>{{ \Carbon\Carbon::parse($inventory->manufacture_date)->format('d/m/Y') }}
                                         </td>
-                                        <td>{{ \Carbon\Carbon::parse($inventory->expiry_date)->format('d/m/Y') }}
-                                            {!! $rowClass !!}</td>
+                                        <td>
+                                            @if ($inventory->expiry_date)
+                                                {{ \Carbon\Carbon::parse($inventory->expiry_date)->format('d/m/Y') }}
+                                                {!! $rowClass !!}
+                                            @else
+                                                <span style="color: #6c757d;">Không có</span>
+                                            @endif
+                                        </td>
+
                                     </tr>
 
                                 @empty

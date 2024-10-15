@@ -90,7 +90,7 @@
                                 <th class="" style="width: 25% !important;">Email</th>
                                 <th class="" style="width: 12% !important;">Số Điện Thoại</th>
                                 <th class="" style="width: 8% !important;">Giới Tính</th>
-                                <th class="" style="width: 10% !important;">Trạng Thái</th>
+                                <th class="" style="width: 12% !important;">Trạng Thái</th>
                                 <th class="pe-3 text-center" style="width: 20% !important;">Hành Động</th>
                             </tr>
                         </thead>
@@ -122,11 +122,11 @@
                                         {{ $item->gender }}
                                     </td>
                                     <td>
-                                        <div class="checkbox-wrapper-6">
-                                            <input class="tgl tgl-light" id="cb1-6" type="checkbox"
-                                                {{ !empty($item->status) == 1 ? 'checked' : '' }} disabled />
-                                            <label class="tgl-btn" for="cb1-6"></label>
-                                        </div>
+                                        @if ($item['status'] == 0)
+                                            <span class="text-danger">Không hoạt động</span>
+                                        @elseif($item['status'] == 1)
+                                            <span class="text-success">Đang hoạt động</span>
+                                        @endif
                                     </td>
                                     <td class="text-center" data-bs-toggle="collapse"
                                         data-bs-target="#collapse_{{ $item->code }}" aria-expanded="false"

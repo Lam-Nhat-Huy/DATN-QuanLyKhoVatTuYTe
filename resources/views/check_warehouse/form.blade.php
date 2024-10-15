@@ -276,7 +276,7 @@
 
                         <div class="table-responsive mt-4">
                             <table class="table text-center align-middle" style="background-color: #f4f6f9;">
-                                <thead style="background-color: #FFA500;">
+                                <thead style="background-color: #000000;">
                                     <tr>
                                         <th style="width: 15%;">STT</th>
                                         <th style="width: 15%;">Mã thiết bị</th>
@@ -335,7 +335,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted" style="font-size: 13px;">Trạng thái</span>
                                 <span class="badge"
-                                    style="background-color: #ff4081; color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 9px;">Đang
+                                    style="background-color: #08d63fce; color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 9px;">Đang
                                     kiểm</span>
                             </div>
                         </div>
@@ -369,7 +369,7 @@
                         <!-- Buttons -->
                         <div class="d-grid gap-3">
                             <button name="status" value="0" onclick="submitMaterials()" type="submit"
-                                class="btn btn-lg rounded-pill text-white" style="background-color: #FFA500;">Lưu
+                                class="btn btn-lg rounded-pill text-white" style="background-color: #FFA500;">Lưu phiếu
                                 tạm</button>
 
                             <!-- Hoàn thành Button -->
@@ -413,7 +413,7 @@
                         <div class="status-indicator">
                             <div class="status-item">
                                 <div class="color-box" style="border: 1px solid black"></div>
-                                <span class="status-text small-text">Chưa kiểm kê (Màu gạch đỏ)</span>
+                                <span class="status-text small-text">Chưa kiểm kê (Màu gạch đen)</span>
                             </div>
                             <div class="status-item">
                                 <div class="color-box" style="background-color: #ffcccb;"></div>
