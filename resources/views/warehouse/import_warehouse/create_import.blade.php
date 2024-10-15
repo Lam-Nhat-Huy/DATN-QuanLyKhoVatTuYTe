@@ -60,7 +60,7 @@
             <div class="card border-0 px-8 mb-4 rounded-3 mt-3">
                 <div class="row">
                     <div class="col-md-6 fv-row">
-                        <label for="receipt_no" class="{{ $required }} form-label fw-semibold">Nhà cung cấp</label>
+                        <label for="supplier_code" class="{{ $required }} form-label fw-semibold">Nhà cung cấp</label>
                         <div class="d-flex align-items-center">
                             <select name="supplier_code" id="supplier_code" {{ !empty($infoIER) ? 'disabled' : '' }}
                                 onchange="cSupplier()"
@@ -279,7 +279,8 @@
                                                     <input type="number"
                                                         id="quantity_change_{{ $item->equipment_code }}"
                                                         value="{{ $item->quantity }}" max="{{ $item->quantity }}"
-                                                        oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom(); showNote('{{ $item->equipment_code }}', '{{ $item->equipments->name }}', '{{ $item->quantity }}');"
+                                                        min="0"
+                                                        oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom(); showNote('{{ $item->equipment_code }}', '{{ $item->equipments->name }}', '{{ $item->quantity }}', '{{ $infoIER->note }}');"
                                                         class="form-control form-control-sm border border-success rounded-pill">
                                                 </div>
                                             </td>
@@ -359,7 +360,7 @@
                                                 <div class="d-flex align-items-center">
                                                     <input type="number"
                                                         id="quantity_change_{{ $item->equipment_code }}"
-                                                        value="{{ $item->quantity }}"
+                                                        value="{{ $item->quantity }}" min="0"
                                                         class="form-control form-control-sm border border-success rounded-pill">
                                                 </div>
                                             </td>
@@ -1865,7 +1866,7 @@
 
         let notes = {}; // Object để lưu các thiết bị đã thay đổi số lượng và chênh lệch
 
-        function showNote(equipment_code, equipment_name, equipment_quantity) {
+        function showNote(equipment_code, equipment_name, equipment_quantity, noteDefault) {
             const quantity = document.getElementById(`quantity_change_${equipment_code}`).value;
             let quantityShowNote = equipment_quantity - quantity;
 
@@ -1875,9 +1876,17 @@
                 notes[equipment_name] = quantityShowNote;
             }
 
-            let noteText = Object.keys(notes).map(name => {
-                return `Số lượng của "${name}" chênh lệch "-${notes[name]}" so với yêu cầu`;
-            }).join(', ');
+            let noteText = noteDefault ? `${noteDefault}` : ''; // Kiểm tra giá trị noteDefault
+
+            // Kiểm tra nếu có thiết bị chênh lệch để chèn thêm nội dung mới
+            if (Object.keys(notes).length > 0) {
+                let additionalText = Object.keys(notes).map(name => {
+                    return `Số lượng của "${name}" chênh lệch "-${notes[name]}" so với yêu cầu`;
+                }).join(', ');
+
+                // Nếu có giá trị noteDefault, nối với additionalText; nếu không, chỉ hiển thị additionalText
+                noteText = noteDefault ? `${noteText}, ${additionalText}` : additionalText;
+            }
 
             document.getElementById('note').innerText = noteText;
         }

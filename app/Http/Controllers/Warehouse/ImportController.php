@@ -277,151 +277,152 @@ class ImportController extends Controller
 
     public function store_import(Request $request)
     {
-        try {
-            if (
-                !empty($request->supplier_code) &&
-                !empty($request->receipt_no) &&
-                !empty($request->importEquipmentStatus) &&
-                !empty($request->equipment_list)
-            ) {
-                $supplierCode = $request->supplier_code;
-                $receiptNo = $request->receipt_no;
-                $note = $request->note;
-                $equipmentList = json_decode($request->equipment_list, true);
+        if (
+            !empty($request->supplier_code) &&
+            !empty($request->receipt_no) &&
+            !empty($request->importEquipmentStatus) &&
+            !empty($request->equipment_list)
+        ) {
+            $supplierCode = $request->supplier_code;
+            $receiptNo = $request->receipt_no;
+            $note = $request->note;
+            $equipmentList = json_decode($request->equipment_list, true);
 
-                $record = Receipts::create([
-                    'code' => 'PN' . $this->generateRandomString(8),
-                    'supplier_code' => $supplierCode,
-                    'note' => $note ?? '',
-                    'status' => $request->importEquipmentStatus == 4 ? 0 : $request->importEquipmentStatus,
-                    'receipt_no' => $receiptNo,
-                    'receipt_date' => now(),
-                    'created_by' => session('user_code'),
-                    'created_at' => now(),
-                    'updated_at' => null,
-                    'deleted_at' => null,
-                ]);
+            $record = Receipts::create([
+                'code' => 'PN' . $this->generateRandomString(8),
+                'supplier_code' => $supplierCode,
+                'note' => $note ?? '',
+                'status' => $request->importEquipmentStatus == 4 ? 0 : $request->importEquipmentStatus,
+                'receipt_no' => $receiptNo,
+                'receipt_date' => now(),
+                'created_by' => session('user_code'),
+                'created_at' => now(),
+                'updated_at' => null,
+                'deleted_at' => null,
+            ]);
 
-                if ($record) {
-                    foreach ($equipmentList as $equipment) {
-                        Receipt_details::create([
-                            'receipt_code' => $record->code,
-                            'batch_number' => $equipment['batch_number'],
-                            'expiry_date' => !empty($equipment['expiry_date']) ? $equipment['expiry_date'] : NULL,
-                            'manufacture_date' => $equipment['product_date'],
-                            'quantity' => $equipment['quantity'],
-                            'VAT' => $equipment['vat'],
-                            'discount' => $equipment['discount_rate'],
-                            'price' => $equipment['price'],
-                            'equipment_code' => $equipment['equipment_code'],
-                            'created_at' => now(),
-                            'updated_at' => null,
-                            'deleted_at' => null,
-                        ]);
-                    }
-
-                    return response()->json(['success' => true, 'message' => 'Đã tạo phiếu nhập']);
-                }
-            }
-
-            return response()->json(['success' => false, 'message' => 'Vui lòng điền đẩy đủ các trường dữ liệu']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
-    public function import_equipment_request(Request $request)
-    {
-        try {
-            if (
-                !empty($request->supplier_code) &&
-                !empty($request->receipt_no) &&
-                !empty($request->importEquipmentStatus) &&
-                !empty($request->equipment_list)
-            ) {
-                $supplierCode = $request->supplier_code;
-                $receiptNo = $request->receipt_no;
-                $note = $request->note;
-                $equipmentList = json_decode($request->equipment_list, true);
-
-                // Tạo phiếu nhập
-                $record = Receipts::create([
-                    'code' => 'PN' . $this->generateRandomString(8),
-                    'supplier_code' => $supplierCode,
-                    'note' => $note ?? '',
-                    'status' => 1,
-                    'receipt_no' => $receiptNo,
-                    'receipt_date' => now(),
-                    'created_by' => session('user_code'),
-                    'created_at' => now(),
-                    'updated_at' => null,
-                    'deleted_at' => null,
-                ]);
-
-                // Tạo chi tiết phiếu nhập
-                if ($record) {
-                    foreach ($equipmentList as $equipment) {
-                        $record_detail = Receipt_details::create([
-                            'receipt_code' => $record->code,
-                            'batch_number' => $equipment['batch_number'],
-                            'expiry_date' => !empty($equipment['expiry_date']) ? $equipment['expiry_date'] : NULL,
-                            'manufacture_date' => $equipment['product_date'],
-                            'quantity' => $equipment['quantity'],
-                            'VAT' => $equipment['vat'],
-                            'discount' => $equipment['discount_rate'],
-                            'price' => $equipment['price'],
-                            'equipment_code' => $equipment['equipment_code'],
-                            'created_at' => now(),
-                            'updated_at' => null,
-                            'deleted_at' => null,
-                        ]);
-
-                        Equipments::where('code', $record_detail->equipment_code)->update([
-                            'price' => $record_detail->price,
-                        ]);
-                    }
-
-                    // Insert inventories
-                    $receiptDetails = Receipt_details::where('receipt_code', $record->code)->get();
-
-                    foreach ($receiptDetails as $item) {
-                        // Tìm bản ghi inventory theo batch_number và equipment_code từ $item
-                        $countQuantityInventoryWhere = Inventories::where('batch_number', $item->batch_number)
-                            ->where('equipment_code', $item->equipment_code)
-                            ->first();
-
-                        // Nếu tìm thấy trong Inventories thì cộng số lượng
-                        $current_quantity = $countQuantityInventoryWhere ? $countQuantityInventoryWhere->current_quantity + $item->quantity : $item->quantity;
-
-                        // Cập nhật hoặc tạo mới Inventory
-                        $inventoryCode = $countQuantityInventoryWhere ? $countQuantityInventoryWhere->code : 'TK' . $this->generateRandomString(8);
-
-                        Inventories::updateOrCreate(
-                            [
-                                'batch_number' => $item['batch_number'],
-                                'equipment_code' => $item['equipment_code']
-                            ],
-                            [
-                                'code' => $inventoryCode,
-                                'batch_number' => $item['batch_number'],
-                                'current_quantity' => $current_quantity,
-                                'import_code' => $record->code,
-                                'expiry_date' => !empty($item['expiry_date']) ? $item['expiry_date'] : null,
-                                'manufacture_date' => $item['manufacture_date'],
-                                'created_at' => $record->receipt_date,
-                                'updated_at' => now(),
-                            ]
-                        );
-                    }
+            if ($record) {
+                foreach ($equipmentList as $equipment) {
+                    Receipt_details::create([
+                        'receipt_code' => $record->code,
+                        'batch_number' => $equipment['batch_number'],
+                        'expiry_date' => !empty($equipment['expiry_date']) ? $equipment['expiry_date'] : NULL,
+                        'manufacture_date' => $equipment['product_date'],
+                        'quantity' => $equipment['quantity'],
+                        'VAT' => $equipment['vat'],
+                        'discount' => $equipment['discount_rate'],
+                        'price' => $equipment['price'],
+                        'equipment_code' => $equipment['equipment_code'],
+                        'created_at' => now(),
+                        'updated_at' => null,
+                        'deleted_at' => null,
+                    ]);
                 }
 
                 return response()->json(['success' => true, 'message' => 'Đã tạo phiếu nhập']);
             }
-
-            return response()->json(['success' => false, 'message' => 'Vui lòng điền đẩy đủ các trường dữ liệu']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
+
+        return response()->json(['success' => false, 'message' => 'Vui lòng điền đẩy đủ các trường dữ liệu']);
+    }
+
+    // Tạo phiếu nhập bằng yêu cầu mua hàng
+    public function import_equipment_request(Request $request)
+    {
+        if (
+            !empty($request->supplier_code) &&
+            !empty($request->receipt_no) &&
+            !empty($request->importEquipmentStatus) &&
+            !empty($request->equipment_list)
+        ) {
+            $supplierCode = $request->supplier_code;
+            $receiptNo = $request->receipt_no;
+            $note = $request->note;
+            $equipmentList = json_decode($request->equipment_list, true);
+
+            // Tạo phiếu nhập
+            $record = Receipts::create([
+                'code' => 'PN' . $this->generateRandomString(8),
+                'supplier_code' => $supplierCode,
+                'note' => $note ?? '',
+                'status' => 1,
+                'receipt_no' => $receiptNo,
+                'receipt_date' => now(),
+                'created_by' => session('user_code'),
+                'created_at' => now(),
+                'updated_at' => null,
+                'deleted_at' => null,
+            ]);
+
+            Import_equipment_requests::where('code', $receiptNo)->update([
+                'status' => 4,
+            ]);
+
+            Import_equipment_request_details::where('import_request_code', $receiptNo)->update([
+                'status' => 4,
+            ]);
+
+            // Tạo chi tiết phiếu nhập
+            if ($record) {
+                foreach ($equipmentList as $equipment) {
+                    $record_detail = Receipt_details::create([
+                        'receipt_code' => $record->code,
+                        'batch_number' => $equipment['batch_number'],
+                        'expiry_date' => !empty($equipment['expiry_date']) ? $equipment['expiry_date'] : NULL,
+                        'manufacture_date' => $equipment['product_date'],
+                        'quantity' => $equipment['quantity'],
+                        'VAT' => $equipment['vat'],
+                        'discount' => $equipment['discount_rate'],
+                        'price' => $equipment['price'],
+                        'equipment_code' => $equipment['equipment_code'],
+                        'created_at' => now(),
+                        'updated_at' => null,
+                        'deleted_at' => null,
+                    ]);
+
+                    Equipments::where('code', $record_detail->equipment_code)->update([
+                        'price' => $record_detail->price,
+                    ]);
+                }
+
+                // Insert inventories
+                $receiptDetails = Receipt_details::where('receipt_code', $record->code)->get();
+
+                foreach ($receiptDetails as $item) {
+                    // Tìm bản ghi inventory theo batch_number và equipment_code từ $item
+                    $countQuantityInventoryWhere = Inventories::where('batch_number', $item->batch_number)
+                        ->where('equipment_code', $item->equipment_code)
+                        ->first();
+
+                    // Nếu tìm thấy trong Inventories thì cộng số lượng
+                    $current_quantity = $countQuantityInventoryWhere ? $countQuantityInventoryWhere->current_quantity + $item->quantity : $item->quantity;
+
+                    // Cập nhật hoặc tạo mới Inventory
+                    $inventoryCode = $countQuantityInventoryWhere ? $countQuantityInventoryWhere->code : 'TK' . $this->generateRandomString(8);
+
+                    Inventories::updateOrCreate(
+                        [
+                            'batch_number' => $item['batch_number'],
+                            'equipment_code' => $item['equipment_code']
+                        ],
+                        [
+                            'code' => $inventoryCode,
+                            'batch_number' => $item['batch_number'],
+                            'current_quantity' => $current_quantity,
+                            'import_code' => $record->code,
+                            'expiry_date' => !empty($item['expiry_date']) ? $item['expiry_date'] : null,
+                            'manufacture_date' => $item['manufacture_date'],
+                            'created_at' => $record->receipt_date,
+                            'updated_at' => now(),
+                        ]
+                    );
+                }
+            }
+
+            return response()->json(['success' => true, 'message' => 'Đã tạo phiếu nhập']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Vui lòng điền đẩy đủ các trường dữ liệu']);
     }
 
     public function edit_import($code)

@@ -50,9 +50,9 @@ modalNotPropagation.forEach(item2 => {
     });
 });
 
-const btn = document.querySelectorAll('.btn');
+const rounded_pill = document.querySelectorAll('.rounded-pill');
 
-btn.forEach(itemBtn => {
+rounded_pill.forEach(itemBtn => {
     itemBtn.addEventListener('click', function (eBtn) {
         eBtn.stopPropagation();
     });
