@@ -14,6 +14,7 @@ return new class extends Migration
             $table->boolean('status')->default(true);
             $table->date('export_date')->nullable();
             $table->char('department_code', 20)->nullable();
+            $table->char('export_request_code', 20)->nullable();
             $table->timestamps();
             $table->softDeletes();
 

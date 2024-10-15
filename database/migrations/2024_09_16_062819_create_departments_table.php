@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name', 255);
             $table->text('description')->nullable();
             $table->string('location', 255)->nullable();
-            $table->char('created_by', 20)->nullable()->nullable();
+            $table->char('created_by', 20)->nullable();
             $table->timestamps();
             $table->softDeletes();
 

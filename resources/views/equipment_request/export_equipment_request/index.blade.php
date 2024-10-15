@@ -1,7 +1,6 @@
 @extends('master_layout.layout')
 
 @section('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 @endsection
 
 @section('title')
@@ -9,96 +8,6 @@
 @endsection
 
 @section('scripts')
-    <script>
-        // Đổi biểu tượng khi bấm vào td có chứa chevron
-        document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function(td) {
-            td.addEventListener('click', function(event) {
-                // Tìm phần tử <i> bên trong <td>
-                var icon = this.querySelector('i');
-
-                // Kiểm tra nếu có <i> thì thực hiện đổi biểu tượng
-                if (icon) {
-                    // Đổi icon khi click
-                    if (icon.classList.contains('fa-chevron-right')) {
-                        icon.classList.remove('fa-chevron-right');
-                        icon.classList.add('fa-chevron-down');
-                    } else {
-                        icon.classList.remove('fa-chevron-down');
-                        icon.classList.add('fa-chevron-right');
-                    }
-                }
-
-                // Ngăn chặn việc click ảnh hưởng đến hàng (row)
-                event.stopPropagation();
-            });
-        });
-
-        document.getElementById('selectAll').addEventListener('change', function() {
-            var isChecked = this.checked;
-            var checkboxes = document.querySelectorAll('.row-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.checked = isChecked;
-                var row = checkbox.closest('tr');
-                if (isChecked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-            });
-        });
-
-        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                var row = this.closest('tr');
-                if (this.checked) {
-                    row.classList.add('selected-row');
-                } else {
-                    row.classList.remove('selected-row');
-                }
-
-                var allChecked = true;
-                document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                    if (!cb.checked) {
-                        allChecked = false;
-                    }
-                });
-                document.getElementById('selectAll').checked = allChecked;
-            });
-        });
-
-        document.querySelectorAll('tbody tr').forEach(function(row) {
-            row.addEventListener('click', function() {
-                var checkbox = this.querySelector('.row-checkbox');
-                if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    if (checkbox.checked) {
-                        this.classList.add('selected-row');
-                    } else {
-                        this.classList.remove('selected-row');
-                    }
-
-                    var allChecked = true;
-                    document.querySelectorAll('.row-checkbox').forEach(function(cb) {
-                        if (!cb.checked) {
-                            allChecked = false;
-                        }
-                    });
-                    document.getElementById('selectAll').checked = allChecked;
-                }
-            });
-        });
-
-        document.querySelectorAll('.printPdfBtn').forEach(function(button) {
-            button.addEventListener('click', function() {
-                var printContents = document.querySelector('.printArea')
-                    .innerHTML; // Use querySelector to select a single element
-                var originalContents = document.body.innerHTML;
-                document.body.innerHTML = printContents;
-                window.print();
-                document.body.innerHTML = originalContents;
-            });
-        });
-    </script>
 @endsection
 
 @section('content')
@@ -108,7 +17,8 @@
                 <span class="card-label fw-bolder fs-3 mb-1">Danh Sách Yêu Cầu Xuất Kho</span>
             </h3>
             <div class="card-toolbar">
-                <a href="{{ route('equipment_request.export_trash') }}" class="btn btn-sm btn-danger me-2 rounded-pill">
+                <a href="{{ route('equipment_request.export_trash') }}"
+                    class="btn btn-sm rounded-pill btn-danger me-2 rounded-pill">
                     <span class="align-items-center d-flex">
                         <i class="fa fa-trash me-1"></i>
                         Thùng Rác
@@ -119,417 +29,728 @@
                 </a>
             </div>
         </div>
-        <div class="card-body py-1 me-9">
-            <form action="" class="row align-items-center">
-                <div class="col-3">
-                    <select name="ur" class="mt-2 mb-2 form-select form-select-sm rounded-pill setupSelect2">
+        <div class="card-body py-1">
+            <form action="{{ route('equipment_request.export') }}" class="row align-items-center">
+                <div class="col-lg-3 col-md-4 col-sm-12">
+                    <select name="dpm" class="mt-2 mb-2 form-select form-select-sm rounded-pill setupSelect2 w-100">
                         <option value="" selected>--Theo Phòng Ban--</option>
-                        <option value="a">A</option>
-                        <option value="b">B</option>
+                        @foreach ($AllDepartment as $item)
+                            <option value="{{ $item->code }}" {{ request()->dpm == $item->code ? 'selected' : '' }}>
+                                {{ $item->name }}</option>
+                        @endforeach
                     </select>
                 </div>
-                <div class="col-3">
-                    <select name="ur" class="mt-2 mb-2 form-select form-select-sm rounded-pill setupSelect2">
+                <div class="col-lg-2 col-md-4 col-sm-12">
+                    <select name="us" class="mt-2 mb-2 form-select form-select-sm rounded-pill setupSelect2 w-100">
                         <option value="" selected>--Theo Người Tạo--</option>
-                        <option value="a">A</option>
-                        <option value="b">B</option>
+                        @foreach ($AllUser as $item)
+                            <option value="{{ $item->code }}" {{ request()->us == $item->code ? 'selected' : '' }}>
+                                {{ $item->last_name . ' ' . $item->first_name }}</option>
+                        @endforeach
                     </select>
                 </div>
-                <div class="col-3">
-                    <select name="stt" class="mt-2 mb-2 form-select form-select-sm rounded-pill setupSelect2">
-                        <option value="" selected>--Theo Trạng Thái--</option>
-                        <option value="1" {{ request()->stt == 1 ? 'selected' : '' }}>Chưa Duyệt</option>
-                        <option value="2" {{ request()->stt == 2 ? 'selected' : '' }}>Đã Duyệt</option>
+                <div class="col-lg-2 col-md-4 col-sm-12">
+                    <select name="stt" class="mt-2 mb-2 form-select form-select-sm rounded-pill setupSelect2 w-100">
+                        <option value="" {{ request()->stt == '' ? 'selected' : '' }}>--Theo Trạng Thái--</option>
+                        <option value="0" {{ request()->stt == '0' ? 'selected' : '' }}>Chờ Duyệt</option>
+                        <option value="1" {{ request()->stt == '1' ? 'selected' : '' }}>Đang Chuẩn Bị</option>
+                        <option value="5" {{ request()->stt == '5' ? 'selected' : '' }}>Đang Vận Chuyển</option>
+                        <option value="2" {{ request()->stt == '2' ? 'selected' : '' }}>Hết Hạn</option>
+                        <option value="3" {{ request()->stt == '3' ? 'selected' : '' }}>Lưu Tạm</option>
+                        <option value="4" {{ request()->stt == '4' ? 'selected' : '' }}>Hoàn Thành</option>
                     </select>
                 </div>
-                <div class="col-3">
-                    <div class="row">
-                        <div class="col-10">
-                            <input type="search" name="kw" placeholder="Tìm Kiếm Mã Yêu Cầu.."
-                                class="mt-2 mb-2 form-control form-control-sm form-control-solid border border-success rounded-pill"
+                <div class="col-lg-5 col-md-12 col-sm-12">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <input type="search" name="kw" placeholder="Tìm kiếm mã phiếu xuất.."
+                                class="mt-2 mb-2 form-control form-control-sm form-control-solid rounded-pill border border-success w-100"
                                 value="{{ request()->kw }}">
                         </div>
-                        <div class="col-2">
-                            <button class="btn btn-dark btn-sm mt-2 mb-2 rounded-pill" type="submit">Tìm</button>
+                        <div class="col-md-6 d-flex">
+                            <a class="btn rounded-pill btn-info btn-sm mt-2 mb-2 w-100 me-2"
+                                href="{{ route('equipment_request.export') }}"><i class="fas fa-times-circle"
+                                    style="margin-bottom: 2px;"></i>
+                                Bỏ Lọc
+                            </a>
+                            <button class="btn rounded-pill btn-dark btn-sm mt-2 mb-2 w-100 load_animation"
+                                type="submit"><i class="fa fa-search" style="margin-bottom: 2px;"></i>Tìm</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="card-body py-3">
-            <div class="table-responsive rounded">
-                <table class="table align-middle gs-0 gy-4">
-                    <thead>
-                        <tr class="text-center bg-success">
-                            <th class="ps-3">
-                                <input type="checkbox" id="selectAll" />
-                            </th>
-                            <th class="">Mã Yêu Cầu</th>
-                            <th class="">Lý Do Xuất</th>
-                            <th class="">Phòng Ban</th>
-                            <th class="">Người Tạo</th>
-                            <th class="">Ngày Tạo</th>
-                            <th class="pe-3" style="width: 60px !important;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="text-center hover-table pointer">
-                            <td>
-                                <input type="checkbox" class="row-checkbox" />
-                            </td>
-                            <td>
-                                #YCX113
-                            </td>
-                            <td>
-                                Cấp Phát Cho Phòng Ban
-                            </td>
-                            <td>
-                                Khoa xét nghiệm
-                            </td>
-                            <td>
-                                Lữ Phát Huy
-                            </td>
-                            <td>
-                                12-09-2024
-                            </td>
-                            <td class="text-center" data-bs-toggle="collapse" data-bs-target="#collapse" id="toggleIcon">
-                                <i class="fa fa-caret-right pointer">
-                                </i>
-                            </td>
-                        </tr>
-
-                        <!-- Collapse content -->
-                        <tr class="collapse multi-collapse" id="collapse">
-                            <td class="p-0" colspan="12"
-                                style="border: 1px solid #dcdcdc; background-color: #fafafa; padding-top: 0 !important;">
-                                <div class="flex-lg-row-fluid border-2 border-lg-1">
-                                    <div class="card card-flush p-2"
-                                        style="padding-top: 0px !important; padding-bottom: 0px !important;">
-                                        <div class="card-header d-flex justify-content-between align-items-center p-2"
-                                            style="padding-top: 0 !important; padding-bottom: 0px !important;">
-                                            <h4 class="fw-bold m-0 text-uppercase fw-bolder">Chi tiết phiếu nhập kho
-                                            </h4>
-                                            <div class="card-toolbar">
-                                                @if (1 == 1)
-                                                    <div style="font-size: 10px;"
-                                                        class="rounded px-2 py-1 text-white bg-danger">Chưa Duyệt
-                                                    </div>
-                                                @else
-                                                    <div style="font-size: 10px;"
-                                                        class="rounded px-2 py-1 text-white bg-success">Đã Duyệt</div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="card-body p-2" style="padding-top: 0px !important">
-                                            <!-- Begin::Receipt Items (Right column) -->
-                                            <div class="col-md-12">
-                                                <div class="table-responsive rounded">
-                                                    <table class="table table-striped table-sm table-hover">
-                                                        <thead class="text-center bg-danger">
-                                                            <tr>
-                                                                <th class="ps-3">Tên thiết bị</th>
-                                                                <th>Đơn Vị Tính</th>
-                                                                <th class="pe-3">Số lượng</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr class="text-center">
-                                                                <td>Băng gạc</td>
-                                                                <td>Bịch</td>
-                                                                <td>100</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                            <!-- End::Receipt Items -->
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="card-body py-3 text-end">
-                                    <div class="button-group">
-                                        @if (1 == 1)
-                                            <!-- Nút Duyệt đơn -->
-                                            <button style="font-size: 10px;"
-                                                class="btn btn-sm btn-success me-2 rounded-pill" data-bs-toggle="modal"
-                                                data-bs-target="#browse_" type="button">
-                                                <i style="font-size: 10px;" class="fas fa-clipboard-check"></i>Duyệt Phiếu
-                                            </button>
-
-                                            <!-- Nút Sửa đơn -->
-                                            <a style="font-size: 10px;"
-                                                href="{{ route('equipment_request.update_export') }}"
-                                                class="btn btn-sm btn-dark me-2 rounded-pill">
-                                                <i style="font-size: 10px;" class="fa fa-edit"></i>Sửa Phiếu
-                                            </a>
-
-                                            <!-- Nút Xóa đơn -->
-                                            <button style="font-size: 10px;"
-                                                class="btn btn-sm btn-danger me-2 rounded-pill" data-bs-toggle="modal"
-                                                data-bs-target="#deleteModal_" type="button">
-                                                <i style="font-size: 10px;" class="fa fa-trash"></i>Xóa Phiếu
-                                            </button>
-                                        @else
-                                            <!-- Nút In Phiếu -->
-                                            <button style="font-size: 10px;" class="btn btn-sm btn-dark me-2"
-                                                type="button">
-                                                <i style="font-size: 10px;" class="fas fa-file-import"></i>Tạo Phiếu Xuất
-                                                Nhanh
-                                            </button>
-
-                                            <!-- Nút In Phiếu -->
-                                            <button style="font-size: 10px;"
-                                                class="btn btn-sm btn-twitter me-2 printPdfBtn rounded-pill"
-                                                type="button">
-                                                <i style="font-size: 10px;" class="fa fa-print"></i>In Phiếu
-                                            </button>
-
-                                            <!-- Nút Xóa đơn -->
-                                            <button style="font-size: 10px;"
-                                                class="btn btn-sm btn-danger me-2 rounded-pill" data-bs-toggle="modal"
-                                                data-bs-target="#deleteModal_" type="button">
-                                                <i style="font-size: 10px;" class="fa fa-trash"></i>Xóa Phiếu
-                                            </button>
+        <form action="{{ route('equipment_request.export') }}" method="POST">
+            @csrf
+            <input type="hidden" name="action_type" id="action_type" value="">
+            <div class="card-body py-3">
+                <div class="table-responsive rounded">
+                    <table class="table align-middle gs-0 gy-4">
+                        <thead class="{{ $AllWarehouseExportRequest->count() == 0 ? 'd-none' : '' }}">
+                            <tr class="bg-success">
+                                <th class="ps-3">
+                                    <input type="checkbox" id="selectAll" />
+                                </th>
+                                <th class="" style="width: 10%;">Mã Yêu Cầu</th>
+                                <th class="" style="width: 13%;">Phòng Ban</th>
+                                <th class="" style="width: 13%;">Lý Do Xuất</th>
+                                <th class="" style="width: 15%;">Người Tạo</th>
+                                <th class="" style="width: 12%;">Ngày Yêu Cầu</th>
+                                <th class="" style="width: 12%;">Ngày Cần Thiết</th>
+                                <th class="text-center" style="width: 10%;">Trạng Thái</th>
+                                <th class="pe-3 text-center" style="width: 25%;">Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($AllWarehouseExportRequest as $item)
+                                <tr class="hover-table pointer">
+                                    <td>
+                                        {{-- Phiếu tạm => ẩn hết, phiếu chờ duyệt thì hiện, phiếu đã duyệt chưa tạo thì hiện icon, phiếu đã duyệt tạo rồi thì ẩn --}}
+                                        @if (($item->status == 3 || $item->status == 0) && $item->user_code == session('user_code'))
+                                            <input type="checkbox" name="export_reqest_codes[]" value="{{ $item->code }}"
+                                                class="row-checkbox" />
+                                        @elseif ($item->status == 5)
+                                            <i class="fa fa-truck-medical" title="Đang vận chuyển"></i>
+                                        @elseif ($item->status == 4)
+                                            <i class="fa fa-check" title="Hoàn Thành"></i>
+                                        @elseif ($item->status == 1)
+                                            <i class="fa-solid fa-circle-exclamation"
+                                                title="Phiếu Yêu Cầu Xuất Chưa Được Vận Chuyển" style="font-size: 13px;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#exclamation_{{ $item->code }}"></i>
                                         @endif
-                                    </div>
-                                </div>
+                                    </td>
+                                    <td>
+                                        #{{ $item->code }}
+                                    </td>
+                                    <td>
+                                        {{ $item->departments->name ?? 'N/A' }}
+                                    </td>
+                                    <td>
+                                        {{ $item->reason_export }}
+                                    </td>
+                                    <td>
+                                        {{ $item->users->last_name . ' ' . $item->users->first_name ?? 'N/A' }}
+                                    </td>
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($item->request_date)->format('d-m-Y') }}
+                                    </td>
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($item->required_date)->format('d-m-Y') }}
+                                    </td>
+                                    <td class="text-center">
+                                        @if (($item->status == 0 || $item->status == 3) && now()->gt(\Carbon\Carbon::parse($item->required_date)))
+                                            <div class="label label-temp bg-warning rounded-pill text-dark px-2 py-1">
+                                                Hết Hạn
+                                            </div>
+                                        @elseif ($item->status == 3)
+                                            <div class="label label-temp bg-info rounded-pill text-white px-2 py-1">
+                                                Lưu Tạm
+                                            </div>
+                                        @elseif ($item->status == 0)
+                                            <div class="label label-temp bg-danger rounded-pill text-white px-2 py-1">
+                                                Chờ Duyệt
+                                            </div>
+                                        @elseif ($item->status == 1)
+                                            <div class="label label-temp bg-primary rounded-pill text-white px-2 py-1">
+                                                Chuẩn Bị
+                                            </div>
+                                        @elseif ($item->status == 5)
+                                            <div class="label label-temp bg-dark rounded-pill text-white px-2 py-1">
+                                                Vận Chuyển
+                                            </div>
+                                        @elseif ($item->status == 4)
+                                            <div class="label label-temp bg-success rounded-pill text-white px-2 py-1">
+                                                Hoàn Thành
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="text-center" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse_{{ $item->code }}" aria-expanded="false"
+                                        aria-controls="collapse_{{ $item->code }}">
+                                        Chi Tiết<i class="fa fa-caret-right pointer ms-2"></i>
+                                    </td>
+                                </tr>
 
-                                {{-- Duyệt --}}
-                                <div class="modal fade" id="browse_" data-bs-backdrop="static"
-                                    data-bs-keyboard="false" tabindex="-1" aria-labelledby="checkModalLabel"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h3 class="modal-title" id="checkModalLabel">Duyệt Yêu Cầu Xuất Kho
-                                                </h3>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form action="" method="">
-                                                    @csrf
-                                                    <h4 class="text-danger text-center">Duyệt Yêu Cầu Xuất Kho Này?
-                                                    </h4>
-                                                </form>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-sm btn-secondary"
-                                                    data-bs-dismiss="modal">Đóng</button>
-                                                <button type="button" class="btn btn-sm btn-success">Duyệt</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- In --}}
-                                <div class="fade modal printArea">
-                                    <div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
-                                        <div class="d-flex mb-5">
-                                            <img src="https://i.pinimg.com/originals/36/b0/a0/36b0a084544360c807d7c778358f762d.png"
-                                                width="100" alt="">
-                                            <div class="text-left mt-3">
-                                                <h6 class="mb-0 pb-0">BỆNH VIỆN ĐA KHOA BEESOFT</h6>
-                                                <div>307C Nguyễn Văn Linh, An Khánh, Ninh Kiều, Cần Thơ
-                                                </div>
-                                                <div>Hotline: 0900900999</div>
-                                            </div>
-                                        </div>
-                                        <form action="" method="post">
-                                            <div class="text-center mb-13">
-                                                <h1 class="mb-3 text-uppercase text-primary">Phiếu Yêu Cầu Xuất Kho
-                                                </h1>
-                                                <div class="text-muted fw-bold fs-6">Thông Tin Chi Tiết Về
-                                                    Phiếu Yêu Cầu Xuất Kho
-                                                    <span class="link-primary text-center">#MaYeuCauMuaHang</span>.
-                                                </div>
-                                                <div class="text-muted fs-30">
-                                                    Ngày Lập 2-9-2024
-                                                </div>
-                                            </div>
-                                            <div class="mb-15 text-left">
-                                                <!-- Begin::Receipt Info -->
-                                                <div class="mb-4">
-                                                    <h4 class="text-primary border-bottom border-dark pb-4">
-                                                        Thông Tin Xuất Kho</h4>
-                                                    <div class="pt-2">
-                                                        <p><strong>Phòng Ban:</strong> <span id="modalSupplier">
-                                                                Khoa xét nghiệm
-                                                            </span>
-                                                        </p>
-                                                        <p><strong>Lý Do Xuất Kho:</strong> <span id="modalSupplier">
-                                                                Cấp phát cho các phòng ban
-                                                            </span>
-                                                        </p>
-                                                        <p><strong>Ghi Chú:</strong> <span id="modalSupplier">
-                                                                ABCDEF
-                                                            </span>
-                                                        </p>
+                                <!-- Collapse content -->
+                                <tr>
+                                    <td class="p-0" colspan="12"
+                                        style="background-color: #fafafa; padding-top: 0 !important;">
+                                        <div class="flex-lg-row-fluid border-2 border-lg-1 collapse multi-collapse"
+                                            id="collapse_{{ $item->code }}">
+                                            <div class="flex-lg-row-fluid border-lg-1">
+                                                <div class="card card-flush px-5" style="padding-top: 0px !important;">
+                                                    <div class="card-header d-flex justify-content-between align-items-center px-2"
+                                                        style="padding-top: 0 !important; padding-bottom: 0px !important;">
+                                                        <h4 class="fw-bold m-0 text-uppercase fw-bolder">
+                                                            Danh Sách Thiết Bị Yêu Cầu
+                                                        </h4>
+                                                        <div class="card-toolbar">
+                                                            @if (($item->status == 0 || $item->status == 3) && now()->gt(\Carbon\Carbon::parse($item->required_date)))
+                                                                <div
+                                                                    class="label label-temp bg-warning rounded-pill text-dark px-2 py-1">
+                                                                    Hết Hạn
+                                                                </div>
+                                                            @elseif ($item->status == 3)
+                                                                <div
+                                                                    class="label label-temp bg-info rounded-pill text-white px-2 py-1">
+                                                                    Lưu Tạm
+                                                                </div>
+                                                            @elseif ($item->status == 0)
+                                                                <div
+                                                                    class="label label-temp bg-danger rounded-pill text-white px-2 py-1">
+                                                                    Chờ Duyệt
+                                                                </div>
+                                                            @elseif ($item->status == 1)
+                                                                <div
+                                                                    class="label label-temp bg-primary rounded-pill text-white px-2 py-1">
+                                                                    Chuẩn Bị
+                                                                </div>
+                                                            @elseif ($item->status == 5)
+                                                                <div
+                                                                    class="label label-temp bg-dark rounded-pill text-white px-2 py-1">
+                                                                    Vận Chuyển
+                                                                </div>
+                                                            @elseif ($item->status == 4)
+                                                                <div
+                                                                    class="label label-temp bg-success rounded-pill text-white px-2 py-1">
+                                                                    Hoàn Thành
+                                                                </div>
+                                                            @endif
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <!-- End::Receipt Info -->
-
-                                                <!-- Begin::Receipt Items -->
-                                                <div class="mb-4">
-                                                    <h4 class="text-primary border-bottom border-dark pb-4 mb-4">
-                                                        Danh Sách Thiết Bị
-                                                    </h4>
-                                                    <div class="table-responsive rounded">
-                                                        <table class="table table-striped align-middle gs-0 gy-4">
-                                                            <thead>
-                                                                <tr class="text-center bg-success">
-                                                                    <th style="width: 33%;">Thiết Bị</th>
-                                                                    <th style="width: 33%;">Đơn Vị</th>
-                                                                    <th style="width: 33%;">Số Lượng
-                                                                    </th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr class="text-center">
-                                                                    <td>
-                                                                        Băng gạc
-                                                                    </td>
-                                                                    <td>
-                                                                        Bình
-                                                                    </td>
-                                                                    <td>
-                                                                        100
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-7"></div>
-                                                        <div class="col-5 text-center">
-                                                            <p class="m-0 p-0">
-                                                                Cần Thơ, ngày
-                                                                {{ \Carbon\Carbon::now()->day }}
-                                                                tháng
-                                                                {{ \Carbon\Carbon::now()->month }} năm
-                                                                {{ \Carbon\Carbon::now()->year }}
-                                                            </p>
-                                                            <p class="m-0 p-0">
-                                                                <strong>Người Lập</strong>
-                                                            </p>
-                                                            <p style="margin-top: 70px !important;">
-                                                                Lữ Phát Huy
-                                                            </p>
+                                                    <div class="card-body p-0" style="padding-top: 0px !important">
+                                                        <!-- Begin::Receipt Items (Right column) -->
+                                                        <div class="col-md-12">
+                                                            <div class="table-responsive rounded">
+                                                                <table
+                                                                    class="table table-striped table-sm table-hover mb-0">
+                                                                    <thead class="bg-dark">
+                                                                        <tr class="text-center">
+                                                                            <th class="ps-3">STT</th>
+                                                                            <th class="ps-3">Tên thiết bị</th>
+                                                                            <th>Đơn Vị Tính</th>
+                                                                            <th class="pe-3">Số lượng</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($item->export_equipment_request_details as $key => $detail)
+                                                                            <tr class="text-center">
+                                                                                <td>{{ $key + 1 }}</td>
+                                                                                <td>{{ $detail->equipments->name }}
+                                                                                </td>
+                                                                                <td>{{ $detail->equipments->units->name }}
+                                                                                </td>
+                                                                                <td>
+                                                                                    @if ($item->status == 1 || $item->status == 4 || $item->status == 5)
+                                                                                        <span class="pointer"
+                                                                                            data-bs-toggle="tooltip"
+                                                                                            data-bs-placement="top"
+                                                                                            title="Số lượng yêu cầu">
+                                                                                            {{ $detail->quantity }}
+                                                                                        </span>
+                                                                                    @elseif($detail->quantity > $detail->equipments->inventories->sum('current_quantity'))
+                                                                                        <span class="pointer"
+                                                                                            data-bs-toggle="tooltip"
+                                                                                            data-bs-placement="top"
+                                                                                            title="Số lượng yêu cầu">
+                                                                                            {{ $detail->quantity }}
+                                                                                        </span>
+                                                                                        /
+                                                                                        <span class="pointer"
+                                                                                            data-bs-toggle="tooltip"
+                                                                                            data-bs-placement="top"
+                                                                                            title="Số lượng tồn">
+                                                                                            {{ $detail->equipments->inventories->sum('current_quantity') }}
+                                                                                        </span>
+                                                                                        <i class="fa-solid fa-triangle-exclamation pointer
+                                                                                            text-danger"
+                                                                                            data-bs-toggle="tooltip"
+                                                                                            data-bs-placement="top"
+                                                                                            title="Vượt quá số lượng tồn kho">
+                                                                                        </i>
+                                                                                    @else
+                                                                                        <span class="pointer"
+                                                                                            data-bs-toggle="tooltip"
+                                                                                            data-bs-placement="top"
+                                                                                            title="Số lượng yêu cầu">
+                                                                                            {{ $detail->quantity }}
+                                                                                        </span>
+                                                                                        /
+                                                                                        <span class="pointer"
+                                                                                            data-bs-toggle="tooltip"
+                                                                                            data-bs-placement="top"
+                                                                                            title="Số lượng tồn">
+                                                                                            {{ $detail->equipments->inventories->sum('current_quantity') }}
+                                                                                        </span>
+                                                                                    @endif
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </form>
-                                    </div>
-                                </div>
 
-                                {{-- Xóa --}}
-                                <div class="modal fade" id="deleteModal_" data-bs-backdrop="static"
-                                    data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModalLabel"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h3 class="modal-title" id="deleteModalLabel">Xóa Yêu Cầu Xuất Kho
-                                                </h3>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
+                                            <div class="card-body py-5 text-end bg-white">
+                                                <div
+                                                    class="button-group {{ $item->status == 3 && $item->user_code != session('user_code') ? 'd-none' : '' }}">
+                                                    @if ($item->status == 0 && now()->lt(\Carbon\Carbon::parse($item->required_date)->addDays(1)))
+                                                        {{-- Chưa duyệt và ngày cần thiết bé hơn ngày hiện tại --}}
+
+                                                        <!-- Nút Duyệt đơn -->
+                                                        <button class="btn btn-sm rounded-pill btn-twitter me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#browse_{{ $item->code }}" type="button">
+                                                            <i class="fas fa-clipboard-check"
+                                                                style="margin-bottom: 2px;"></i>Duyệt Phiếu
+                                                        </button>
+
+                                                        <!-- Nút Sửa đơn -->
+                                                        <a href="{{ route('equipment_request.update_export', $item->code) }}"
+                                                            class="btn btn-sm rounded-pill btn-dark me-2">
+                                                            <i class="fa fa-edit" style="margin-bottom: 2px;"></i>Sửa
+                                                            Phiếu
+                                                        </a>
+
+                                                        <!-- Nút Hủy đơn -->
+                                                        <button class="btn btn-sm rounded-pill btn-danger me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteModal_{{ $item->code }}"
+                                                            type="button">
+                                                            <i class="fa fa-trash" style="margin-bottom: 2px;"></i>Hủy
+                                                            Phiếu
+                                                        </button>
+                                                    @elseif (($item->status == 0 || $item->status == 3) && now()->gt(\Carbon\Carbon::parse($item->required_date)))
+                                                        {{-- Quá ngày cần thiết --}}
+
+                                                        <!-- Nút Hủy đơn -->
+                                                        <button class="btn btn-sm rounded-pill btn-danger me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteModal_{{ $item->code }}"
+                                                            type="button">
+                                                            <i class="fa fa-trash" style="margin-bottom: 2px;"></i>Hủy
+                                                            Phiếu
+                                                        </button>
+                                                    @elseif (
+                                                        $item->status == 3 &&
+                                                            now()->lt(\Carbon\Carbon::parse($item->required_date)->addDays(1)) &&
+                                                            $item->user_code == session('user_code'))
+                                                        {{-- Lưu tạm và ngày yêu cầu trong 3 ngày gần nhất --}}
+
+                                                        <!-- Nút lưu phiếu -->
+                                                        <button class="btn btn-sm rounded-pill btn-twitter me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#save_{{ $item->code }}" type="button">
+                                                            <i class="fa fa-save" style="margin-bottom: 2px;"></i>Tạo
+                                                            Phiếu
+                                                        </button>
+
+                                                        <!-- Nút Sửa đơn -->
+                                                        <a href="{{ route('equipment_request.update_export', $item->code) }}"
+                                                            class="btn btn-sm rounded-pill btn-dark me-2">
+                                                            <i class="fa fa-edit" style="margin-bottom: 2px;"></i>Sửa
+                                                            Phiếu
+                                                        </a>
+
+                                                        <!-- Nút Hủy đơn -->
+                                                        <button class="btn btn-sm rounded-pill btn-danger me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteModal_{{ $item->code }}"
+                                                            type="button">
+                                                            <i class="fa fa-trash" style="margin-bottom: 2px;"></i>Hủy
+                                                            Phiếu
+                                                        </button>
+                                                    @else
+                                                        {{-- Đã duyệt --}}
+                                                        @if ($item->status < 4)
+                                                            <!-- Nút Tạo Phiếu Xuất -->
+                                                            <a href="{{ route('warehouse.create_export') }}?cd={{ $item->code }}"
+                                                                class="btn btn-sm rounded-pill btn-dark me-2">
+                                                                <i class="fas fa-file-import"
+                                                                    style="margin-bottom: 2px;"></i> Tạo Phiếu Xuất
+                                                            </a>
+
+                                                            <!-- Nút In Phiếu -->
+                                                            <button class="btn btn-sm rounded-pill btn-twitter me-2"
+                                                                onclick="printInvoice('{{ $item->code }}')"
+                                                                type="button">
+                                                                <i class="fa fa-print" style="margin-bottom: 2px;"></i> In
+                                                                Phiếu
+                                                            </button>
+                                                        @endif
+                                                    @endif
+                                                </div>
                                             </div>
-                                            <div class="modal-body">
-                                                <form action="" method="">
-                                                    @csrf
-                                                    <h4 class="text-danger text-center">Xóa Yêu Cầu Xuất Kho Này?</h4>
-                                                </form>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-sm btn-secondary"
-                                                    data-bs-dismiss="modal">Đóng</button>
-                                                <button type="button" class="btn btn-sm btn-danger">Xóa</button>
+
+                                            {{-- In --}}
+                                            <div class="fade modal" id="printArea_{{ $item->code }}">
+                                                <div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
+                                                    <div class="d-flex mb-5">
+                                                        <img src="{{ asset('image/logo_warehouse.png') }}" width="100"
+                                                            alt="">
+                                                        <div class="text-left mt-3">
+                                                            <h6 class="mb-0 pb-0">BỆNH VIỆN ĐA KHOA BEESOFT</h6>
+                                                            <div>307C Nguyễn Văn Linh, An Khánh, Ninh Kiều, Cần Thơ
+                                                            </div>
+                                                            <div>Hotline: 0900900999</div>
+                                                        </div>
+                                                    </div>
+                                                    <form action="" method="post">
+                                                        <div class="text-center mb-13">
+                                                            <h1 class="mb-3 text-uppercase text-primary">
+                                                                Phiếu Yêu Cầu Xuất Kho
+                                                            </h1>
+                                                            <div class="text-muted fw-bold fs-6">Thông Tin Chi Tiết Về
+                                                                Phiếu Yêu Cầu Xuất Kho
+                                                                <span class="link-primary ">#{{ $item->code }}</span>.
+                                                            </div>
+                                                            <div class="text-muted fs-30">
+                                                                Ngày Lập
+                                                                {{ \Carbon\Carbon::parse($item->request_date)->format('d-m-Y') }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-15 text-left">
+                                                            <!-- Begin::Receipt Info -->
+                                                            <div class="mb-4">
+                                                                <div class="pt-2">
+                                                                    <p>
+                                                                        <strong>Tên người xuất:</strong>
+                                                                        <span id="modalReason">
+                                                                            ....................................................................................
+                                                                        </span>
+                                                                        <strong>Bộ phận:</strong>
+                                                                        <span id="modalReason">
+                                                                            .........................................................................
+                                                                        </span>
+                                                                    </p>
+                                                                    <p>
+                                                                        <strong>Lý do xuất:</strong>
+                                                                        <span id="modalReason" style="line-height: 2;">
+                                                                            ........................................................................................................................................................................................
+                                                                            .............................................................................................................................................................................................................
+                                                                        </span>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <!-- End::Receipt Info -->
+
+                                                            <!-- Begin::Receipt Items -->
+                                                            <div class="mb-4 mt-3">
+                                                                <h4 class="text-primary mb-3">
+                                                                    Danh Sách Thiết Bị
+                                                                </h4>
+                                                                <div class="table-responsive rounded">
+                                                                    <table
+                                                                        class="table border border-dark align-middle gs-0 gy-4">
+                                                                        <thead>
+                                                                            <tr
+                                                                                class=" bg-success border border-dark text-center">
+                                                                                <th style="width: 5%;"
+                                                                                    class="ps-3 text-dark">
+                                                                                    STT
+                                                                                </th>
+                                                                                <th style="width: 55%;" class="text-dark">
+                                                                                    Thiết Bị
+                                                                                </th>
+                                                                                <th style="width: 20%;" class="text-dark">
+                                                                                    Đơn
+                                                                                    Vị
+                                                                                </th>
+                                                                                <th style="width: 20%;" class="text-dark">
+                                                                                    Số
+                                                                                    Lượng
+                                                                                </th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @foreach ($item->export_equipment_request_details as $key => $detail_in)
+                                                                                <tr class="border border-dark">
+                                                                                    <td class="ps-3 text-right">
+                                                                                        {{ $key + 1 }}
+                                                                                    </td>
+                                                                                    <td class="text-left">
+                                                                                        {{ $detail_in->equipments->name }}
+                                                                                    </td>
+                                                                                    <td class="text-left">
+                                                                                        {{ $detail_in->equipments->units->name }}
+                                                                                    </td>
+                                                                                    <td class="pe-3 text-right">
+                                                                                        {{ $detail_in->quantity }}
+                                                                                    </td>
+                                                                                </tr>
+                                                                            @endforeach
+                                                                            <tr class=" border border-dark">
+                                                                                <td colspan="1">
+                                                                                </td>
+                                                                                <td colspan="1" class="text-center">
+                                                                                    Tổng Cộng
+                                                                                </td>
+                                                                                <td colspan="1"
+                                                                                    style="height: 30px; min-height: 30px;">
+                                                                                </td>
+                                                                                <td colspan="1"
+                                                                                    style="height: 30px; min-height: 30px;">
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                                <div>
+                                                                    <p><strong>Ghi Chú:
+                                                                        </strong><span>{{ $item->note }}</span>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-8"></div>
+                                                                    <div class="col-4">
+                                                                        <p class="m-0 p-0">
+                                                                            Cần Thơ, ngày
+                                                                            {{ \Carbon\Carbon::now()->day }}
+                                                                            tháng
+                                                                            {{ \Carbon\Carbon::now()->month }} năm
+                                                                            {{ \Carbon\Carbon::now()->year }}
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="col-1"></div>
+                                                                    <div class="col-4">
+                                                                        <p class="m-0 p-0">
+                                                                            <strong>Người Lập Phiếu</strong>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="col-3">
+                                                                        <p class="m-0 p-0">
+                                                                            <strong>Người Nhận</strong>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="col-4 text-center">
+                                                                        <p class="m-0 p-0">
+                                                                            <strong>Trưởng Bộ Phận</strong>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr id="noDataAlert">
+                                    <td colspan="12" class="text-center">
+                                        <div class="alert alert-secondary d-flex flex-column align-items-center justify-content-center p-4"
+                                            role="alert"
+                                            style="border: 2px dashed #6c757d; background-color: #f8f9fa; color: #495057;">
+                                            <div class="mb-3">
+                                                <i class="fas fa-search" style="font-size: 36px; color: #6c757d;"></i>
+                                            </div>
+                                            <div class="text-center">
+                                                <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Không Có Dữ
+                                                    Liệu</h5>
+                                                <p style="font-size: 14px; color: #6c757d; margin: 0;">
+                                                    Không Có Dữ Liệu Nào Về Phiếu Yêu Cầu Xuất Kho
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <div class="card-body py-3">
-            <div class="dropdown d-none" id="action_delete_all">
-                <button class="btn btn-info btn-sm dropdown-toggle rounded-pill" id="dropdownMenuButton1"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <span>Chọn Thao Tác</span>
-                </button>
-                <ul class="dropdown-menu shadow" aria-labelledby="dropdownMenuButton1">
-                    <li>
-                        <a class="dropdown-item pointer d-flex align-items-center" data-bs-toggle="modal"
-                            data-bs-target="#browseAll">
-                            <i class="fas fa-clipboard-check me-2 text-twitter"></i>
-                            <span>Duyệt phiếu</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item pointer d-flex align-items-center" data-bs-toggle="modal"
-                            data-bs-target="#deleteAll">
-                            <i class="fas fa-trash me-2 text-danger"></i>
-                            <span class="text-danger">Xóa phiếu</span>
-                        </a>
-                    </li>
-                </ul>
+            @if ($AllWarehouseExportRequest->count() > 0)
+                <div class="card-body py-3 d-flex justify-content-between align-items-center">
+                    <div class="dropdown d-none" id="action_delete_all">
+                        <button class="btn btn-info btn-sm dropdown-toggle rounded-pill" id="dropdownMenuButton1"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>Chọn Thao Tác</span>
+                        </button>
+                        <ul class="dropdown-menu shadow" aria-labelledby="dropdownMenuButton1">
+                            <li>
+                                <a class="dropdown-item pointer d-flex align-items-center" data-bs-toggle="modal"
+                                    data-bs-target="#browseAll">
+                                    <i class="fas fa-clipboard-check me-2 text-twitter"></i>
+                                    <span>Duyệt phiếu</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item pointer d-flex align-items-center" data-bs-toggle="modal"
+                                    data-bs-target="#deleteAll">
+                                    <i class="fas fa-trash me-2 text-danger"></i>
+                                    <span class="text-danger">Hủy phiếu</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="DayNganCach"></div>
+                    <ul class="pagination">
+                        {{ $AllWarehouseExportRequest->links('pagination::bootstrap-5') }}
+                    </ul>
+                </div>
+            @endif
+
+            {{-- Modal Duyệt Tất Cả --}}
+            <div class="modal fade" id="browseAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="browseAllModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-md">
+                    <div class="modal-content border-0 shadow">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title text-white" id="browseAllModal">Duyệt Yêu Cầu Xuất Kho</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center" style="padding-bottom: 0px;">
+                            <p class="text-primary mb-4">Bạn có chắc chắn muốn duyệt tất cả yêu cầu xuất kho đã chọn?
+                            </p>
+                        </div>
+                        <div class="modal-footer justify-content-center border-0">
+                            <button type="button" class="btn rounded-pill btn-sm btn-secondary btn-sm px-4"
+                                data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">
+                                Duyệt</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            {{-- Modal Xác Nhận Hủy Tất Cả --}}
+            <div class="modal fade" id="deleteAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="deleteAllLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-md">
+                    <div class="modal-content border-0 shadow">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title text-white" id="deleteAllLabel">Xác Nhận Hủy yêu cầu xuất kho</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center" style="padding-bottom: 0px;">
+                            <p class="text-danger mb-4">Bạn có chắc chắn muốn hủy tất cả yêu cầu xuất kho đã chọn?</p>
+                        </div>
+                        <div class="modal-footer justify-content-center border-0">
+                            <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
+                                data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit"
+                                class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Hủy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 
-    {{-- Modal Duyệt Tất Cả --}}
-    <div class="modal fade" id="confirmAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="confirmAll" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-md">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title text-white" id="confirmAll">Duyệt Tất Cả phiếu xuất kho</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center" style="padding-bottom: 0px;">
-                    <form action="" method="">
+    @foreach ($AllWarehouseExportRequest as $item)
+        <!-- Modal Duyệt Yêu Cầu Xuất Kho -->
+        <div class="modal fade" id="browse_{{ $item->code }}" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="checkModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-primary">
+                        <h5 class="modal-title text-white" id="checkModalLabel">Duyệt
+                            Yêu Cầu Xuất Kho</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('equipment_request.export') }}" id="form-3" method="POST">
                         @csrf
-                        <p class="text-danger mb-4">Bạn có chắc chắn muốn duyệt tất cả phiếu xuất kho đã chọn?</p>
+                        <input type="hidden" name="browse_request" value="{{ $item->code }}">
+                        <div class="modal-body text-center pb-0">
+                            <p class="text-primary mb-4">Bạn có chắc chắn muốn duyệt yêu cầu xuất kho này?
+                            </p>
+                        </div>
+                        <div class="modal-footer justify-content-center border-0">
+                            <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
+                                data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit"
+                                class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">Duyệt</button>
+                        </div>
                     </form>
                 </div>
-                <div class="modal-footer justify-content-center border-0">
-                    <button type="button" class="btn btn-sm btn-secondary btn-sm px-4"
-                        data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-sm btn-success px-4">
-                        Duyệt</button>
-                </div>
             </div>
         </div>
-    </div>
 
-    {{-- Modal Xác Nhận Xóa Tất Cả --}}
-    <div class="modal fade" id="deleteAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="deleteAllLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-md">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title text-white" id="deleteAllLabel">Xác Nhận Xóa Tất Cả phiếu xuất kho</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center" style="padding-bottom: 0px;">
-                    <form action="" method="">
+        {{-- Hủy --}}
+        <div class="modal fade" id="deleteModal_{{ $item->code }}" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-danger">
+                        <h5 class="modal-title text-white" id="deleteModalLabel">Hủy Yêu Cầu Xuất Kho
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('equipment_request.export') }}" id="form-4" method="POST">
                         @csrf
-                        <p class="text-danger mb-4">Bạn có chắc chắn muốn xóa tất cả phiếu xuất kho đã chọn?</p>
+                        <input type="hidden" name="delete_request" value="{{ $item->code }}">
+                        <div class="modal-body pb-0 text-center">
+                            <p class="text-danger mb-4">Hủy Yêu Cầu Xuất Kho Này?</p>
+                        </div>
+                        <div class="modal-footer justify-content-center border-0">
+                            <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
+                                data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit"
+                                class="btn rounded-pill btn-sm btn-danger px-4 load_animation">Hủy</button>
+                        </div>
                     </form>
                 </div>
-                <div class="modal-footer justify-content-center border-0">
-                    <button type="button" class="btn btn-sm btn-secondary px-4" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-sm btn-success px-4"> Xóa</button>
+            </div>
+        </div>
+
+        {{-- Lưu phiếu --}}
+        <div class="modal fade" id="save_{{ $item->code }}" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-primary">
+                        <h5 class="modal-title text-white" id="saveModalLabel">Tạo Phiếu Yêu Cầu
+                            Mua
+                            Hàng
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('equipment_request.export') }}" id="form-4" method="POST">
+                        @csrf
+                        <input type="hidden" name="save_status" value="{{ $item->code }}">
+                        <div class="modal-body pb-0 text-center">
+                            <p class="text-primary mb-4">Tạo Phiếu Yêu Cầu Xuất Kho
+                                Này?</p>
+                        </div>
+                        <div class="modal-footer justify-content-center border-0">
+                            <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
+                                data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit"
+                                class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">Tạo</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </div>
+
+        {{-- Thông Báo Phiếu Yc Chưa Tạo Xuất --}}
+        <div class="modal fade" id="exclamation_{{ $item->code }}" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="xclamationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-dark">
+                        <h5 class="modal-title text-warning" id="xclamationModalLabel"><i
+                                class="fa-solid fa-circle-exclamation text-warning"></i> Lưu ý
+                        </h5>
+                    </div>
+                    <div class="modal-body pb-0 text-center">
+                        <p class="text-dark mb-4">Phiếu Yêu Cầu Xuất Kho Này Chưa Được Vận Chuyển</p>
+                    </div>
+                    <div class="modal-footer justify-content-center border-0">
+                        <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
+                            data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 @endsection

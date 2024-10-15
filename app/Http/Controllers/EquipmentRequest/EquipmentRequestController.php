@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\EquipmentRequest;
 
 use App\Http\Controllers\Controller;
+use App\Models\Departments;
 use App\Models\Equipments;
+use App\Models\Export_equipment_request_details;
+use App\Models\Export_equipment_requests;
+use App\Models\Exports;
 use App\Models\Import_equipment_request_details;
 use App\Models\Import_equipment_requests;
 use App\Models\Receipts;
@@ -124,7 +128,7 @@ class EquipmentRequestController extends Controller
 
                 $this->callModel::whereIn('code', $request->import_reqest_codes)->delete();
 
-                toastr()->success('Xóa thành công');
+                toastr()->success('Hủy thành công');
 
                 return redirect()->back();
             }
@@ -383,7 +387,7 @@ class EquipmentRequestController extends Controller
                     [
                         'quantity' => $equipment['quantity'],
                         'status' => $record->status,
-                        'created_at' => $record->request_date,
+                        'created_at' => now(),
                         'updated_at' => now()
                     ]
                 );
@@ -397,45 +401,401 @@ class EquipmentRequestController extends Controller
 
     // Xuất
 
-    public function export_equipment_request()
+    public function export_equipment_request(Request $request)
     {
         $title = 'Yêu Cầu Xuất Kho';
 
-        return view("{$this->route}.export_equipment_request.index", compact('title'));
+        $AllDepartment = Departments::orderBy('created_at', 'DESC')->get();
+
+        $AllUser = Users::orderBy('created_at', 'DESC')->get();
+
+        $AllWarehouseExportRequest = Export_equipment_requests::with(['departments', 'users', 'export_equipment_request_details'])
+            ->orderBy('request_date', 'DESC')
+            ->whereNull('deleted_at');
+
+        if (isset($request->dpm)) {
+            $AllWarehouseExportRequest = $AllWarehouseExportRequest->where("department_code", $request->dpm);
+        }
+
+        if (isset($request->us)) {
+            $AllWarehouseExportRequest = $AllWarehouseExportRequest->where("user_code", $request->us);
+        }
+
+        if (isset($request->stt)) {
+            if ($request->stt == 2) {
+
+                $AllWarehouseExportRequest = $AllWarehouseExportRequest
+                    ->where(function ($query) {
+                        $query->where('status', 0)
+                            ->orWhere('status', 3);
+                    })
+                    ->where("required_date", '<', now());
+            } elseif ($request->stt == 3) {
+
+                $AllWarehouseExportRequest = $AllWarehouseExportRequest->where("status", 3)
+                    ->where("required_date", '>', now())
+                    ->where('user_code', session('user_code'));
+            } elseif ($request->stt == 0) {
+
+                $AllWarehouseExportRequest = $AllWarehouseExportRequest->where("status", 0)
+                    ->where("required_date", '>', now());
+            } elseif ($request->stt == 4) {
+
+                $AllWarehouseExportRequest = $AllWarehouseExportRequest->where("status", 4);
+            } elseif ($request->stt == 5) {
+
+                $AllWarehouseExportRequest = $AllWarehouseExportRequest->where("status", 5);
+            } else {
+
+                $AllWarehouseExportRequest = $AllWarehouseExportRequest->where("status", 1);
+            }
+        }
+
+        if (isset($request->kw)) {
+
+            $AllWarehouseExportRequest = $AllWarehouseExportRequest->where(function ($query) use ($request) {
+                $query->where('code', 'like', '%' . $request->kw . '%');
+            });
+        }
+
+        $AllWarehouseExportRequest = $AllWarehouseExportRequest->paginate(10);
+
+        if (!empty($request->save_status)) {
+            $record = Export_equipment_requests::where('code', $request->save_status)
+                ->update([
+                    'status' => 0,
+                ]);
+
+            toastr()->success('Phiếu tạm đã được tạo và đang ở trạng thái chờ duyệt');
+
+            return redirect()->back();
+        }
+
+        if (!empty($request->delete_request)) {
+            Export_equipment_requests::where('code', $request->delete_request)
+                ->delete();
+
+            toastr()->success('Đã hủy yêu cầu xuất kho');
+
+            return redirect()->back();
+        }
+
+        if (!empty($request->browse_request)) {
+            Export_equipment_requests::where('code', $request->browse_request)
+                ->where('status', 0)
+                ->update([
+                    'status' => 1,
+                ]);
+
+            Export_equipment_request_details::where('export_request_code', $request->browse_request)
+                ->update(['status' => 1]);
+
+            toastr()->success('Đã duyệt phiếu yêu cầu mua hàng');
+
+            return redirect()->back();
+        }
+
+        if (!empty($request->export_reqest_codes)) {
+
+            if ($request->action_type === 'browse') {
+
+                Export_equipment_requests::whereIn('code', $request->export_reqest_codes)->where('status', 0)->update(['status' => 1]);
+
+                Export_equipment_request_details::whereIn('export_request_code', $request->export_reqest_codes)
+                    ->update(['status' => 1]);
+
+                toastr()->success('Duyệt phiếu chờ thành công');
+
+                return redirect()->back();
+            } elseif ($request->action_type === 'delete') {
+
+                Export_equipment_requests::whereIn('code', $request->export_reqest_codes)->delete();
+
+                toastr()->success('Hủy thành công');
+
+                return redirect()->back();
+            }
+        }
+
+        return view("{$this->route}.export_equipment_request.index", compact('title', 'AllWarehouseExportRequest', 'AllDepartment', 'AllUser'));
     }
 
-    public function export_equipment_request_trash()
+    public function export_equipment_request_trash(Request $request)
     {
         $title = 'Yêu Cầu Xuất Kho';
 
-        return view("{$this->route}.export_equipment_request.trash", compact('title'));
+        $AllWarehouseExportRequestTrash = Export_equipment_requests::with(['departments', 'users', 'export_equipment_request_details'])
+            ->orderBy('deleted_at', 'DESC')
+            ->onlyTrashed()
+            ->paginate(10);
+
+        if (!empty($request->delete_request)) {
+            Export_equipment_requests::where('code', $request->delete_request)
+                ->forceDelete();
+
+            toastr()->success('Đã xóa vĩnh viễn yêu cầu xuất kho');
+
+            return redirect()->back();
+        }
+
+        if (!empty($request->restore_request)) {
+            Export_equipment_requests::where('code', $request->restore_request)
+                ->restore();
+
+            toastr()->success('Đã khôi phục yêu cầu xuất kho');
+
+            return redirect()->back();
+        }
+
+        if (!empty($request->export_reqest_codes)) {
+
+            if ($request->action_type === 'restore') {
+
+                Export_equipment_requests::whereIn('code', $request->export_reqest_codes)->restore();
+
+                toastr()->success('Khôi phục thành công');
+
+                return redirect()->back();
+            } elseif ($request->action_type === 'delete') {
+
+                Export_equipment_requests::whereIn('code', $request->export_reqest_codes)->forceDelete();
+
+                toastr()->success('Xóa vĩnh viễn thành công');
+
+                return redirect()->back();
+            }
+        }
+
+        return view("{$this->route}.export_equipment_request.trash", compact('title', 'AllWarehouseExportRequestTrash'));
     }
 
-    public function create_export_equipment_request()
+    public function create_export_equipment_request(Request $request)
     {
         $title = 'Yêu Cầu Xuất Kho';
-
-        $title_form = 'Tạo Phiếu Yêu Cầu Xuất Kho';
 
         $action = 'create';
 
-        return view("{$this->route}.export_equipment_request.form", compact('title', 'title_form', 'action'));
+        $AllDepartment = Departments::orderBy('created_at', 'DESC')->get();
+
+        $AllEquipment = Equipments::orderBy('created_at', 'DESC')->get();
+
+        if (!empty($request->name) && !empty($request->location)) {
+            $department = Departments::create([
+                'code' => 'PB' . $this->generateRandomString(8),
+                'name' => $request->name,
+                'location' => $request->location,
+            ]);
+
+            if ($department) {
+                return response()->json([
+                    'success' => true,
+                    'code' => $department->code,
+                    'name' => $department->name,
+                    'location' => $department->location,
+                ]);
+            }
+        }
+
+        if (!empty($request->equipment) && !empty($request->quantity)) {
+            $equipment = Equipments::where('code', $request->equipment)->first();
+
+            if ($equipment) {
+                return response()->json([
+                    'success' => true,
+                    'equipment_name' => $equipment->name,
+                    'inventory' => $equipment->inventories->sum('current_quantity'),
+                    'unit' => $equipment->units->name,
+                    'quantity' => $request->quantity,
+                    'equipment_code' => $equipment->code,
+                ]);
+            }
+        }
+
+        return view("{$this->route}.export_equipment_request.form", compact('title', 'action', 'AllDepartment', 'AllEquipment'));
     }
 
-    public function store_export_equipment_request() {}
+    public function store_export_equipment_request(Request $request)
+    {
+        if (!empty($request->input('department_code')) && !empty($request->input('reason_export')) && !empty($request->input('required_date')) && !empty($request->input('equipment_list')) && !empty($request->input('exportEquipmentStatus'))) {
+            $departmentCode = $request->input('department_code');
+            $reasonExport = $request->input('reason_export');
+            $requiredDate = $request->input('required_date');
+            $note = $request->input('note');
+            $equipmentList = json_decode($request->input('equipment_list'), true);
 
-    public function update_export_equipment_request()
+            $existingEquipment = Export_equipment_request_details::whereIn('equipment_code', array_column($equipmentList, 'equipment_code'))
+                ->where(function ($query) {
+                    $query->where('status', 0)
+                        ->orWhere('status', 3);
+                })
+                ->where('created_at', '>', now()->subDays(3))
+                ->whereHas('exportEquipmentRequests', function ($query) use ($departmentCode) {
+                    $query->where('department_code', $departmentCode);
+                })
+                ->get(['equipment_code']);
+
+            if ($existingEquipment->isNotEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Thiết bị yêu cầu xuất kho trong danh sách đã tồn tại trong lịch sử yêu cầu hoặc thùng rác, vui lòng kiểm tra lại',
+                    'list_duplicated' => $existingEquipment->pluck('equipment_code')->toArray(),
+                ]);
+            }
+
+            // Tạo yêu cầu nhập thiết bị
+            $insertExportEquipmentRequest = Export_equipment_requests::create([
+                'code' => 'YCXK' . $this->generateRandomString(6),
+                'user_code' => session('user_code'),
+                'department_code' => $departmentCode,
+                'reason_export' => $reasonExport,
+                'note' => $note ?? '',
+                'status' => $request->input('exportEquipmentStatus') == 4 ? 0 : $request->input('exportEquipmentStatus'),
+                'request_date' => now(),
+                'required_date' => $requiredDate,
+                'created_at' => now(),
+                'updated_at' => null,
+            ]);
+
+            if ($insertExportEquipmentRequest) {
+                foreach ($equipmentList as $equipment) {
+                    Export_equipment_request_details::create([
+                        'export_request_code' => $insertExportEquipmentRequest->code,
+                        'equipment_code' => $equipment['equipment_code'],
+                        'quantity' => $equipment['quantity'],
+                        'status' => $request->input('exportEquipmentStatus') == 4 ? 0 : $request->input('exportEquipmentStatus'),
+                        'created_at' => $insertExportEquipmentRequest->request_date,
+                        'updated_at' => null,
+                    ]);
+                }
+
+                return response()->json(['success' => true, 'message' => 'Đã tạo phiếu yêu cầu']);
+            }
+        }
+
+        return response()->json(['success' => false, 'message' => 'Vui lòng điền đẩy đủ các trường dữ liệu']);
+    }
+
+    public function update_export_equipment_request($code)
     {
         $title = 'Yêu Cầu Xuất Kho';
 
-        $title_form = 'Cập Nhật Phiếu Yêu Cầu Xuất Kho';
-
         $action = 'update';
 
-        return view("{$this->route}.export_equipment_request.form", compact('title', 'title_form', 'action'));
+        $AllDepartment = Departments::orderBy('created_at', 'DESC')->get();
+
+        $AllEquipment = Equipments::orderBy('created_at', 'DESC')->get();
+
+        $equipmentDetail = Export_equipment_request_details::where('export_request_code', $code);
+
+        $getList = $equipmentDetail->get();
+
+        $checkList = $equipmentDetail->pluck('equipment_code')->toArray();
+
+        $editForm = Export_equipment_requests::with(['departments', 'users', 'export_equipment_request_details'])
+            ->where('code', $code)
+            ->whereNull('deleted_at')
+            ->first();
+
+        return view("{$this->route}.export_equipment_request.form", compact('title', 'action', 'AllEquipment', 'AllDepartment', 'editForm', 'getList', 'checkList'));
     }
 
-    public function edit_export_equipment_request() {}
+    public function edit_export_equipment_request(Request $request, $code)
+    {
+        if (!empty($request->input('department_code')) && !empty($request->input('reason_export')) && !empty($request->input('required_date')) && !empty($request->input('equipment_list')) && !empty($request->input('exportEquipmentStatus'))) {
+            $departmentCode = $request->input('department_code');
+            $reasonExport = $request->input('reason_export');
+            $requiredDate = $request->input('required_date');
+            $note = $request->input('note');
+            $equipmentList = json_decode($request->input('equipment_list'), true);
+
+            $existingEquipment = Export_equipment_request_details::whereIn('equipment_code', array_column($equipmentList, 'equipment_code'))
+                ->where('export_request_code', '!=', $code)
+                ->where(function ($query) {
+                    $query->where('status', 0)
+                        ->orWhere('status', 3);
+                })
+                ->where('created_at', '>', now()->subDays(3))
+                ->whereHas('exportEquipmentRequests', function ($query) use ($departmentCode) {
+                    $query->where('department_code', $departmentCode);
+                })
+                ->get(['equipment_code']);
+
+            if ($existingEquipment->isNotEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Thiết bị yêu cầu xuất kho trong danh sách đã tồn tại trong lịch sử yêu cầu hoặc thùng rác, vui lòng kiểm tra lại',
+                    'list_duplicated' => $existingEquipment->pluck('equipment_code')->toArray(),
+                ]);
+            }
+
+            // Tìm các bản ghi không có mã trong $equipmentList và thuộc về export_request_code
+            $equipmentToDelete = Export_equipment_request_details::whereNotIn('equipment_code', array_column($equipmentList, 'equipment_code'))
+                ->where('export_request_code', $code)
+                ->get();
+
+            // Xóa các bản ghi tìm thấy
+            if ($equipmentToDelete->isNotEmpty()) {
+                $equipmentToDelete->each(function ($item) {
+                    $item->forceDelete();
+                });
+            }
+
+            $existingRequest = Export_equipment_requests::where('code', $code);
+
+            $record = $existingRequest->first();
+
+            $existingRequest->update([
+                'department_code' => $departmentCode,
+                'reason_export' => $reasonExport,
+                'note' => $note ?? $record->note,
+                'request_date' => now(),
+                'required_date' => $requiredDate,
+                'updated_at' => now(),
+            ]);
+
+            foreach ($equipmentList as $equipment) {
+                Export_equipment_request_details::updateOrCreate(
+                    [
+                        'export_request_code' => $code,
+                        'equipment_code' => $equipment['equipment_code']
+                    ],
+                    [
+                        'quantity' => $equipment['quantity'],
+                        'status' => $record->status,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+
+            return response()->json(['success' => true, 'message' => 'Cập nhật phiếu yêu cầu xuất kho thành công']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Vui lòng điền đẩy đủ các trường dữ liệu']);
+    }
+
+    public function delete_department($code)
+    {
+        $importExists = Export_equipment_requests::where('department_code', $code)->exists();
+        $departmentExists = Exports::where('department_code', $code)->exists();
+
+        if ($importExists || $departmentExists) {
+            return response()->json([
+                'success' => false,
+                'messages' => 'Không thể xóa phòng ban này vì đã có giao dịch trong hệ thống'
+            ]);
+        }
+
+        $department = Departments::where('code', $code)->whereNull('deleted_at')->first();
+
+        $department->delete();
+
+        return response()->json([
+            'success' => true,
+            'department' => $department,
+            'messages' => 'Đã xóa phòng ban'
+        ]);
+    }
 
     function generateRandomString($length = 9)
     {
