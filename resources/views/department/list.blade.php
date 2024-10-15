@@ -37,7 +37,7 @@
             <form action="" method="">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <input type="search" name="kw" placeholder="Tìm Kiếm Mã, Tên, Email Người Dùng.."
+                        <input type="search" name="kw" placeholder="Tìm kiếm phòng ban.."
                             class="mt-2 mb-2 form-control form-control-sm rounded-pill border border-success w-100"
                             value="{{ request()->kw }}">
                     </div>
@@ -51,11 +51,11 @@
                 </div>
             </form>
         </div>
-        <form action="{{ route('supplier.list') }} " method="POST">
+        <form action="{{ route('department.index') }} " method="POST">
             @csrf
             <div class="card-body py-3">
                 <div class="table-responsive rounded">
-                    <table class="table table-hover table-bordered align-middle">
+                    <table class="table align-middle gs-0 gy-4">
                         <thead class="{{ $department->count() == 0 ? 'd-none' : '' }}">
                             <tr class="fw-bolder bg-success">
                                 <th class="ps-3"><input type="checkbox" id="selectAll" /></th>
@@ -65,18 +65,18 @@
                                 <th style="width: 20%;" class="pe-3 text-center">Hành Động</th>
                             </tr>
                         </thead>
-                        <tbody id="supplierTableBody">
+                        <tbody>
                             @forelse ($department as $item)
-                                <tr class="text-center hover-table pointer">
+                                <tr class="hover-table pointer">
                                     <td class="text-xl-start">
-                                        <input type="checkbox" class="row-checkbox" name="supplier_codes[]"
+                                        <input type="checkbox" class="row-checkbox" name="department_codes[]"
                                             value="{{ $item->code }}" />
                                     </td>
                                     <td class="text-xl-start text-truncate" style="max-width: 150px;">
                                         {{ $item->name }}
                                     </td>
                                     <td class="text-xl-start text-truncate" style="max-width: 150px;">
-                                        {{ $item->description }}
+                                        {{ $item->description ?? 'Không Có' }}
                                     </td>
                                     <td class="text-xl-start text-truncate" style="max-width: 150px;">
                                         {{ $item->location }}
@@ -172,9 +172,9 @@
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('supplier.list') }}" method="POST">
+                    <form action="{{ route('department.index') }}" method="POST">
                         @csrf
-                        <input type="hidden" name="supplier_code_delete" value="{{ $item->code }}">
+                        <input type="hidden" name="department_code_delete" value="{{ $item->code }}">
                         <div class="modal-body pb-0 text-center">
                             <p class="text-danger mb-4">Xóa Phòng Ban Này?</p>
                         </div>

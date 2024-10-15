@@ -191,13 +191,13 @@ return [
             'user_role' => [0, 1],
             'title' => 'Phòng ban',
             'icon' => 'fas fa-building',
-            'route' => ['department.index', 'department.create', 'department.edit'],
+            'route' => ['department.index', 'department.add', 'department.edit'],
             'subModule' => [
                 [
                     'title' => 'Danh Sách',
                     'route' => 'department.index',
                     'route_action' => [
-                        'department.create',
+                        'department.add',
                         'department.edit',
                     ],
                     'icon' => 'fas fa-check-square',

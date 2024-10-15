@@ -218,14 +218,14 @@
             <div class="col-md-12 ps-10">
                 <div class="card border-0 shadow bg-white rounded-3">
                     <div class="table-responsive rounded bg-white shadow">
-                        <table class="table table-bordered table-striped mb-0" id="table_list_equipment">
+                        <table class="table align-middle table-striped gs-0 gy-4" id="table_list_equipment">
                             <thead class="table-dark">
                                 <tr class="">
                                     @if (!empty($getListIERD))
                                         <th style="width: 25%;" class="ps-5">Thiết bị</th>
-                                        <th style="width: 17%;">Số lô</th>
-                                        <th style="width: 17%;">Giá</th>
-                                        <th style="width: 8%;">SL</th>
+                                        <th style="width: 16%;">Số lô</th>
+                                        <th style="width: 16%;">Giá</th>
+                                        <th style="width: 10%;">SL</th>
                                         <th style="width: 1%;">NSX</th>
                                         <th style="width: 1%;">HSD</th>
                                         <th style="width: 9%;">CK</th>
@@ -276,9 +276,10 @@
                                             </td>
                                             <td class="">
                                                 <div class="d-flex align-items-center">
-                                                    <input type="text"
+                                                    <input type="number"
                                                         id="quantity_change_{{ $item->equipment_code }}"
-                                                        value="{{ $item->quantity }}" disabled
+                                                        value="{{ $item->quantity }}" max="{{ $item->quantity }}"
+                                                        oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom(); showNote('{{ $item->equipment_code }}', '{{ $item->equipments->name }}', '{{ $item->quantity }}');"
                                                         class="form-control form-control-sm border border-success rounded-pill">
                                                 </div>
                                             </td>
@@ -1861,5 +1862,24 @@
                     });
             }, 500);
         });
+
+        let notes = {}; // Object để lưu các thiết bị đã thay đổi số lượng và chênh lệch
+
+        function showNote(equipment_code, equipment_name, equipment_quantity) {
+            const quantity = document.getElementById(`quantity_change_${equipment_code}`).value;
+            let quantityShowNote = equipment_quantity - quantity;
+
+            if (quantityShowNote === 0) {
+                delete notes[equipment_name];
+            } else {
+                notes[equipment_name] = quantityShowNote;
+            }
+
+            let noteText = Object.keys(notes).map(name => {
+                return `Số lượng của "${name}" chênh lệch "-${notes[name]}" so với yêu cầu`;
+            }).join(', ');
+
+            document.getElementById('note').innerText = noteText;
+        }
     </script>
 @endsection

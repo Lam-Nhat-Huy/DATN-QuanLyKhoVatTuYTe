@@ -6,91 +6,122 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Department\CreateDepartmentRequest;
 use App\Http\Requests\Department\UpdateDepartmentRequest;
 use App\Models\Departments;
+use App\Models\Export_equipment_requests;
 use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
     protected $title = 'Phòng Ban';
+
     protected $route = 'department';
-    protected $DepartmentModel = 'Department';
+
+    protected $departmentModal;
+
     public function __construct()
     {
-        $this->DepartmentModel = new Departments();
+        $this->departmentModal = new Departments();
     }
     public function index(Request $request)
-{
-    $title = $this->title;
-
-    // Khởi tạo truy vấn cơ sở dữ liệu
-    $allDepartment = $this->DepartmentModel::orderBy('created_at', 'DESC')->whereNull('deleted_at');
-
-    // Áp dụng các điều kiện lọc
-    if ($request->filled('name')) {
-        $allDepartment = $allDepartment->where("name", $request->name);
-    }
-
-    if ($request->filled('location')) {
-        $allDepartment = $allDepartment->where("location", $request->location);
-    }
-
-    if ($request->filled('keyword')) {
-        $allDepartment = $allDepartment->where(function ($query) use ($request) {
-            $query->where('name', 'like', '%' . $request->keyword . '%')
-                  ->orWhere('location', 'like', '%' . $request->keyword . '%');
-        });
-    }
-
-    // Phân trang và lấy danh sách phòng ban
-    $department = $allDepartment->paginate(10);
-
-    return view("{$this->route}.list", compact("department", 'title'));
-}
-public function trash(Request $request)
     {
-        $title = 'Nhà Cung Cấp';
+        $title = $this->title;
 
-        if (isset($request->department_code)) {
+        $allDepartment = $this->departmentModal::orderBy('created_at', 'DESC')->whereNull('deleted_at');
+
+        if (isset($request->kw)) {
+            $allDepartment = $allDepartment->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->kw . '%')
+                    ->orWhere('location', 'like', '%' . $request->kw . '%')
+                    ->orWhere('description', 'like', '%' . $request->kw . '%');
+            });
+        }
+
+        $department = $allDepartment->paginate(10);
+
+        if (isset($request->department_codes)) {
+
+            $existingDepartments = Export_equipment_requests::whereIn('department_code', $request->department_codes)
+                ->pluck('department_code')
+                ->toArray();
+
+            $nonExistingDepartments = array_diff($request->department_codes, $existingDepartments);
+
+            if (!empty($nonExistingDepartments)) {
+
+                $this->departmentModal::whereIn('code', $nonExistingDepartments)->delete();
+
+                toastr()->success('Đã xóa phòng ban không tồn tại trong giao dịch của hệ thống.');
+
+                return redirect()->back();
+            }
+
+            toastr()->error('Không thể xóa phòng ban vì đã tồn tại trong giao dịch của hệ thống.');
+
+            return redirect()->back();
+        }
+
+        if (isset($request->department_code_delete)) {
+
+            $existsDepartment = Export_equipment_requests::where('department_code', $request->department_code_delete)->first();
+
+            if ($existsDepartment) {
+
+                toastr()->error('Phòng ban này tồn tại giao dịch trong hệ thống, không thể xóa');
+
+                return redirect()->back();
+            }
+
+            $this->departmentModal::where('code', $request->department_code_delete)->delete();
+
+            toastr()->success('Xóa thành công');
+
+            return redirect()->back();
+        }
+
+        return view("{$this->route}.list", compact("department", 'title'));
+    }
+    public function trash(Request $request)
+    {
+        $title = 'Phòng Ban';
+
+        if (isset($request->department_codes)) {
             if ($request->action_type === 'restore') {
-                $this->DepartmentModel::whereIn('code', $request->department_code)->restore();
+                $this->departmentModal::whereIn('code', $request->department_codes)->restore();
                 toastr()->success('Khôi phục thành công');
             } elseif ($request->action_type === 'delete') {
-                $this->DepartmentModel::whereIn('code', $request->department_code)->forceDelete();
+                $this->departmentModal::whereIn('code', $request->department_codes)->forceDelete();
                 toastr()->success('Xóa vĩnh viễn thành công');
             }
             return redirect()->back();
         }
 
         if (isset($request->department_code_restore)) {
-            $this->DepartmentModel::where('code', $request->department_code_restore)->restore();
+            $this->departmentModal::where('code', $request->department_code_restore)->restore();
             toastr()->success('Khôi phục thành công');
             return redirect()->back();
         }
 
         if (isset($request->department_code_delete)) {
-            $this->DepartmentModel::where('code', $request->department_code_delete)->forceDelete();
+            $this->departmentModal::where('code', $request->department_code_delete)->forceDelete();
             toastr()->success('Xóa vĩnh viễn thành công');
             return redirect()->back();
         }
 
-        $allDepartmentTrash = $this->DepartmentModel::onlyTrashed()->orderBy('deleted_at', 'DESC')->paginate(10);
+        $allDepartmentTrash = $this->departmentModal::onlyTrashed()->orderBy('deleted_at', 'DESC')->paginate(10);
 
         return view("{$this->route}.trash", compact('title', 'allDepartmentTrash'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function add()
     {
-        $title = 'Phong Ban';
+        $title = 'Phòng Ban';
 
-        $title_form = 'Thêm Phong Ban';
+        $title_form = 'Thêm Phòng Ban';
 
         $config = 'create';
 
         return view("{$this->route}.form", compact('title', 'title_form', 'config'));
     }
+
     public function create(CreateDepartmentRequest $request)
     {
         $data = $request->validated();
@@ -107,15 +138,16 @@ public function trash(Request $request)
 
         $data['updated_at'] = null;
 
-        $this->DepartmentModel::create($data);
+        $this->departmentModal::create($data);
 
         toastr()->success('Thêm thành công');
 
         return redirect()->route('department.index');
     }
+
     public function edit(Request $request, $code)
     {
-        $firstDepartment = $this->DepartmentModel::where('code', $code)->first();
+        $firstDepartment = $this->departmentModal::where('code', $code)->first();
         if (!$firstDepartment) {
             toastr()->error('Không tìm thấy Phong Ban với mã ' . $code);
             return redirect()->route('department.index');
@@ -146,12 +178,12 @@ public function trash(Request $request)
 
         $data['updated_at'] = now();
 
-        $record = $this->DepartmentModel::where('code', session('department_code'));
+        $record = $this->departmentModal::where('code', session('department_code'));
         if ($record) {
             $record->update($data);
         }
 
-        $nameDepartment = $this->DepartmentModel::where('code', session('department_code'))->first();
+        $nameDepartment = $this->departmentModal::where('code', session('department_code'))->first();
 
         $nameDepartment = $nameDepartment->name;
 
@@ -164,7 +196,7 @@ public function trash(Request $request)
 
     function generateRandomString($length = 9)
     {
-        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters = '0123456789';
 
         $charactersLength = strlen($characters);
 
