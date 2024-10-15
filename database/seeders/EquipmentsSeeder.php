@@ -23,7 +23,7 @@ class EquipmentsSeeder extends Seeder
                 'deleted_at' => null,
             ],
             [
-                'code' => 'E002',
+                'code' => 'EQ85737523',
                 'name' => 'Máy đo nồng độ oxy máu và nhịp tim Jumper JPD-500D (LED)',
                 'equipment_type_code' => 'ET002',
                 'unit_code' => 'UNIT010',
@@ -35,7 +35,7 @@ class EquipmentsSeeder extends Seeder
                 'deleted_at' => null,
             ],
             [
-                'code' => 'E003',
+                'code' => 'EQ85737543',
                 'name' => 'Máy đo huyết áp bắp tay Jumper JPD-HA210',
                 'equipment_type_code' => 'ET003',
                 'unit_code' => 'UNIT007',
@@ -47,7 +47,7 @@ class EquipmentsSeeder extends Seeder
                 'deleted_at' => null,
             ],
             [
-                'code' => 'E004',
+                'code' => 'EQ85737928',
                 'name' => 'Nhiệt kế hồng ngoại không tiếp xúc Jumper FR202',
                 'equipment_type_code' => 'ET004',
                 'unit_code' => 'UNIT001',
@@ -59,7 +59,7 @@ class EquipmentsSeeder extends Seeder
                 'deleted_at' => null,
             ],
             [
-                'code' => 'E005',
+                'code' => 'EQ85737643',
                 'name' => 'Cân điện tử Beurer GS10',
                 'equipment_type_code' => 'ET001',
                 'unit_code' => 'UNIT001',
@@ -71,7 +71,7 @@ class EquipmentsSeeder extends Seeder
                 'deleted_at' => null,
             ],
             [
-                'code' => 'E006',
+                'code' => 'EQ85737644',
                 'name' => 'Máy đo huyết áp cổ tay OMRON 6121',
                 'equipment_type_code' => 'ET001',
                 'unit_code' => 'UNIT001',
@@ -83,7 +83,7 @@ class EquipmentsSeeder extends Seeder
                 'deleted_at' => null,
             ],
             [
-                'code' => 'E007',
+                'code' => 'EQ85737614',
                 'name' => 'MN-MDHA8712 - Máy đo huyết áp HEM-8712',
                 'equipment_type_code' => 'ET001',
                 'unit_code' => 'UNIT001',
@@ -95,7 +95,7 @@ class EquipmentsSeeder extends Seeder
                 'deleted_at' => null,
             ],
             [
-                'code' => 'E008',
+                'code' => 'EQ85737691',
                 'name' => 'GIƯỜNG Y TẾ ĐA CHỨC NĂNG A07 (Có xe lăn tách rời)',
                 'equipment_type_code' => 'ET001',
                 'unit_code' => 'UNIT001',
@@ -107,7 +107,7 @@ class EquipmentsSeeder extends Seeder
                 'deleted_at' => null,
             ],
             [
-                'code' => 'E009',
+                'code' => 'EQ85737890',
                 'name' => 'Giường y tế đa chức năng, model: D01-S',
                 'equipment_type_code' => 'ET001',
                 'unit_code' => 'UNIT001',
@@ -119,7 +119,7 @@ class EquipmentsSeeder extends Seeder
                 'deleted_at' => null,
             ],
             [
-                'code' => 'E010',
+                'code' => 'EQ85737876',
                 'name' => 'TỦ Y TẾ ĐẦU GIƯỜNG - D25',
                 'equipment_type_code' => 'ET001',
                 'unit_code' => 'UNIT001',
@@ -131,7 +131,7 @@ class EquipmentsSeeder extends Seeder
                 'deleted_at' => null,
             ],
             [
-                'code' => 'E011',
+                'code' => 'EQ857376421',
                 'name' => 'MN-KWD808I- MÁY CHÂM CỨU MODEL KWD-808-I (Yingdi – Trung Quốc)',
                 'equipment_type_code' => 'ET001',
                 'unit_code' => 'UNIT001',
@@ -143,7 +143,7 @@ class EquipmentsSeeder extends Seeder
                 'deleted_at' => null,
             ],
             [
-                'code' => 'E012',
+                'code' => 'EQ85737618',
                 'name' => 'Máy hiệu ứng từ YF-T08A',
                 'equipment_type_code' => 'ET001',
                 'unit_code' => 'UNIT001',
