@@ -13,10 +13,11 @@ return new class extends Migration
             $table->char('export_request_code', 20)->nullable();
             $table->char('equipment_code', 20)->nullable();
             $table->integer('quantity');
+            $table->boolean('status')->default(false);
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('export_request_code')->references('code')->on('export_equipment_requests')->onDelete('set null');
+            $table->foreign('export_request_code')->references('code')->on('export_equipment_requests')->onDelete('cascade');
             $table->foreign('equipment_code')->references('code')->on('equipments')->onDelete('set null');
         });
     }

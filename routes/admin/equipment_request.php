@@ -21,9 +21,13 @@ Route::prefix('equipment_request')->middleware(CheckLogin::class)->name('equipme
 
     // Xuất
     Route::get('/export', [EquipmentRequestController::class, 'export_equipment_request'])->name('export');
+    Route::post('/export', [EquipmentRequestController::class, 'export_equipment_request'])->name('export');
     Route::get('/export_trash', [EquipmentRequestController::class, 'export_equipment_request_trash'])->name('export_trash');
+    Route::post('/export_trash', [EquipmentRequestController::class, 'export_equipment_request_trash'])->name('export_trash');
     Route::get('/create_export', [EquipmentRequestController::class, 'create_export_equipment_request'])->name('create_export');
+    Route::post('/create_export', [EquipmentRequestController::class, 'create_export_equipment_request'])->name('create_export');
+    Route::post('/delete_department/{code}', [EquipmentRequestController::class, 'delete_department'])->name('delete_department');
     Route::post('/store_export', [EquipmentRequestController::class, 'store_export_equipment_request'])->name('store_export');
-    Route::get('/update_export', [EquipmentRequestController::class, 'update_export_equipment_request'])->name('update_export');
-    Route::post('/edit_export', [EquipmentRequestController::class, 'edit_export_equipment_request'])->name('edit_export');
+    Route::get('/update_export/{code}', [EquipmentRequestController::class, 'update_export_equipment_request'])->name('update_export');
+    Route::post('/edit_export/{code}', [EquipmentRequestController::class, 'edit_export_equipment_request'])->name('edit_export');
 });

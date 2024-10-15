@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->boolean('status')->default(false);
             $table->timestamp('request_date')->nullable();
+            $table->timestamp('required_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
