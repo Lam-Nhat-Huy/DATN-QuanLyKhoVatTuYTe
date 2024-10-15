@@ -218,7 +218,7 @@
                                                 <input type="checkbox" name="import_reqest_codes[]"
                                                     value="{{ $item->code }}" class="row-checkbox" />
                                             @elseif ($item->status == 1 && !empty($checkExistsReceipt == 0))
-                                                <i class="fa-solid fa-circle-exclamation"
+                                                <i class="fa-solid fa-circle-exclamation text-danger"
                                                     title="Phiếu Yêu Cầu Nhập Chưa Được Tạo" style="font-size: 13px;"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#exclamation_{{ $item->code }}"></i>
@@ -780,16 +780,16 @@
             tabindex="-1" aria-labelledby="xclamationModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow">
-                    <div class="modal-header bg-dark">
-                        <h5 class="modal-title text-warning" id="xclamationModalLabel"><i
-                                class="fa-solid fa-circle-exclamation text-warning"></i> Lưu ý
+                    <div class="modal-header bg-danger">
+                        <h5 class="modal-title text-white" id="xclamationModalLabel"><i
+                                class="fa-solid fa-circle-exclamation text-white"></i> Lưu ý
                         </h5>
                     </div>
                     <div class="modal-body pb-0 text-center">
                         <p class="text-dark mb-4">Phiếu Yêu Cầu Mua Hàng Này Chưa Được Tạo Phiếu Nhập</p>
                     </div>
                     <div class="modal-footer justify-content-center border-0">
-                        <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
+                        <button type="button" class="btn rounded-pill btn-sm btn-danger px-4"
                             data-bs-dismiss="modal">Đóng</button>
                     </div>
                 </div>
