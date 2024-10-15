@@ -51,17 +51,26 @@ class EquipmentRequestController extends Controller
         if (isset($request->stt)) {
             if ($request->stt == 2) {
 
-                $AllEquipmentRequest = $AllEquipmentRequest->where("status", 0)
-                    ->where("request_date", '<=', now()->subDays(3));
+                $AllEquipmentRequest = $AllEquipmentRequest
+                    ->where(function ($query) {
+                        $query->where('status', 0)
+                            ->orWhere('status', 3);
+                    })
+                    ->where("request_date", '<', now()->subDays(3));
             } elseif ($request->stt == 3) {
 
                 $AllEquipmentRequest = $AllEquipmentRequest->where("status", 3)
-                    ->where("request_date", '>', now()->subDays(3))
-                    ->where('user_code', session('user_code'));
+                    ->where("request_date", '>', now()->subDays(3));
             } elseif ($request->stt == 0) {
 
                 $AllEquipmentRequest = $AllEquipmentRequest->where("status", 0)
                     ->where("request_date", '>', now()->subDays(3));
+            } elseif ($request->stt == 4) {
+
+                $AllEquipmentRequest = $AllEquipmentRequest->where("status", 4);
+            } elseif ($request->stt == 5) {
+
+                $AllEquipmentRequest = $AllEquipmentRequest->where("status", 5);
             } else {
 
                 $AllEquipmentRequest = $AllEquipmentRequest->where("status", 1);
@@ -92,7 +101,7 @@ class EquipmentRequestController extends Controller
             $this->callModel::where('code', $request->delete_request)
                 ->delete();
 
-            toastr()->success('Đã xóa yêu cầu mua hàng');
+            toastr()->success('Đã hủy yêu cầu mua hàng');
 
             return redirect()->back();
         }
@@ -433,8 +442,7 @@ class EquipmentRequestController extends Controller
             } elseif ($request->stt == 3) {
 
                 $AllWarehouseExportRequest = $AllWarehouseExportRequest->where("status", 3)
-                    ->where("required_date", '>', now())
-                    ->where('user_code', session('user_code'));
+                    ->where("required_date", '>', now());
             } elseif ($request->stt == 0) {
 
                 $AllWarehouseExportRequest = $AllWarehouseExportRequest->where("status", 0)

@@ -125,7 +125,7 @@
                                         @if ($item['status'] == 0)
                                             <span class="text-danger">Không hoạt động</span>
                                         @elseif($item['status'] == 1)
-                                            <span class="text-success">Đang hoạt động</span>
+                                            <span class="text-success">Hoạt động</span>
                                         @endif
                                     </td>
                                     <td class="text-center" data-bs-toggle="collapse"

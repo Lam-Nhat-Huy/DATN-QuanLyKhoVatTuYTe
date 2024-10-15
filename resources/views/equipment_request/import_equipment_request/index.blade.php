@@ -53,15 +53,16 @@
                     <select name="stt" class="mt-2 mb-2 form-select form-select-sm rounded-pill setupSelect2 w-100">
                         <option value="" {{ request()->stt == '' ? 'selected' : '' }}>--Theo Trạng Thái--</option>
                         <option value="0" {{ request()->stt == '0' ? 'selected' : '' }}>Chờ Duyệt</option>
-                        <option value="1" {{ request()->stt == '1' ? 'selected' : '' }}>Đã Duyệt</option>
+                        <option value="1" {{ request()->stt == '1' ? 'selected' : '' }}>Đang Nhập Kho</option>
                         <option value="2" {{ request()->stt == '2' ? 'selected' : '' }}>Hết Hạn</option>
                         <option value="3" {{ request()->stt == '3' ? 'selected' : '' }}>Lưu Tạm</option>
+                        <option value="4" {{ request()->stt == '4' ? 'selected' : '' }}>Hoàn Thành</option>
                     </select>
                 </div>
                 <div class="col-lg-5 col-md-12 col-sm-12">
                     <div class="row align-items-center">
                         <div class="col-md-6">
-                            <input type="search" name="kw" placeholder="Tìm kiếm mã phiếu nhập, số hóa đơn.."
+                            <input type="search" name="kw" placeholder="Tìm kiếm mã phiếu nhập.."
                                 class="mt-2 mb-2 form-control form-control-sm form-control-solid rounded-pill border border-success w-100"
                                 value="{{ request()->kw }}">
                         </div>
@@ -89,8 +90,8 @@
                                     <input type="checkbox" id="selectAll" />
                                 </th>
                                 <th class="" style="width: 10%;">Mã Yêu Cầu</th>
-                                <th class="" style="width: 40%;">Nhà Cung Cấp</th>
-                                <th class="" style="width: 15%;">Người Tạo</th>
+                                <th class="" style="width: 43%;">Nhà Cung Cấp</th>
+                                <th class="" style="width: 12%;">Người Tạo</th>
                                 <th class="" style="width: 10%;">Ngày Yêu Cầu</th>
                                 <th class="text-center" style="width: 10%;">Trạng Thái</th>
                                 <th class="pe-3 text-center" style="width: 15%;">Hành Động</th>
@@ -98,86 +99,103 @@
                         </thead>
                         <tbody>
                             @forelse ($AllEquipmentRequest as $item)
-                                @php
-                                    $checkExistsReceipt = \App\Models\Receipts::where(
-                                        'receipt_no',
-                                        $item->code,
-                                    )->count();
-                                @endphp
-                                @if ($item->status == 3 && $item->user_code != session('user_code'))
-                                    <tr class="hover-table pointer">
-                                        <td>
-                                        </td>
-                                        <td>
-                                            #{{ $item->code }}
-                                        </td>
-                                        <td>
-                                            {{ $item->suppliers->name ?? 'N/A' }}
-                                        </td>
-                                        <td>
-                                            {{ $item->users->last_name . ' ' . $item->users->first_name ?? 'N/A' }}
-                                        </td>
-                                        <td>
-                                            {{ \Carbon\Carbon::parse($item->request_date)->format('d-m-Y') }}
-                                        </td>
-                                        <td class="text-center">
-                                            @if ($item['status'] == 3)
-                                                <div class="label label-temp bg-info rounded-pill text-white px-2 py-1">
-                                                    Lưu Tạm
-                                                </div>
-                                            @elseif ($item->status == 0)
-                                                <div class="label label-temp bg-danger rounded-pill text-white px-2 py-1">
-                                                    Chờ Duyệt
-                                                </div>
-                                            @elseif ($item->status == 1)
-                                                <div class="label label-final bg-success rounded-pill text-white px-2 py-1">
-                                                    Đã duyệt
-                                                </div>
-                                            @endif
-                                        </td>
-                                        <td class="text-center" data-bs-toggle="collapse"
-                                            data-bs-target="#collapse_{{ $item->code }}" aria-expanded="false"
-                                            aria-controls="collapse_{{ $item->code }}">
-                                            Chi Tiết<i class="fa fa-caret-right pointer ms-2"></i>
-                                        </td>
-                                    </tr>
+                                <tr class="hover-table pointer">
+                                    <td>
+                                        {{-- Phiếu tạm => ẩn hết, phiếu chờ duyệt thì hiện, phiếu đã duyệt chưa tạo thì hiện icon, phiếu đã duyệt tạo rồi thì ẩn --}}
+                                        @if (($item->status == 3 || $item->status == 0) && $item->user_code == session('user_code'))
+                                            <input type="checkbox" name="import_reqest_codes[]" value="{{ $item->code }}"
+                                                class="row-checkbox" />
+                                        @elseif ($item->status == 4)
+                                            <i class="fa fa-check text-success" data-bs-toggle="tooltip"
+                                                data-bs-placement="top" title="Hoàn Thành"></i>
+                                        @elseif ($item->status == 1)
+                                            <i class="fa-solid fa-circle-exclamation text-danger" style="font-size: 13px;"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Phiếu Yêu Cầu Chưa Được Nhập Kho"></i>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        #{{ $item->code }}
+                                    </td>
+                                    <td>
+                                        {{ $item->suppliers->name ?? 'N/A' }}
+                                    </td>
+                                    <td>
+                                        {{ $item->users->last_name . ' ' . $item->users->first_name ?? 'N/A' }}
+                                    </td>
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($item->request_date)->format('d-m-Y') }}
+                                    </td>
+                                    <td class="text-center">
+                                        @if (($item->status == 0 || $item->status == 3) && now()->gt(\Carbon\Carbon::parse($item->request_date)->addDays(3)))
+                                            <div class="rounded-pill px-2 py-1 text-dark bg-warning">
+                                                Hết Hạn
+                                            </div>
+                                        @elseif ($item->status == 3)
+                                            <div class="rounded-pill px-2 py-1 text-white bg-info">
+                                                Lưu Tạm
+                                            </div>
+                                        @elseif ($item->status == 0)
+                                            <div class="rounded-pill px-2 py-1 text-white bg-danger">
+                                                Chờ Duyệt
+                                            </div>
+                                        @elseif ($item->status == 1)
+                                            <div class="rounded-pill px-2 py-1 text-white bg-primary">
+                                                Đang Nhập
+                                            </div>
+                                        @elseif ($item->status == 4)
+                                            <div class="rounded-pill px-2 py-1 text-white bg-success">
+                                                Hoàn Thành
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="text-center" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse_{{ $item->code }}" aria-expanded="false"
+                                        aria-controls="collapse_{{ $item->code }}">
+                                        Chi Tiết<i class="fa fa-caret-right pointer ms-2"></i>
+                                    </td>
+                                </tr>
 
-                                    <!-- Collapse content -->
-                                    <tr>
-                                        <td class="p-0" colspan="12"
-                                            style="background-color: #fafafa; padding-top: 0 !important;">
-                                            <div class="flex-lg-row-fluid border-2 border-lg-1 collapse multi-collapse"
-                                                id="collapse_{{ $item->code }}">
+                                <!-- Collapse content -->
+                                <tr>
+                                    <td class="p-0" colspan="12"
+                                        style="background-color: #fafafa; padding-top: 0 !important;">
+                                        <div class="flex-lg-row-fluid border-2 border-lg-1 collapse multi-collapse"
+                                            id="collapse_{{ $item->code }}">
+                                            <div class="flex-lg-row-fluid border-lg-1">
                                                 <div class="card card-flush px-5" style="padding-top: 0px !important;">
                                                     <div class="card-header d-flex justify-content-between align-items-center px-2"
                                                         style="padding-top: 0 !important; padding-bottom: 0px !important;">
-                                                        <h4 class="fw-bold m-0 text-uppercase fw-bolder">Danh Sách Thiết Bị
+                                                        <h4 class="fw-bold m-0 text-uppercase fw-bolder">Danh Sách
+                                                            Thiết Bị
                                                             Yêu
                                                             Cầu
                                                         </h4>
                                                         <div class="card-toolbar">
-                                                            @if (($item->status == 0 || $item->status == 3) && \Carbon\Carbon::parse($item->request_date)->diffInDays(now()) > 3)
-                                                                <div class="rounded-pill px-2 py-1 text-white bg-warning">
+                                                            @if (($item->status == 0 || $item->status == 3) && now()->gt(\Carbon\Carbon::parse($item->request_date)->addDays(3)))
+                                                                <div class="rounded-pill px-2 py-1 text-dark bg-warning">
                                                                     Hết Hạn
                                                                 </div>
                                                             @elseif ($item->status == 3)
-                                                                <div class="rounded-pill px-2 py-1 text-white bg-info">Lưu
-                                                                    Tạm
+                                                                <div class="rounded-pill px-2 py-1 text-white bg-info">
+                                                                    Lưu Tạm
                                                                 </div>
                                                             @elseif ($item->status == 0)
                                                                 <div class="rounded-pill px-2 py-1 text-white bg-danger">
-                                                                    Chờ
-                                                                    Duyệt
+                                                                    Chờ Duyệt
                                                                 </div>
                                                             @elseif ($item->status == 1)
+                                                                <div class="rounded-pill px-2 py-1 text-white bg-primary">
+                                                                    Đang Nhập
+                                                                </div>
+                                                            @elseif ($item->status == 4)
                                                                 <div class="rounded-pill px-2 py-1 text-white bg-success">
-                                                                    Đã
-                                                                    Duyệt
+                                                                    Hoàn Thành
                                                                 </div>
                                                             @endif
                                                         </div>
                                                     </div>
-                                                    <div class="card-body px-0" style="padding-top: 0px !important">
+                                                    <div class="card-body p-0" style="padding-top: 0px !important">
                                                         <!-- Begin::Receipt Items (Right column) -->
                                                         <div class="col-md-12">
                                                             <div class="table-responsive rounded">
@@ -195,7 +213,8 @@
                                                                         @foreach ($item->import_equipment_request_details as $key => $detail)
                                                                             <tr class="text-center">
                                                                                 <td>{{ $key + 1 }}</td>
-                                                                                <td>{{ $detail->equipments->name }}</td>
+                                                                                <td>{{ $detail->equipments->name }}
+                                                                                </td>
                                                                                 <td>{{ $detail->equipments->units->name }}
                                                                                 </td>
                                                                                 <td>{{ $detail->quantity }}</td>
@@ -208,381 +227,256 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </td>
-                                    </tr>
-                                @else
-                                    <tr class="hover-table pointer">
-                                        <td>
-                                            {{-- Phiếu tạm => ẩn hết, phiếu chờ duyệt thì hiện, phiếu đã duyệt chưa tạo thì hiện icon, phiếu đã duyệt tạo rồi thì ẩn --}}
-                                            @if ($item->status == 3 || $item->status == 0)
-                                                <input type="checkbox" name="import_reqest_codes[]"
-                                                    value="{{ $item->code }}" class="row-checkbox" />
-                                            @elseif ($item->status == 1 && !empty($checkExistsReceipt == 0))
-                                                <i class="fa-solid fa-circle-exclamation text-danger"
-                                                    title="Phiếu Yêu Cầu Nhập Chưa Được Tạo" style="font-size: 13px;"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#exclamation_{{ $item->code }}"></i>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            #{{ $item->code }}
-                                        </td>
-                                        <td>
-                                            {{ $item->suppliers->name ?? 'N/A' }}
-                                        </td>
-                                        <td>
-                                            {{ $item->users->last_name . ' ' . $item->users->first_name ?? 'N/A' }}
-                                        </td>
-                                        <td>
-                                            {{ \Carbon\Carbon::parse($item->request_date)->format('d-m-Y') }}
-                                        </td>
-                                        <td class="text-center">
-                                            @if ($item['status'] == 3)
-                                                <div class="label label-temp bg-info rounded-pill text-white px-2 py-1">
-                                                    Lưu Tạm
-                                                </div>
-                                            @elseif ($item->status == 0)
-                                                <div class="label label-temp bg-danger rounded-pill text-white px-2 py-1">
-                                                    Chờ Duyệt
-                                                </div>
-                                            @elseif ($item->status == 1)
-                                                <div
-                                                    class="label label-final bg-success rounded-pill text-white px-2 py-1">
-                                                    Đã duyệt
-                                                </div>
-                                            @endif
-                                        </td>
-                                        <td class="text-center" data-bs-toggle="collapse"
-                                            data-bs-target="#collapse_{{ $item->code }}" aria-expanded="false"
-                                            aria-controls="collapse_{{ $item->code }}">
-                                            Chi Tiết<i class="fa fa-caret-right pointer ms-2"></i>
-                                        </td>
-                                    </tr>
 
-                                    <!-- Collapse content -->
-                                    <tr>
-                                        <td class="p-0" colspan="12"
-                                            style="background-color: #fafafa; padding-top: 0 !important;">
-                                            <div class="flex-lg-row-fluid border-2 border-lg-1 collapse multi-collapse"
-                                                id="collapse_{{ $item->code }}">
-                                                <div class="flex-lg-row-fluid border-lg-1">
-                                                    <div class="card card-flush px-5"
-                                                        style="padding-top: 0px !important;">
-                                                        <div class="card-header d-flex justify-content-between align-items-center px-2"
-                                                            style="padding-top: 0 !important; padding-bottom: 0px !important;">
-                                                            <h4 class="fw-bold m-0 text-uppercase fw-bolder">Danh Sách
-                                                                Thiết Bị
-                                                                Yêu
-                                                                Cầu
-                                                            </h4>
-                                                            <div class="card-toolbar">
-                                                                @if (($item->status == 0 || $item->status == 3) && \Carbon\Carbon::parse($item->request_date)->diffInDays(now()) > 3)
-                                                                    <div
-                                                                        class="rounded-pill px-2 py-1 text-white bg-warning">
-                                                                        Hết
-                                                                        Hạn
-                                                                    </div>
-                                                                @elseif ($item->status == 3)
-                                                                    <div class="rounded-pill px-2 py-1 text-white bg-info">
-                                                                        Lưu
-                                                                        Tạm
-                                                                    </div>
-                                                                @elseif ($item->status == 0)
-                                                                    <div
-                                                                        class="rounded-pill px-2 py-1 text-white bg-danger">
-                                                                        Chờ
-                                                                        Duyệt
-                                                                    </div>
-                                                                @elseif ($item->status == 1)
-                                                                    <div
-                                                                        class="rounded-pill px-2 py-1 text-white bg-success">
-                                                                        Đã
-                                                                        Duyệt
-                                                                    </div>
-                                                                @endif
+                                            <div class="card-body py-5 text-end bg-white">
+                                                <div
+                                                    class="button-group">
+                                                    @if (($item->status == 0 || $item->status == 3) && now()->gt(\Carbon\Carbon::parse($item->request_date)->addDays(3)))
+                                                        {{-- Quá hạn yêu cầu 3 ngày --}}
+                                                        <!-- Nút Hủy đơn -->
+                                                        <button class="btn btn-sm rounded-pill btn-danger me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteModal_{{ $item->code }}"
+                                                            type="button">
+                                                            <i class="fa fa-trash" style="margin-bottom: 2px;"></i>Hủy
+                                                            Phiếu
+                                                        </button>
+                                                    @elseif ($item->status == 0 && now()->lt(\Carbon\Carbon::parse($item->request_date)->addDays(3)))
+                                                        {{-- Chưa duyệt và ngày yêu cầu trong 3 ngày gần đây --}}
+
+                                                        <!-- Nút Duyệt đơn -->
+                                                        <button class="btn btn-sm rounded-pill btn-twitter me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#browse_{{ $item->code }}" type="button">
+                                                            <i class="fas fa-clipboard-check"
+                                                                style="margin-bottom: 2px;"></i>Duyệt Phiếu
+                                                        </button>
+
+                                                        <!-- Nút Sửa đơn -->
+                                                        <a href="{{ route('equipment_request.update_import', $item->code) }}"
+                                                            class="btn btn-sm rounded-pill btn-dark me-2">
+                                                            <i class="fa fa-edit" style="margin-bottom: 2px;"></i>Sửa
+                                                            Phiếu
+                                                        </a>
+
+                                                        <!-- Nút Hủy đơn -->
+                                                        <button class="btn btn-sm rounded-pill btn-danger me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteModal_{{ $item->code }}"
+                                                            type="button">
+                                                            <i class="fa fa-trash" style="margin-bottom: 2px;"></i>Hủy
+                                                            Phiếu
+                                                        </button>
+                                                    @elseif (
+                                                        $item->status == 3 &&
+                                                            now()->lt(\Carbon\Carbon::parse($item->request_date)->addDays(3)) &&
+                                                            $item->user_code == session('user_code'))
+                                                        {{-- Lưu tạm và ngày yêu cầu trong 3 ngày gần nhất --}}
+
+                                                        <!-- Nút lưu phiếu -->
+                                                        <button class="btn btn-sm rounded-pill btn-twitter me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#save_{{ $item->code }}" type="button">
+                                                            <i class="fa fa-save" style="margin-bottom: 2px;"></i>Tạo
+                                                            Phiếu
+                                                        </button>
+
+                                                        <!-- Nút Sửa đơn -->
+                                                        <a href="{{ route('equipment_request.update_import', $item->code) }}"
+                                                            class="btn btn-sm rounded-pill btn-dark me-2">
+                                                            <i class="fa fa-edit" style="margin-bottom: 2px;"></i>Sửa
+                                                            Phiếu
+                                                        </a>
+
+                                                        <!-- Nút Hủy đơn -->
+                                                        <button class="btn btn-sm rounded-pill btn-danger me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteModal_{{ $item->code }}"
+                                                            type="button">
+                                                            <i class="fa fa-trash" style="margin-bottom: 2px;"></i>Hủy
+                                                            Phiếu
+                                                        </button>
+                                                    @elseif ($item->status == 1)
+                                                        {{-- Đang chuẩn bị --}}
+                                                        <!-- Nút Tạo Phiếu Nhập -->
+                                                        <a href="{{ route('warehouse.create_import') }}?cd={{ $item->code }}"
+                                                            class="btn btn-sm rounded-pill btn-dark me-2">
+                                                            <i class="fas fa-file-import" style="margin-bottom: 2px;"></i>
+                                                            Tạo Phiếu Nhập
+                                                        </a>
+
+                                                        <!-- Nút In Phiếu -->
+                                                        <button class="btn btn-sm rounded-pill btn-twitter me-2"
+                                                            onclick="printInvoice('{{ $item->code }}')" type="button">
+                                                            <i class="fa fa-print" style="margin-bottom: 2px;"></i> In
+                                                            Phiếu
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            {{-- In --}}
+                                            <div class="fade modal" id="printArea_{{ $item->code }}">
+                                                <div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
+                                                    <div class="d-flex mb-5">
+                                                        <img src="{{ asset('image/logo_warehouse.png') }}" width="100"
+                                                            alt="">
+                                                        <div class="text-left mt-3">
+                                                            <h6 class="mb-0 pb-0">BỆNH VIỆN ĐA KHOA BEESOFT</h6>
+                                                            <div>307C Nguyễn Văn Linh, An Khánh, Ninh Kiều, Cần Thơ
+                                                            </div>
+                                                            <div>Hotline: 0900900999</div>
+                                                        </div>
+                                                    </div>
+                                                    <form action="" method="post">
+                                                        <div class="text-center mb-13">
+                                                            <h1 class="mb-3 text-uppercase text-primary">Phiếu Yêu Cầu
+                                                                Đặt Mua Thiết Bị
+                                                            </h1>
+                                                            <div class="text-muted fw-bold fs-6">Thông Tin Chi Tiết Về
+                                                                Phiếu Yêu Cầu Đặt Mua Thiết Bị
+                                                            </div>
+                                                            <div class="text-muted fs-30">
+                                                                Ngày Lập
+                                                                {{ \Carbon\Carbon::parse($item->request_date)->format('d-m-Y') }}
                                                             </div>
                                                         </div>
-                                                        <div class="card-body p-0" style="padding-top: 0px !important">
-                                                            <!-- Begin::Receipt Items (Right column) -->
-                                                            <div class="col-md-12">
+                                                        <div class="mb-15 text-left">
+                                                            <!-- Begin::Receipt Info -->
+                                                            <div class="mb-4">
+                                                                <div class="pt-2">
+                                                                    <p><strong>Người Giao:</strong>
+                                                                        .................................................................................................................................................................................
+                                                                    </p>
+                                                                    <p><strong>Theo Số Hóa Đơn:</strong>
+                                                                        <span id="modalSupplier">
+                                                                            {{ $item->code }}
+                                                                        </span>
+                                                                    </p>
+                                                                    <h6><span id="modalSupplier"
+                                                                            style="line-height: 1.6;">
+                                                                            Công Ty <span
+                                                                                class="text-success">BeeSoft</span>
+                                                                            Có Nhu Cầu Đặt Mua Thiết Bị Tại
+                                                                            <span
+                                                                                class="text-danger">{{ $item->suppliers->name }}</span>
+                                                                            theo mẫu yêu
+                                                                            cầu như sau:
+                                                                        </span>
+                                                                    </h6>
+                                                                </div>
+                                                            </div>
+                                                            <!-- End::Receipt Info -->
+
+                                                            <!-- Begin::Receipt Items -->
+                                                            <div class="mb-4 mt-3">
+                                                                <h4 class="text-primary mb-3">
+                                                                    Danh Sách Thiết Bị
+                                                                </h4>
                                                                 <div class="table-responsive rounded">
                                                                     <table
-                                                                        class="table table-striped table-sm table-hover mb-0">
-                                                                        <thead class="bg-dark">
-                                                                            <tr class="text-center">
-                                                                                <th class="ps-3">STT</th>
-                                                                                <th class="ps-3">Tên thiết bị</th>
-                                                                                <th>Đơn Vị Tính</th>
-                                                                                <th class="pe-3">Số lượng</th>
+                                                                        class="table border border-dark align-middle gs-0 gy-4">
+                                                                        <thead>
+                                                                            <tr
+                                                                                class=" bg-success border border-dark text-center">
+                                                                                <th style="width: 5%;"
+                                                                                    class="ps-3 text-dark">
+                                                                                    STT
+                                                                                </th>
+                                                                                <th style="width: 35%;" class="text-dark">
+                                                                                    Thiết Bị
+                                                                                </th>
+                                                                                <th style="width: 15%;" class="text-dark">
+                                                                                    Đơn
+                                                                                    Vị
+                                                                                </th>
+                                                                                <th style="width: 15%;" class="text-dark">
+                                                                                    Số
+                                                                                    Lượng
+                                                                                </th>
+                                                                                <th style="width: 15%;" class="text-dark">
+                                                                                    Đơn
+                                                                                    giá
+                                                                                </th>
+                                                                                <th class="pe-3 text-dark"
+                                                                                    style="width: 15%;">
+                                                                                    Thành tiền
+                                                                                </th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
-                                                                            @foreach ($item->import_equipment_request_details as $key => $detail)
-                                                                                <tr class="text-center">
-                                                                                    <td>{{ $key + 1 }}</td>
-                                                                                    <td>{{ $detail->equipments->name }}
+                                                                            @foreach ($item->import_equipment_request_details as $key => $detail_in)
+                                                                                <tr class="border border-dark">
+                                                                                    <td class="ps-3 text-right">
+                                                                                        {{ $key + 1 }}
                                                                                     </td>
-                                                                                    <td>{{ $detail->equipments->units->name }}
+                                                                                    <td class="text-left">
+                                                                                        {{ $detail_in->equipments->name }}
                                                                                     </td>
-                                                                                    <td>{{ $detail->quantity }}</td>
+                                                                                    <td class="text-left">
+                                                                                        {{ $detail_in->equipments->units->name }}
+                                                                                    </td>
+                                                                                    <td class="pe-3 text-right">
+                                                                                        {{ $detail_in->quantity }}
+                                                                                    </td>
+                                                                                    <td></td>
+                                                                                    <td></td>
                                                                                 </tr>
                                                                             @endforeach
+                                                                            <tr class=" border border-dark">
+                                                                                <td colspan="4">
+                                                                                </td>
+                                                                                <td colspan="1"
+                                                                                    style="height: 30px; min-height: 30px;">
+                                                                                </td>
+                                                                                <td colspan="1"
+                                                                                    style="height: 30px; min-height: 30px;">
+                                                                                </td>
+                                                                            </tr>
                                                                         </tbody>
                                                                     </table>
                                                                 </div>
+                                                                <div>
+                                                                    <p><strong>Ghi Chú:
+                                                                        </strong><span>{{ $item->note }}</span>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-8"></div>
+                                                                    <div class="col-4">
+                                                                        <p class="m-0 p-0">
+                                                                            Cần Thơ, ngày
+                                                                            {{ \Carbon\Carbon::now()->day }}
+                                                                            tháng
+                                                                            {{ \Carbon\Carbon::now()->month }} năm
+                                                                            {{ \Carbon\Carbon::now()->year }}
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="col-1"></div>
+                                                                    <div class="col-4">
+                                                                        <p class="m-0 p-0">
+                                                                            <strong>Người Lập Phiếu</strong>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="col-3">
+                                                                        <p class="m-0 p-0">
+                                                                            <strong>Người Giao Hàng</strong>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="col-4 text-center">
+                                                                        <p class="m-0 p-0">
+                                                                            <strong>Trưởng Bộ Phận</strong>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="card-body py-5 text-end bg-white">
-                                                    <div class="button-group">
-                                                        @if ($item->status == 0 && \Carbon\Carbon::parse($item->request_date)->diffInDays(now()) < 3)
-                                                            {{-- Chưa duyệt và ngày yêu cầu trong 3 ngày gần đây --}}
-
-                                                            <!-- Nút Duyệt đơn -->
-                                                            <button class="btn btn-sm rounded-pill btn-twitter me-2"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#browse_{{ $item->code }}"
-                                                                type="button">
-                                                                <i class="fas fa-clipboard-check"
-                                                                    style="margin-bottom: 2px;"></i>Duyệt Phiếu
-                                                            </button>
-
-                                                            <!-- Nút Sửa đơn -->
-                                                            <a href="{{ route('equipment_request.update_import', $item->code) }}"
-                                                                class="btn btn-sm rounded-pill btn-dark me-2">
-                                                                <i class="fa fa-edit" style="margin-bottom: 2px;"></i>Sửa
-                                                                Phiếu
-                                                            </a>
-
-                                                            <!-- Nút Hủy đơn -->
-                                                            <button class="btn btn-sm rounded-pill btn-danger me-2"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#deleteModal_{{ $item->code }}"
-                                                                type="button">
-                                                                <i class="fa fa-trash" style="margin-bottom: 2px;"></i>Hủy
-                                                                Phiếu
-                                                            </button>
-                                                        @elseif ($item->status == 0 && \Carbon\Carbon::parse($item->request_date)->diffInDays(now()) > 3)
-                                                            {{-- Quá hạn yêu cầu 3 ngày --}}
-
-                                                            <!-- Nút Hủy đơn -->
-                                                            <button class="btn btn-sm rounded-pill btn-danger me-2"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#deleteModal_{{ $item->code }}"
-                                                                type="button">
-                                                                <i class="fa fa-trash" style="margin-bottom: 2px;"></i>Hủy
-                                                                Phiếu
-                                                            </button>
-                                                        @elseif (
-                                                            $item->status == 3 &&
-                                                                \Carbon\Carbon::parse($item->request_date)->diffInDays(now()) < 3 &&
-                                                                $item->user_code == session('user_code'))
-                                                            {{-- Lưu tạm và ngày yêu cầu trong 3 ngày gần nhất --}}
-
-                                                            <!-- Nút lưu phiếu -->
-                                                            <button class="btn btn-sm rounded-pill btn-twitter me-2"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#save_{{ $item->code }}"
-                                                                type="button">
-                                                                <i class="fa fa-save" style="margin-bottom: 2px;"></i>Tạo
-                                                                Phiếu
-                                                            </button>
-
-                                                            <!-- Nút Sửa đơn -->
-                                                            <a href="{{ route('equipment_request.update_import', $item->code) }}"
-                                                                class="btn btn-sm rounded-pill btn-dark me-2">
-                                                                <i class="fa fa-edit" style="margin-bottom: 2px;"></i>Sửa
-                                                                Phiếu
-                                                            </a>
-
-                                                            <!-- Nút Hủy đơn -->
-                                                            <button class="btn btn-sm rounded-pill btn-danger me-2"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#deleteModal_{{ $item->code }}"
-                                                                type="button">
-                                                                <i class="fa fa-trash" style="margin-bottom: 2px;"></i>Hủy
-                                                                Phiếu
-                                                            </button>
-                                                        @else
-                                                            {{-- Đã duyệt --}}
-                                                            @if (!in_array($item->code, $allReceiptNo->toArray()))
-                                                                <!-- Nút Tạo Phiếu Nhập -->
-                                                                <a href="{{ route('warehouse.create_import') }}?cd={{ $item->code }}"
-                                                                    class="btn btn-sm rounded-pill btn-dark me-2">
-                                                                    <i class="fas fa-file-import"
-                                                                        style="margin-bottom: 2px;"></i> Tạo Phiếu Nhập
-                                                                </a>
-
-                                                                <!-- Nút In Phiếu -->
-                                                                <button class="btn btn-sm rounded-pill btn-twitter me-2"
-                                                                    onclick="setCodePrint('{{ $item->code }}')"
-                                                                    type="button">
-                                                                    <i class="fa fa-print"
-                                                                        style="margin-bottom: 2px;"></i> In
-                                                                    Phiếu
-                                                                </button>
-                                                            @endif
-                                                        @endif
-
-                                                    </div>
-                                                </div>
-
-                                                {{-- In --}}
-                                                <div class="fade modal" id="printArea_{{ $item->code }}">
-                                                    <div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
-                                                        <div class="d-flex mb-5">
-                                                            <img src="{{ asset('image/logo_warehouse.png') }}"
-                                                                width="100" alt="">
-                                                            <div class="text-left mt-3">
-                                                                <h6 class="mb-0 pb-0">BỆNH VIỆN ĐA KHOA BEESOFT</h6>
-                                                                <div>307C Nguyễn Văn Linh, An Khánh, Ninh Kiều, Cần Thơ
-                                                                </div>
-                                                                <div>Hotline: 0900900999</div>
-                                                            </div>
-                                                        </div>
-                                                        <form action="" method="post">
-                                                            <div class="text-center mb-13">
-                                                                <h1 class="mb-3 text-uppercase text-primary">Phiếu Yêu Cầu
-                                                                    Đặt Mua Thiết Bị
-                                                                </h1>
-                                                                <div class="text-muted fw-bold fs-6">Thông Tin Chi Tiết Về
-                                                                    Phiếu Yêu Cầu Đặt Mua Thiết Bị
-                                                                    <span
-                                                                        class="link-primary ">#{{ $item->code }}</span>.
-                                                                </div>
-                                                                <div class="text-muted fs-30">
-                                                                    Ngày Lập
-                                                                    {{ \Carbon\Carbon::parse($item->request_date)->format('d-m-Y') }}
-                                                                </div>
-                                                            </div>
-                                                            <div class="mb-15 text-left">
-                                                                <!-- Begin::Receipt Info -->
-                                                                <div class="mb-4">
-                                                                    <div class="pt-2">
-                                                                        <p><strong>Người Yêu Cầu:</strong> <span
-                                                                                id="modalSupplier">{{ $item->users->last_name . ' ' . $item->users->first_name ?? 'N/A' }}</span>
-                                                                        </p>
-                                                                        <p><strong>Số Điện Thoại:</strong>
-                                                                            <span
-                                                                                id="modalSupplier">{{ $item->users->phone }}
-                                                                            </span>
-                                                                        </p>
-                                                                        <h6><span id="modalSupplier">Công Ty <span
-                                                                                    class="text-success">BeeSoft</span> Có
-                                                                                Nhu
-                                                                                Cầu Đặt Mua Thiết Bị Tại
-                                                                                <span
-                                                                                    class="text-danger">{{ $item->suppliers->name }}</span>
-                                                                                theo mẫu yêu
-                                                                                cầu như sau:</span>
-                                                                        </h6>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- End::Receipt Info -->
-
-                                                                <!-- Begin::Receipt Items -->
-                                                                <div class="mb-4 mt-3">
-                                                                    <h4 class="text-primary mb-3">
-                                                                        Danh Sách Thiết Bị
-                                                                    </h4>
-                                                                    <div class="table-responsive rounded">
-                                                                        <table
-                                                                            class="table border border-dark align-middle gs-0 gy-4">
-                                                                            <thead>
-                                                                                <tr
-                                                                                    class=" bg-success border border-dark text-center">
-                                                                                    <th style="width: 5%;"
-                                                                                        class="ps-3 text-dark">
-                                                                                        STT
-                                                                                    </th>
-                                                                                    <th style="width: 35%;"
-                                                                                        class="text-dark">
-                                                                                        Thiết Bị
-                                                                                    </th>
-                                                                                    <th style="width: 15%;"
-                                                                                        class="text-dark">
-                                                                                        Đơn
-                                                                                        Vị
-                                                                                    </th>
-                                                                                    <th style="width: 15%;"
-                                                                                        class="text-dark">
-                                                                                        Số
-                                                                                        Lượng
-                                                                                    </th>
-                                                                                    <th style="width: 15%;"
-                                                                                        class="text-dark">
-                                                                                        Đơn
-                                                                                        giá
-                                                                                    </th>
-                                                                                    <th class="pe-3 text-dark"
-                                                                                        style="width: 15%;">
-                                                                                        Thành tiền
-                                                                                    </th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                @foreach ($item->import_equipment_request_details as $key => $detail_in)
-                                                                                    <tr class="border border-dark">
-                                                                                        <td class="ps-3 text-right">
-                                                                                            {{ $key + 1 }}
-                                                                                        </td>
-                                                                                        <td class="text-left">
-                                                                                            {{ $detail_in->equipments->name }}
-                                                                                        </td>
-                                                                                        <td class="text-left">
-                                                                                            {{ $detail_in->equipments->units->name }}
-                                                                                        </td>
-                                                                                        <td class="pe-3 text-right">
-                                                                                            {{ $detail_in->quantity }}
-                                                                                        </td>
-                                                                                        <td></td>
-                                                                                        <td></td>
-                                                                                    </tr>
-                                                                                @endforeach
-                                                                                <tr class=" border border-dark">
-                                                                                    <td colspan="4">
-                                                                                    </td>
-                                                                                    <td colspan="1"
-                                                                                        style="height: 30px; min-height: 30px;">
-                                                                                    </td>
-                                                                                    <td colspan="1"
-                                                                                        style="height: 30px; min-height: 30px;">
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
-                                                                    <div>
-                                                                        <p><strong>Ghi Chú:
-                                                                            </strong><span>{{ $item->note }}</span>
-                                                                        </p>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-7"></div>
-                                                                        <div class="col-5 text-center">
-                                                                            <p class="m-0 p-0">
-                                                                                Cần Thơ, ngày
-                                                                                {{ \Carbon\Carbon::now()->day }}
-                                                                                tháng
-                                                                                {{ \Carbon\Carbon::now()->month }} năm
-                                                                                {{ \Carbon\Carbon::now()->year }}
-                                                                            </p>
-                                                                            <p class="m-0 p-0">
-                                                                                <strong>Trưởng Ban Quản Lý Kho</strong>
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    </div>
+                                                    </form>
                                                 </div>
                                             </div>
-                                        </td>
-                                    </tr>
-                                @endif
+                                        </div>
+                                    </td>
+                                </tr>
                             @empty
                                 <tr id="noDataAlert">
                                     <td colspan="12" class="text-center">
@@ -771,27 +665,6 @@
                                 class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">Tạo</button>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-
-        {{-- Thông Báo Phiếu Yc Chưa Tạo Nhập --}}
-        <div class="modal fade" id="exclamation_{{ $item->code }}" data-bs-backdrop="static" data-bs-keyboard="false"
-            tabindex="-1" aria-labelledby="xclamationModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-header bg-danger">
-                        <h5 class="modal-title text-white" id="xclamationModalLabel"><i
-                                class="fa-solid fa-circle-exclamation text-white"></i> Lưu ý
-                        </h5>
-                    </div>
-                    <div class="modal-body pb-0 text-center">
-                        <p class="text-dark mb-4">Phiếu Yêu Cầu Mua Hàng Này Chưa Được Tạo Phiếu Nhập</p>
-                    </div>
-                    <div class="modal-footer justify-content-center border-0">
-                        <button type="button" class="btn rounded-pill btn-sm btn-danger px-4"
-                            data-bs-dismiss="modal">Đóng</button>
-                    </div>
                 </div>
             </div>
         </div>

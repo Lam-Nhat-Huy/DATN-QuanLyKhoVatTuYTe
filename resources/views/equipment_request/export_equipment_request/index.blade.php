@@ -110,14 +110,15 @@
                                             <input type="checkbox" name="export_reqest_codes[]" value="{{ $item->code }}"
                                                 class="row-checkbox" />
                                         @elseif ($item->status == 5)
-                                            <i class="fa fa-truck-medical" title="Đang vận chuyển"></i>
+                                            <i class="fa fa-truck-medical" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Đang Vận Chuyển"></i>
                                         @elseif ($item->status == 4)
-                                            <i class="fa fa-check" title="Hoàn Thành"></i>
+                                            <i class="fa fa-check text-success" data-bs-toggle="tooltip"
+                                                data-bs-placement="top" title="Hoàn Thành"></i>
                                         @elseif ($item->status == 1)
-                                            <i class="fa-solid fa-circle-exclamation"
-                                                title="Phiếu Yêu Cầu Xuất Chưa Được Vận Chuyển" style="font-size: 13px;"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#exclamation_{{ $item->code }}"></i>
+                                            <i class="fa-solid fa-circle-exclamation text-danger" style="font-size: 13px;"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Phiếu Yêu Cầu Chưa Được Vận Chuyển"></i>
                                         @endif
                                     </td>
                                     <td>
@@ -297,7 +298,7 @@
 
                                             <div class="card-body py-5 text-end bg-white">
                                                 <div
-                                                    class="button-group {{ $item->status == 3 && $item->user_code != session('user_code') ? 'd-none' : '' }}">
+                                                    class="button-group">
                                                     @if ($item->status == 0 && now()->lt(\Carbon\Carbon::parse($item->required_date)->addDays(1)))
                                                         {{-- Chưa duyệt và ngày cần thiết bé hơn ngày hiện tại --}}
 
@@ -437,7 +438,8 @@
                                                                     <p>
                                                                         <strong>Xuất đến:</strong>
                                                                         <span id="modalReason">
-                                                                            {{ $item->departments->name }}, {{ $item->departments->location }}
+                                                                            {{ $item->departments->name }},
+                                                                            {{ $item->departments->location }}
                                                                         </span>
                                                                     </p>
                                                                 </div>
@@ -734,27 +736,6 @@
                                 class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">Tạo</button>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-
-        {{-- Thông Báo Phiếu Yc Chưa Tạo Xuất --}}
-        <div class="modal fade" id="exclamation_{{ $item->code }}" data-bs-backdrop="static" data-bs-keyboard="false"
-            tabindex="-1" aria-labelledby="xclamationModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-header bg-dark">
-                        <h5 class="modal-title text-warning" id="xclamationModalLabel"><i
-                                class="fa-solid fa-circle-exclamation text-warning"></i> Lưu ý
-                        </h5>
-                    </div>
-                    <div class="modal-body pb-0 text-center">
-                        <p class="text-dark mb-4">Phiếu Yêu Cầu Xuất Kho Này Chưa Được Vận Chuyển</p>
-                    </div>
-                    <div class="modal-footer justify-content-center border-0">
-                        <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
-                            data-bs-dismiss="modal">Đóng</button>
-                    </div>
                 </div>
             </div>
         </div>
