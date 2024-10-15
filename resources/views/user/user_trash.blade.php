@@ -31,7 +31,7 @@
             <div class="card-body py-3">
                 <div class="table-responsive rounded">
                     <table class="table align-middle gs-0 gy-4">
-                        <thead class="{{ $allUnitTrash->count() == 0 ? 'd-none' : '' }}">
+                        <thead class="{{ $allUserTrash->count() == 0 ? 'd-none' : '' }}">
                             <tr class="fw-bolder bg-success">
                                 <th class="ps-3">
                                     <input type="checkbox" id="selectAll" />

@@ -274,7 +274,7 @@
                         </div>
 
 
-                        <div class="table-responsive mt-4">
+                        <div class="table-responsive mt-4 rounded">
                             <table class="table text-center align-middle" style="background-color: #f4f6f9;">
                                 <thead style="background-color: #000000;">
                                     <tr>
@@ -326,7 +326,12 @@
                 {{-- Giao diện kiểm kho mới --}}
                 <div class="col-md-4">
                     <div class="card border-0 shadow-lg p-4 bg-body rounded-4 mb-5">
-                        <h3 class="mb-4 text-dark text-uppercase">Chi tiết kiểm kho</h3>
+                        <div class="d-flex justify-between">
+                            <h3 class="mb-4 text-dark text-uppercase">Chi tiết kiểm kho</h3>
+
+                            <a href="{{ route('check_warehouse.index') }}" class="text-dark">Trở về</a>
+                        </div>
+
 
                         <input type="hidden" id="created_by" value="{{ session('user_code') }}">
 
@@ -369,14 +374,15 @@
                         <!-- Buttons -->
                         <div class="d-grid gap-3">
                             <button name="status" value="0" onclick="submitMaterials()" type="submit"
-                                class="btn btn-lg rounded-pill text-white" style="background-color: #FFA500;">Lưu phiếu
-                                tạm</button>
+                                class="btn btn-lg rounded-pill text-white" style="background-color: #007BFF;">Lưu phiếu
+                            </button>
+
 
                             <!-- Hoàn thành Button -->
                             <button type="button" class="btn text-white btn-lg rounded-pill"
                                 style="background-color: #66CC00;" data-bs-toggle="modal"
                                 data-bs-target="#completeModal">
-                                Hoàn thành
+                                Lưu và duyệt phiếu
                             </button>
 
                             <!-- Modal Hoàn thành -->
