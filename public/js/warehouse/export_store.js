@@ -28,22 +28,23 @@ $(document).ready(function () {
                     if (response.length > 0) {
                         response.forEach(inventory => {
                             const currentDate = new Date();
-                            const expiryDate = new Date(inventory.expiry_date);
-                            const monthsDifference = (expiryDate -
-                                currentDate) / (1000 * 60 * 60 * 24 *
-                                    30); // Tính số tháng còn lại
+                            let displayExpiryDate = 'Không có'; // Mặc định là 'Không có'
+                            let monthsDifference = null; // Khởi tạo biến
 
-                            // Chỉ hiển thị hạn sử dụng nếu còn hơn 5 tháng
-                            const displayExpiryDate = monthsDifference > 5 ?
-                                formatDate(inventory.expiry_date) : 'Hết hạn';
+                            if (inventory.expiry_date) { // Nếu có hạn sử dụng
+                                const expiryDate = new Date(inventory.expiry_date);
+                                monthsDifference = (expiryDate - currentDate) / (1000 * 60 * 60 * 24 * 30); // Tính số tháng còn lại
+
+                                displayExpiryDate = monthsDifference > 5 ? formatDate(inventory.expiry_date) : 'Hết hạn';
+                            }
 
                             tableContent += `
-                        <tr class="batch-row ${monthsDifference <= 5 ? 'expired' : ''}" style="cursor:pointer;" data-batch-number="${inventory.batch_number}" data-current-quantity="${inventory.current_quantity}">
-                            <td class="text-center">${inventory.batch_number}</td>
-                            <td class="text-center">${inventory.current_quantity}</td>
-                            <td class="text-center">${displayExpiryDate}</td>
-                        </tr>
-                        `;
+                            <tr class="batch-row ${monthsDifference !== null && monthsDifference <= 5 ? 'expired' : ''}" style="cursor:pointer;" data-batch-number="${inventory.batch_number}" data-current-quantity="${inventory.current_quantity}">
+                                <td class="text-center">${inventory.batch_number}</td>
+                                <td class="text-center">${inventory.current_quantity}</td>
+                                <td class="text-center">${displayExpiryDate}</td>
+                            </tr>
+                            `;
                         });
                     } else {
                         tableContent += `
@@ -297,10 +298,15 @@ $(document).ready(function () {
     });
 
     // Format ngày theo dd/mm/yyyy
+    // Format ngày theo dd/mm/yyyy
     function formatDate(dateString) {
-        const dateParts = dateString.split('-');
-        return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+        const date = new Date(dateString);
+        const day = ('0' + date.getDate()).slice(-2); // Thêm số 0 nếu ngày nhỏ hơn 10
+        const month = ('0' + (date.getMonth() + 1)).slice(-2); // Tháng bắt đầu từ 0, nên cần cộng 1
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`; // Trả về định dạng dd/mm/yyyy
     }
+
 });
 $(document).ready(function () {
     // Hàm để cập nhật dữ liệu từ bảng vào input ẩn

@@ -30,16 +30,29 @@ class ExportController extends Controller
         $this->users = Users::where('code', session('user_code'))->first();
     }
 
-    public function export()
+    public function export(Request $request)
     {
         $title = 'Xuất Kho';
-        $exports = Exports::with('exportDetail')->get();
+        $exports = Exports::with(['exportDetail', 'creator'])->get();
+        if ($request->ajax()) {
+            $equipment_code = $request->input('equipment_code');
+            $inventories = Inventories::where('equipment_code', $equipment_code)->get();
+
+            return response()->json($inventories);
+        }
+        $equipments = Equipments::with('inventories')->get();
+
+        foreach ($equipments as $equipment) {
+            $equipment->total_inventory = $equipment->inventories->sum('current_quantity');
+        }
         return view(
             "{$this->route}.export_warehouse.export",
             [
                 'title' => $title,
                 'exports' => $exports,
                 'departments' => $this->departments,
+                'equipments' => $equipments,
+                'inventories' => $this->inventories,
             ]
         );
     }
@@ -47,16 +60,23 @@ class ExportController extends Controller
     public function create_export(Request $request)
     {
         $title = 'Tạo phiếu xuất kho';
+
         if ($request->ajax()) {
             $equipment_code = $request->input('equipment_code');
             $inventories = Inventories::where('equipment_code', $equipment_code)->get();
 
             return response()->json($inventories);
         }
+        $equipments = Equipments::with('inventories')->get();
+
+        foreach ($equipments as $equipment) {
+            $equipment->total_inventory = $equipment->inventories->sum('current_quantity');
+        }
+
         return view(
             "{$this->route}.export_warehouse.add_export",
             [
-                'equipments' => $this->equipments,
+                'equipments' => $equipments,
                 'inventories' => $this->inventories,
                 'users' => $this->users,
                 'departments' => $this->departments,
@@ -65,6 +85,7 @@ class ExportController extends Controller
         );
     }
 
+
     public function store_export(Request $request)
     {
         $materialList = json_decode($request->material_list, true);
@@ -72,21 +93,19 @@ class ExportController extends Controller
             return redirect()->back()->with('error', 'Danh sách vật tư không hợp lệ.');
         }
         $export = new Exports();
-        $export->code = 'EXP' . time();  
+        $export->code = 'EXP' . time();
         $export->note = $request->note;
         $export->status = $request->input('status');
+        $export->created_by = session('user_code');
         $export->export_date = $request->export_at;
         $export->department_code = $request->department_code;
         $export->save();
 
-        // Lưu thông tin chi tiết phiếu xuất và cập nhật kho
         foreach ($materialList as $material) {
-            // Kiểm tra xem thông tin vật tư có hợp lệ không
             if (!isset($material['equipment_code'], $material['quantity'], $material['batch_number'])) {
                 return redirect()->back()->with('error', 'Thông tin vật tư không đầy đủ.');
             }
 
-            // Lưu thông tin chi tiết phiếu xuất
             $exportDetail = new Export_details();
             $exportDetail->export_code = $export->code;
             $exportDetail->equipment_code = $material['equipment_code'];
@@ -94,16 +113,12 @@ class ExportController extends Controller
             $exportDetail->batch_number = $material['batch_number'];
             $exportDetail->save();
 
-            // Kiểm tra trạng thái trước khi cập nhật kho
-            if ($export->status == 1) { // Nếu trạng thái không bằng 1 thì trừ số lượng
-                // Cập nhật số lượng trong kho
+            if ($export->status == 1) {
                 $inventory = Inventories::where('equipment_code', $material['equipment_code'])
                     ->where('batch_number', $material['batch_number'])
                     ->first();
                 if ($inventory) {
-                    // Kiểm tra xem số lượng trong kho có đủ để xuất không
                     if ($inventory->current_quantity >= $material['quantity']) {
-                        // Trừ số lượng đã xuất
                         $inventory->current_quantity -= $material['quantity'];
                         $inventory->save();
                     } else {
@@ -114,7 +129,23 @@ class ExportController extends Controller
                 }
             }
         }
+        toastr()->success('Tạo phiếu xuất thành công');
+        return redirect()->route('warehouse.export');
+    }
 
-        return redirect()->route('warehouse.export')->with('success', 'Phiếu xuất đã được tạo thành công.');
+    public function approve_export(Request $request)
+    {
+        $exportCode = $request->input('export_code');
+        $export = Exports::where('code', $exportCode)->first();
+
+        if (!$export) {
+            return redirect()->back()->with('error', 'Phiếu xuất không tồn tại.');
+        }
+
+        // Cập nhật trạng thái hoặc thực hiện các thao tác cần thiết
+        $export->status = true; // Hoặc một trạng thái khác mà bạn cần
+        $export->save();
+
+        return redirect()->route('warehouse.export')->with('success', 'Duyệt phiếu thành công.');
     }
 }
