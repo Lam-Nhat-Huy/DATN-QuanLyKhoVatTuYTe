@@ -96,10 +96,10 @@
 
         {{-- Danh sách phiếu  --}}
         <div class="card-body py-3">
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle text-center">
+            <div class="table-responsive rounded">
+                <table class="table table-hover table-bordered">
                     <thead>
-                        <tr class="bg-success text-white">
+                        <tr class="bg-success text-white text-center    ">
                             <th class="ps-3">
                                 <input type="checkbox" id="selectAll" />
                             </th>
@@ -122,7 +122,7 @@
                                 <td class="text-center">{{ \Carbon\Carbon::parse($export->export_date)->format('d/m/Y') }}
                                 </td>
                                 <td class="text-center">
-                                    {{ $export->creator ? $export->creator->last_name . ' ' . $export->creator->first_name : 'Không có' }}
+                                    {{ $export->user->last_name . ' ' . $export->user->first_name }}
                                 </td>
                                 <td class="text-center">{{ $export->note ?? 'Không có' }}</td>
                                 <td class="text-center">
@@ -140,32 +140,77 @@
                                     <div class="flex-lg-row-fluid border-2 border-lg-1">
                                         <div class="card card-flush p-2 mb-3">
                                             <div class="card-header d-flex justify-content-between align-items-center p-2">
-                                                <h4 class="fw-bold m-0">Chi tiết phiếu xuất kho</h4>
+                                                <h4 class="fw-bold m-0 text-uppercase fw-bolder">Chi tiết phiếu xuất kho
+                                                </h4>
                                                 <span class="badge {{ $export->status < 1 ? 'bg-danger' : 'bg-success' }}"
                                                     style="font-size: 10px;">
                                                     {{ $export->status < 1 ? 'Chưa Duyệt' : 'Đã Duyệt' }}
                                                 </span>
                                             </div>
-                                            <div class="card-body p-2">
+
+                                            <div class="card-body p-2 pt-0">
+                                                <div class="row">
+                                                    <div class="col-md-7">
+                                                        <table class="table gy-1">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td class="text-start w-50"><strong>Mã phiếu
+                                                                            nhập</strong></td>
+                                                                    <td class="text-start text-dark">{{ $export->code }}
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-start w-50"><strong>Ngày xuất</strong>
+                                                                    </td>
+                                                                    <td class="text-start text-dark">
+                                                                        {{ $export->export_date }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-start w-50"><strong>Người tạo</strong>
+                                                                    </td>
+                                                                    <td class="text-start text-dark">
+                                                                        {{ $export->user->last_name . ' ' . $export->user->first_name }}
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-start w-50"><strong>Ghi chú</strong>
+                                                                    </td>
+                                                                    <td class="text-start text-dark">{{ $export->note }}
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+
+                                                        </table>
+                                                    </div>
+                                                </div>
+
                                                 <div class="col-md-12">
                                                     <div class="table-responsive">
-                                                        <table class="table table-striped table-sm table-hover">
+                                                        <table class="table table-hover table-bordered">
                                                             <thead class="fw-bolder bg-danger text-white">
-                                                                <tr>
-                                                                    <th class="ps-3">Mã vật tư</th>
-                                                                    <th>Tên vật tư</th>
-                                                                    <th>Số lô</th>
-                                                                    <th>Số lượng</th>
+                                                                <tr class="text-center">
+                                                                    <th class="px-5">STT</th>
+                                                                    <th class="">Mã vật tư</th>
+                                                                    <th class="">Tên vật tư</th>
+                                                                    <th class="">Số lô</th>
+                                                                    <th class="">Số lượng</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
                                                                 @foreach ($export->exportDetail as $detail)
-                                                                    <tr>
-                                                                        <td>{{ $detail->equipment_code }}</td>
-                                                                        <td>{{ $detail->equipments->name ?? 'Không có' }}
+                                                                    <tr class="text-center">
+                                                                        <td>
+                                                                            {{ $loop->iteration }}
                                                                         </td>
-                                                                        <td>{{ $detail->batch_number }}</td>
-                                                                        <td>{{ $detail->quantity }}</td>
+                                                                        <td class="">
+                                                                            {{ $detail->equipment_code }}</td>
+                                                                        <td class="">
+                                                                            {{ $detail->equipments->name ?? 'Không có' }}
+                                                                        </td>
+                                                                        <td class="">{{ $detail->batch_number }}
+                                                                        </td>
+                                                                        <td class="">{{ $detail->quantity }}
+                                                                        </td>
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
@@ -177,34 +222,32 @@
                                         <div class="card-body py-3 text-end">
                                             <div class="button-group">
                                                 @if ($export->status == 0)
-                                                    <button style="font-size: 10px;" class="btn btn-sm btn-success me-2"
-                                                        data-bs-toggle="modal" data-bs-target="#browse{{ $export->code }}"
-                                                        type="button">
-                                                        <i style="font-size: 10px;" class="fas fa-clipboard-check"></i>Duyệt
-                                                        Phiếu
+                                                    <button class="btn btn-sm btn-success me-2" data-bs-toggle="modal"
+                                                        data-bs-target="#browse{{ $export->code }}" type="button">
+                                                        <i class="fas fa-clipboard-check"></i> Duyệt Phiếu
                                                     </button>
-                                                    <button style="font-size: 10px;" class="btn btn-sm btn-dark me-2"
-                                                        data-bs-toggle="modal"
+                                                    <button class="btn btn-sm btn-dark me-2" data-bs-toggle="modal"
                                                         data-bs-target="#editExportReceiptModal{{ $export->code }}"
                                                         type="button">
-                                                        <i style="font-size: 10px;" class="fa fa-edit"></i>Sửa Phiếu
+                                                        <i class="fa fa-edit"></i> Sửa Phiếu
                                                     </button>
-                                                    <button style="font-size: 10px;" class="btn btn-sm btn-danger me-2"
-                                                        data-bs-toggle="modal"
+                                                    <button class="btn btn-sm btn-danger me-2" data-bs-toggle="modal"
                                                         data-bs-target="#deleteConfirm{{ $export->code }}"
                                                         type="button">
-                                                        <i style="font-size: 10px;" class="fa fa-trash"></i>Xóa Phiếu
+                                                        <i class="fa fa-trash"></i> Xóa Phiếu
                                                     </button>
                                                 @endif
-                                                <button class="btn btn-sm btn-twitter me-2" style="font-size: 10px;"
-                                                    id="printPdfBtn" type="button">
-                                                    <i style="font-size: 10px;" class="fa fa-print"></i>In Phiếu
+                                                <button class="btn btn-sm btn-twitter me-2" id="printPdfBtn"
+                                                    type="button">
+                                                    <i class="fa fa-print"></i> In Phiếu
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                             </tr>
+
+
                             {{-- Kiểm tra trạng thái của phiếu --}}
                             @if ($export->status !== 1)
                                 {{-- Modal Duyệt Phiếu --}}

@@ -10,13 +10,6 @@ class ExportDetailsSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('export_details')->insert([
-            [
-                'export_code' => 'EXP001',
-                'equipment_code' => 'E001',
-                'quantity' => 3,
-                'batch_number' => 'B001',
-            ],
-        ]);
+        DB::table('export_details')->insert([]);
     }
 }

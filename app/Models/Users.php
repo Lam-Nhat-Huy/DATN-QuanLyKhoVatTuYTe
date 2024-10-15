@@ -39,4 +39,9 @@ class Users extends Model
     {
         return $this->hasMany(Receipts::class, 'created_by', 'code');
     }
+
+    public function exports()
+    {
+        return $this->hasMany(Exports::class, 'created_by', 'code');
+    }
 }

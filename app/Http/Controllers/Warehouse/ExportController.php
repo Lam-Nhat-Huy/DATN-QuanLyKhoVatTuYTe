@@ -33,7 +33,7 @@ class ExportController extends Controller
     public function export(Request $request)
     {
         $title = 'Xuất Kho';
-        $exports = Exports::with(['exportDetail', 'creator'])->get();
+        $exports = Exports::with(['exportDetail', 'user'])->get();
         if ($request->ajax()) {
             $equipment_code = $request->input('equipment_code');
             $inventories = Inventories::where('equipment_code', $equipment_code)->get();

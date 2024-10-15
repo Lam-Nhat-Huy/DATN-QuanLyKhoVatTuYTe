@@ -28,10 +28,11 @@ class Exports extends Model
 
     public function exportDetail()
     {
-        return $this->hasMany(Export_details::class, 'export_code', 'code'); 
+        return $this->hasMany(Export_details::class, 'export_code', 'code');
     }
-    public function creator()
+
+    public function user()
     {
-        return $this->belongsTo(Users::class, 'created_by');
+        return $this->belongsTo(Users::class, 'created_by', 'code');
     }
 }
