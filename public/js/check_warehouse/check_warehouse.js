@@ -183,8 +183,8 @@ function checkInputs() {
     if (allFilled) {
         saveButton.disabled = false;
         completeButton.disabled = false;
-        saveButton.textContent = "Lưu thông tin";
-        completeButton.textContent = "Hoàn thành";
+        saveButton.textContent = "Lưu phiếu";
+        completeButton.textContent = "Lưu và duyệt phiếu";
     } else {
         saveButton.disabled = true;
         completeButton.disabled = true;

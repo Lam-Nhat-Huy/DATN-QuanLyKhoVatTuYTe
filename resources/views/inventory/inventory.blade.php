@@ -35,9 +35,9 @@
                             <th style="width: 5%;">
                                 STT
                             </th>
-                            <th style="width: 10%;">Mã sàn phẩm</th>
-                            <th style="width: 40%;">Tên sản phẩm</th>
-                            <th style="width: 20%;">Nhóm sản phẩm</th>
+                            <th style="width: 10%;">Mã thiết bị</th>
+                            <th style="width: 40%;">Tên thiết bị</th>
+                            <th style="width: 20%;">Nhóm thiết bị</th>
                             <th style="width: 10%;">Tổng tồn</th>
                             <th style="width: 15%;">Đơn vị tính</th>
                         </tr>

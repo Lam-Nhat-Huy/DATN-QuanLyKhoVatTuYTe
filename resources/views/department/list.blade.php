@@ -42,8 +42,9 @@
                             value="{{ request()->kw }}">
                     </div>
                     <div class="col-3 d-flex justify-content-between">
-                        <a class="btn rounded-pill btn-info btn-sm mt-2 mb-2 w-100 me-2" href="{{ route('department.index') }}"><i
-                                class="fas fa-times-circle" style="margin-bottom: 2px;"></i>Bỏ Lọc</a>
+                        <a class="btn rounded-pill btn-info btn-sm mt-2 mb-2 w-100 me-2"
+                            href="{{ route('department.index') }}"><i class="fas fa-times-circle"
+                                style="margin-bottom: 2px;"></i>Bỏ Lọc</a>
                         <button class="btn rounded-pill btn-dark btn-sm mt-2 mb-2 w-100 load_animation" type="submit"><i
                                 class="fa fa-search" style="margin-bottom: 2px;"></i>Tìm</button>
                     </div>
@@ -53,8 +54,8 @@
         <form action="{{ route('supplier.list') }} " method="POST">
             @csrf
             <div class="card-body py-3">
-                <div class="table-responsive">
-                    <table class="table align-middle gs-0 gy-4">
+                <div class="table-responsive rounded">
+                    <table class="table table-hover table-bordered align-middle">
                         <thead class="{{ $department->count() == 0 ? 'd-none' : '' }}">
                             <tr class="fw-bolder bg-success">
                                 <th class="ps-3"><input type="checkbox" id="selectAll" /></th>

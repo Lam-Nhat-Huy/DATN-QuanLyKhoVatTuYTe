@@ -81,7 +81,7 @@
 
         <div class="card-body py-3">
             <div class="table-responsive rounded">
-                <table class="table align-middle gs-0 gy-4">
+                <table class="table table-hover table-bordered align-middle">
                     <!-- Trong phần <thead> của bảng -->
                     <thead>
                         <tr class="bg-success text-center">

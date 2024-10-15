@@ -83,7 +83,7 @@
             <input type="hidden" name="action_type" id="action_type" value="">
             <div class="card-body py-3">
                 <div class="table-responsive rounded">
-                    <table class="table align-middle gs-0 gy-4">
+                    <table class="table table-hover table-bordered align-middle">
                         <thead class="{{ $AllNotification->count() == 0 ? 'd-none' : '' }}">
                             <tr class="fw-bolder bg-success">
                                 <th class="ps-4">
