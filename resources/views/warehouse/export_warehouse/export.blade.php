@@ -323,10 +323,10 @@
                                         </div>
                                         <div class="text-center">
                                             <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thông tin phiếu
-                                                nhập trống</h5>
+                                                xuất trống</h5>
                                             <p style="font-size: 14px; color: #6c757d; margin: 0;">
-                                                Hiện tại chưa có phiếu nhập nào được thêm vào. Vui lòng kiểm tra lại hoặc
-                                                tạo mới phiếu nhập để bắt đầu.
+                                                Hiện tại chưa có phiếu xuất nào được thêm vào. Vui lòng kiểm tra lại hoặc
+                                                tạo mới phiếu xuất để bắt đầu.
                                             </p>
                                         </div>
                                     </div>

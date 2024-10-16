@@ -1,9 +1,10 @@
 $(document).ready(function () {
-    // Sự kiện khi thay đổi chọn vật tư
+    let equipmentName;
     $('#material_code').on('change', function () {
         const equipmentCode = $(this).val();
         const batchInfoContainer = $('#batch_info');
-        batchInfoContainer.html(''); // Xóa thông tin lô cũ
+        batchInfoContainer.html('');
+
         if (equipmentCode) {
             $.ajax({
                 url: postExportUrl, // Gửi yêu cầu để lấy thông tin lô
@@ -24,16 +25,15 @@ $(document).ready(function () {
                     </thead>
                     <tbody>
                 `;
-
                     if (response.length > 0) {
                         response.forEach(inventory => {
                             const currentDate = new Date();
-                            let displayExpiryDate = 'Không có'; // Mặc định là 'Không có'
-                            let monthsDifference = null; // Khởi tạo biến
-
-                            if (inventory.expiry_date) { // Nếu có hạn sử dụng
+                            let displayExpiryDate = 'Không có';
+                            let monthsDifference = null;
+                            equipmentName = inventory.equipments.name;
+                            if (inventory.expiry_date) {
                                 const expiryDate = new Date(inventory.expiry_date);
-                                monthsDifference = (expiryDate - currentDate) / (1000 * 60 * 60 * 24 * 30); // Tính số tháng còn lại
+                                monthsDifference = (expiryDate - currentDate) / (1000 * 60 * 60 * 24 * 30);
 
                                 displayExpiryDate = monthsDifference > 5 ? formatDate(inventory.expiry_date) : 'Hết hạn';
                             }
@@ -101,20 +101,14 @@ $(document).ready(function () {
 
 
                     // Sự kiện lưu số lượng sau khi nhập trong modal
-                    $('#saveQuantity').on('click', function () {
-                        const inputQuantity = parseInt($('#inputQuantity')
-                            .val());
+                    $('#saveQuantity').off('click').on('click', function () {
+                        const inputQuantity = parseInt($('#inputQuantity').val());
                         const batchNumber = $('#batchNumberModal').val();
-                        const currentQuantity = parseInt($(
-                            '#currentQuantityModal').val());
+                        const currentQuantity = parseInt($('#currentQuantityModal').val());
 
-                        // Kiểm tra tính hợp lệ của số lượng nhập vào
-                        if (!inputQuantity || isNaN(inputQuantity) ||
-                            inputQuantity <= 0 || inputQuantity >
-                            currentQuantity) {
-                            $('#quantityError').text(
-                                'Số lượng nhập không hợp lệ hoặc lớn hơn số lượng tồn.'
-                            );
+                        // Kiểm tra tính hợp lệ của số lượng nhập
+                        if (!inputQuantity || isNaN(inputQuantity) || inputQuantity <= 0 || inputQuantity > currentQuantity) {
+                            $('#quantityError').text('Số lượng nhập không hợp lệ hoặc lớn hơn số lượng tồn.');
                             $('#inputQuantity').addClass('is-invalid');
                             return;
                         } else {
@@ -122,51 +116,59 @@ $(document).ready(function () {
                         }
 
                         const materialListBody = $('#material-list-body');
-                        const existingRow = materialListBody.find(
-                            `tr[data-batch-number="${batchNumber}"]`);
+                        const existingRow = materialListBody.find(`tr[data-batch-number="${batchNumber}"]`);
 
                         if (existingRow.length > 0) {
-                            // Nếu số lô đã tồn tại, cộng dồn số lượng
-                            const currentMaterialQuantity = parseInt(existingRow
-                                .find('td:nth-child(3)').text());
-                            const newMaterialQuantity =
-                                currentMaterialQuantity + inputQuantity;
-                            existingRow.find('td:nth-child(3)').text(
-                                newMaterialQuantity);
+                            // Nếu lô đã tồn tại, cộng dồn số lượng
+                            const existingQuantity = parseInt(existingRow.find('td:nth-child(3)').text());
+
+                            const newQuantity = existingQuantity + inputQuantity;
+
+                            // Cập nhật số lượng trong bảng
+                            existingRow.find('td:nth-child(3)').text(newQuantity);
 
                             // Cập nhật lại số lượng tồn kho
-                            const remainingQuantity = currentQuantity -
-                                inputQuantity;
-                            $(`#batch-table tr[data-batch-number="${batchNumber}"] td:nth-child(2)`)
-                                .text(remainingQuantity);
-                            $(`#batch-table tr[data-batch-number="${batchNumber}"]`)
-                                .data('current-quantity', remainingQuantity);
+                            const remainingQuantity = currentQuantity - newQuantity;
+                            const batchRow = $(`#batch-table tr[data-batch-number="${batchNumber}"]`);
+
+                            if (batchRow.length > 0) {
+                                batchRow.find('td:nth-child(2)').text(remainingQuantity);
+                                batchRow.data('current-quantity', remainingQuantity);
+                            }
                         } else {
-                            // Nếu số lô chưa tồn tại, thêm dòng mới vào bảng
+                            // Nếu lô chưa tồn tại, thêm dòng mới vào bảng
                             const newRow = `
-                                <tr data-batch-number="${batchNumber}">
-                                    <td>${$('#material_code option:selected').text()}</td>
-                                    <td>${batchNumber}</td>
-                                    <td>${inputQuantity}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-dark edit-material" style="font-size:10px"><i class="fa fa-edit"></i></button>
-                                        <button type="button" class="btn btn-danger btn-sm remove-material" style="font-size:10px"><i class="fa fa-trash"></i></button>
+                            <tr data-batch-number="${batchNumber}" data-equipment-code="${equipmentCode}">
+                            <td>${equipmentName}</td>
+                            <td>${batchNumber}</td>
+                            <td>${inputQuantity}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-dark edit-material" style="font-size:10px"><i class="fa fa-edit"></i></button>
+                                <button type="button" class="btn btn-danger btn-sm remove-material" style="font-size:10px"><i class="fa fa-trash"></i></button>
                                     </td>
-                                </tr>`;
+                            </tr>`;
                             materialListBody.append(newRow);
-                            $('#no-material-alert')
-                                .remove(); // Xóa alert khi không có vật tư
+
+                            $('#no-material-alert').remove();
 
                             // Cập nhật số lượng tồn kho
-                            const remainingQuantity = currentQuantity -
-                                inputQuantity;
-                            $(`#batch-table tr[data-batch-number="${batchNumber}"] td:nth-child(2)`)
-                                .text(remainingQuantity);
-                            $(`#batch-table tr[data-batch-number="${batchNumber}"]`)
-                                .data('current-quantity', remainingQuantity);
+                            const remainingQuantity = currentQuantity - inputQuantity;
+                            const batchRow = $(`#batch-table tr[data-batch-number="${batchNumber}"]`);
+
+                            if (batchRow.length > 0) {
+                                batchRow.find('td:nth-child(2)').text(remainingQuantity);
+                                batchRow.data('current-quantity', remainingQuantity);
+                            } else {
+                                // Nếu dòng lô hàng chưa tồn tại trong bảng batch, có thể thêm mới ở đây
+                                const newBatchRow = `
+                                    <tr data-batch-number="${batchNumber}">
+                                        <td>${batchNumber}</td>
+                                        <td>${remainingQuantity}</td>
+                                    </tr>`;
+                                $('#batch-table tbody').append(newBatchRow);
+                            }
                         }
 
-                        // Đóng modal sau khi lưu
                         $('#quantityModal').modal('hide');
                     });
                 },
@@ -213,12 +215,24 @@ $(document).ready(function () {
         if ($('#material-list-body').children().length === 0) {
             $('#material-list-body').append(`
                 <tr id="no-material-alert">
-                    <td colspan="4" class="text-center pe-0 px-0" style="box-shadow: none !important;">
-                        <div class="alert alert-warning mb-0" role="alert">
-                            Chưa có vật tư nào được thêm vào danh sách.
-                        </div>
-                    </td>
-                </tr>
+                                <td colspan="12" class="text-center">
+                                    <div class="alert alert-secondary d-flex flex-column align-items-center justify-content-center p-4"
+                                        role="alert"
+                                        style="border: 2px dashed #6c757d; background-color: #f8f9fa; color: #495057;">
+                                        <div class="mb-3">
+                                            <i class="fas fa-file-invoice" style="font-size: 36px; color: #6c757d;"></i>
+                                        </div>
+                                        <div class="text-center">
+                                            <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thông tin phiếu
+                                                xuất trống</h5>
+                                            <p style="font-size: 14px; color: #6c757d; margin: 0;">
+                                                Hiện tại chưa có phiếu xuất nào được thêm vào. Vui lòng kiểm tra lại hoặc
+                                                tạo mới phiếu xuất để bắt đầu.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
             `);
         }
 
@@ -313,11 +327,9 @@ $(document).ready(function () {
     function updateMaterialListInput() {
         const materialList = [];
 
-        // Lấy equipment_code từ select
-        const equipmentCode = $('#material_code').val();
-
         $('#material-list-body tr').each(function () {
             const batchNumber = $(this).data('batch-number'); // Lấy số lô từ thuộc tính data
+            const equipmentCode = $(this).data('equipment-code'); // Lấy equipment_code từ thuộc tính data
             const quantity = $(this).find('td:nth-child(3)').text(); // Lấy số lượng từ cột thứ 3
 
             if (batchNumber && quantity) { // Kiểm tra nếu có dữ liệu
@@ -332,6 +344,7 @@ $(document).ready(function () {
         // Lưu mảng dữ liệu vật tư dưới dạng JSON vào input ẩn
         $('#material_list_input').val(JSON.stringify(materialList));
     }
+
 
     // Khi form submit, gọi hàm để lưu dữ liệu vào input ẩn
     $('#warehouse-export-form').on('submit', function () {

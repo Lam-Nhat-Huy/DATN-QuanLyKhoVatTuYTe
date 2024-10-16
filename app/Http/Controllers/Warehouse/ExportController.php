@@ -63,7 +63,9 @@ class ExportController extends Controller
 
         if ($request->ajax()) {
             $equipment_code = $request->input('equipment_code');
-            $inventories = Inventories::where('equipment_code', $equipment_code)->get();
+            $inventories = Inventories::with('equipments')
+                ->where('equipment_code', $equipment_code)
+                ->get();
 
             return response()->json($inventories);
         }

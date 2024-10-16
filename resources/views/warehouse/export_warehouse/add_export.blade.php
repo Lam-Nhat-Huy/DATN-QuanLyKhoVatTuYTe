@@ -80,10 +80,21 @@
                                 </thead>
                                 <tbody id="material-list-body">
                                     <tr id="no-material-alert">
-                                        <td colspan="4" class="text-center pe-0 px-0"
-                                            style="box-shadow: none !important;">
-                                            <div class="alert alert-warning mb-0" role="alert">
-                                                Chưa có vật tư nào được thêm vào danh sách.
+                                        <td colspan="12" class="text-center">
+                                            <div class="alert alert-secondary d-flex flex-column align-items-center justify-content-center p-4"
+                                                role="alert"
+                                                style="border: 2px dashed #6c757d; background-color: #f8f9fa; color: #495057;">
+                                                <div class="mb-3">
+                                                    <i class="fas fa-file-invoice" style="font-size: 36px; color: #6c757d;"></i>
+                                                </div>
+                                                <div class="text-center">
+                                                    <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thông tin phiếu
+                                                        xuất trống</h5>
+                                                    <p style="font-size: 14px; color: #6c757d; margin: 0;">
+                                                        Hiện tại chưa có phiếu xuất nào được thêm vào. Vui lòng kiểm tra lại hoặc
+                                                        tạo mới phiếu xuất để bắt đầu.
+                                                    </p>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
