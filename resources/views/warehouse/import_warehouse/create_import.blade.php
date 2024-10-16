@@ -18,6 +18,8 @@
 
         $d_none_update = 'd-none';
 
+        $hidden = 'd-none';
+
         $d_none_temp = '';
     } elseif ($action == 'create') {
         $action = route('warehouse.store_import');
@@ -28,6 +30,8 @@
 
         $d_none_update = 'd-none';
 
+        $hidden = '';
+
         $d_none_temp = '';
     } elseif ($action == 'update') {
         $action = route('warehouse.update_import', request('code'));
@@ -37,6 +41,8 @@
         $d_none_save = 'd-none';
 
         $d_none_update = '';
+
+        $hidden = '';
 
         $d_none_temp = 'd-none';
     }
@@ -50,6 +56,12 @@
             </h3>
 
             <div class="card-toolbar">
+                <button type="button" id="random-btn" class="btn rounded-pill btn-sm btn-info me-2 {{ $hidden }}">
+                    <span class="align-items-center d-flex">
+                        <i class="fa fa-random me-1"></i>
+                        Dữ Liệu Mẫu
+                    </span>
+                </button>
                 <a href="{{ route('warehouse.import') }}" class="btn btn-sm btn-dark rounded-pill">
                     <i class="fa fa-arrow-left me-1" style="margin-bottom: 2px;"></i>Trở Lại
                 </a>
@@ -1721,6 +1733,55 @@
                 cVATErr.innerText = '';
             }
         }
+
+        document.getElementById('random-btn').addEventListener('click', function(event) {
+            function getRandomString(length) {
+                let result = '';
+                const characters = '0123456789';
+                const charactersLength = characters.length;
+                for (let i = 0; i < length; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                }
+                return result;
+            }
+
+            // Hàm tạo số ngẫu nhiên trong khoảng
+            function getRandomNumber(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function getRandomArr(item) {
+                return item[Math.floor(Math.random() * item.length)];
+            }
+
+            const allSuppliers = @json($suppliers->pluck('code')->toArray());
+            const allEquipments = @json($equipmentsWithStock->pluck('code')->toArray());
+
+            // Lọc các thiết bị chưa được thêm
+            const availableEquipments = allEquipments.filter(function(equipment) {
+                return !addedEquipments.includes(equipment); // Loại bỏ các thiết bị đã thêm
+            });
+
+            // Gán dữ liệu ngẫu nhiên vào các trường
+            document.getElementById('supplier_code').value = getRandomArr(allSuppliers);
+            document.getElementById('receipt_no').value = 'LH' + getRandomNumber(1000,
+                9999);
+            document.getElementById('note').value = 'Nhập Kho Thiết Bị Mới';
+            document.getElementById('equipment').value = getRandomArr(availableEquipments);
+            document.getElementById('price').value = getRandomNumber(50000,
+                500000);
+            document.getElementById('product_date').value = new Date().toISOString().split('T')[
+                0];
+            document.getElementById('expiry_date').value = new Date(new Date().setFullYear(new Date()
+                .getFullYear() + 1)).toISOString().split('T')[0];
+            document.getElementById('batch_number').value = 'LH' + getRandomString(
+                4);
+            document.getElementById('quantity').value = getRandomNumber(50,
+                300);
+            document.getElementById('discount_rate').value = getRandomNumber(0,
+                30);
+            document.getElementById('VAT').value = getRandomNumber(5, 20);
+        });
     </script>
     <script>
         // Thêm nhà cung cấp

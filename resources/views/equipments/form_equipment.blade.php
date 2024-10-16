@@ -77,6 +77,12 @@
                 <span class="card-label fw-bolder fs-3 mb-1">{{ $title_form }}</span>
             </h3>
             <div class="card-toolbar">
+                <button type="button" id="random-btn" class="btn rounded-pill btn-sm btn-info me-2">
+                    <span class="align-items-center d-flex">
+                        <i class="fa fa-random me-1"></i>
+                        Dữ Liệu Mẫu
+                    </span>
+                </button>
                 <a href="{{ route('equipments.index') }}" class="btn btn-sm btn-dark rounded-pill">
                     <span class="align-items-center d-flex">
                         <i class="fa fa-arrow-left me-1"></i>
@@ -201,7 +207,7 @@
                                         <label class="fw-bold mb-3">Ngày Hết Hạn (Nếu Có)</label>
                                         <input type="date"
                                             class="form-control form-control-sm rounded-pill border border-success"
-                                            name="expiry_date"
+                                            name="expiry_date" id="expiry_date"
                                             value="{{ old('expiry_date', !empty($currentEquipment) ? $currentEquipment->expiry_date : '') }}">
                                         @error('expiry_date')
                                             <div class="message_error">{{ $message }}</div>
@@ -506,6 +512,46 @@
 
 @section('scripts')
     <script>
+        document.getElementById('random-btn').addEventListener('click', function(event) {
+            function getRandomString(length) {
+                let result = '';
+                const characters = '0123456789';
+                const charactersLength = characters.length;
+                for (let i = 0; i < length; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                }
+                return result;
+            }
+
+            // Hàm tạo số ngẫu nhiên trong khoảng
+            function getRandomNumber(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function getRandomArr(item) {
+                return item[Math.floor(Math.random() * item.length)];
+            }
+
+            const equipmentTypes = @json($equipmentTypes->pluck('code')->toArray());
+            const units = @json($units->pluck('code')->toArray());
+            const suppliers = @json($suppliers->pluck('code')->toArray());
+            const country = @json(config('apps.country'));
+
+            // Gán dữ liệu ngẫu nhiên vào các trường
+            document.getElementById('name').value = 'Thiết Bị ' + ['A', 'B', 'C', 'D', 'E', 'F']
+                .sort(() => Math
+                    .random() - 0.5)[0];
+            document.getElementById('equipment_type_code').value = getRandomArr(equipmentTypes);
+            document.getElementById('unit_code').value = getRandomArr(units);
+            document.getElementById('price').value = getRandomNumber(50000,
+                500000);
+            document.getElementById('expiry_date').value = new Date(new Date().setFullYear(new Date()
+                .getFullYear() + 1)).toISOString().split('T')[0];
+            document.getElementById('supplier_code').value = getRandomArr(suppliers);
+            document.getElementById('country').value = getRandomArr(country);
+            document.getElementById('description').value = 'Mô Tả Sản Phẩm';
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const inputFile = document.getElementById('equipment_image');
             const previewImage = document.getElementById('preview-image');

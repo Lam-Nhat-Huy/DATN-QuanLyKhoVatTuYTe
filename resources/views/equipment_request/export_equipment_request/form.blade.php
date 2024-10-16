@@ -42,6 +42,12 @@
                 <span class="card-label fw-bolder fs-3 mb-1">Thông Tin Phiếu Yêu Cầu Xuất Kho</span>
             </h3>
             <div class="card-toolbar">
+                <button type="button" id="random-btn" class="btn rounded-pill btn-sm btn-info me-2">
+                    <span class="align-items-center d-flex">
+                        <i class="fa fa-random me-1"></i>
+                        Dữ Liệu Mẫu
+                    </span>
+                </button>
                 <a href="{{ route('equipment_request.export') }}" class="btn btn-sm btn-dark rounded-pill">
                     <span class="align-items-center d-flex">
                         <i class="fa fa-arrow-left me-1"></i>
@@ -325,6 +331,54 @@
 
 @section('scripts')
     <script>
+        document.getElementById('random-btn').addEventListener('click', function(event) {
+            // Hàm random chuỗi
+            function getRandomString(length) {
+                let result = '';
+                const characters = '0123456789';
+                const charactersLength = characters.length;
+                for (let i = 0; i < length; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                }
+                return result;
+            }
+
+            // Hàm random số
+            function getRandomNumber(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            // Hàm random một phần tử từ mảng
+            function getRandomArr(item) {
+                return item[Math.floor(Math.random() * item.length)];
+            }
+
+            const allDepartments = @json($AllDepartment->pluck('code')->toArray());
+            const allEquipments = @json($AllEquipment->pluck('code')->toArray());
+
+            // Lọc các thiết bị chưa được thêm
+            const availableEquipments = allEquipments.filter(function(equipment) {
+                return !addedEquipments.includes(equipment); // Loại bỏ các thiết bị đã thêm
+            });
+
+            // Nếu còn thiết bị để random
+            if (availableEquipments.length > 0) {
+                const randomDepartmnet = getRandomArr(allDepartments);
+                const randomEquipment = getRandomArr(availableEquipments);
+
+                // Gán dữ liệu random vào form
+                document.getElementById('department_code').value = randomDepartmnet;
+                document.getElementById('note').value = 'Cạn Kiệt Thiết Bị';
+                document.getElementById('reason_export').value = 'Thay đổi thiết bị';
+                document.getElementById('required_date').value = new Date(new Date().setDate(new Date().getDate() +
+                        4))
+                    .toISOString()
+                    .split('T')[0];
+                document.getElementById('equipment').value = randomEquipment;
+                document.getElementById('quantity').value = getRandomNumber(50, 300);
+            }
+        });
+
         function countDown() {
             let timeLeft = 20;
             const countdownElement = document.getElementById('countdown');

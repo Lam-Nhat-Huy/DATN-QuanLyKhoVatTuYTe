@@ -61,8 +61,7 @@
                             <div class="mb-5">
                                 <img id="preview-avatar" class="border border-dark rounded-circle"
                                     src="{{ !empty($firstUser->avatar) ? asset('storage/' . $firstUser->avatar) : 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png' }}"
-                                    style="width: 155px !important; height: 155px !important;"
-                                    alt="image">
+                                    style="width: 155px !important; height: 155px !important;" alt="image">
                             </div>
 
                             <div class="fv-row mb-5 text-center">
@@ -389,14 +388,14 @@
             // Tạo dữ liệu ngẫu nhiên
             const randomLastName = 'Nguyễn';
 
-            const randomFirstName = ['Văn An', 'Thị Bích', 'Thị Cúc', 'Kiều Duyên', 'Chí Nam'].sort(() => Math
+            const randomFirstName = ['Văn A', 'Thị B', 'Thị C', 'Văn D', 'Văn E'].sort(() => Math
                 .random() - 0.5)[0];
 
             const cleanFirstName = removeDiacritics(randomFirstName);
             const cleanLastName = removeDiacritics(randomLastName);
 
             const randomEmail = (cleanFirstName + cleanLastName + Math.floor(Math.random() * 100))
-                .replace(/\s+/g, '').toLowerCase() + '@example.com';
+                .replace(/\s+/g, '').toLowerCase() + '@gmail.com';
 
             const randomPhone = '0' + Math.floor(Math.random() * 1000000000);
 

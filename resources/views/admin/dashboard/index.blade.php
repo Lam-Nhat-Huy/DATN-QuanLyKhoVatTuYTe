@@ -27,7 +27,7 @@
                     <div class="modal-header justify-content-center">
                         <h3 class="modal-title text-danger" id="DetailModal">BEESOFT THÔNG BÁO</h3>
                     </div>
-                    <div class="modal-body" id="notification_content">
+                    <div class="modal-body text-center" id="notification_content">
                         {!! $getImportantNotification->content !!}
                     </div>
                     <div class="modal-footer">

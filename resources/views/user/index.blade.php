@@ -198,7 +198,7 @@
                                                                                         <td class="fw-semibold">Năm Sinh:
                                                                                         </td>
                                                                                         <td class="text-dark">
-                                                                                            {{ $item->birth_day }}</td>
+                                                                                            {{ \Carbon\Carbon::parse($item->birth_day)->format('d-m-Y') }}</td>
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="fw-semibold">Giới Tính:

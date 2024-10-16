@@ -202,7 +202,7 @@ class EquipmentRequestController extends Controller
 
         $action = 'create';
 
-        $AllSuppiler = Suppliers::orderBy('created_at', 'DESC')->get();
+        $AllSupplier = Suppliers::orderBy('created_at', 'DESC')->get();
 
         $AllEquipment = Equipments::orderBy('created_at', 'DESC')->get();
 
@@ -236,7 +236,7 @@ class EquipmentRequestController extends Controller
             }
         }
 
-        return view("{$this->route}.import_equipment_request.form", compact('title', 'action', 'AllSuppiler', 'AllEquipment'));
+        return view("{$this->route}.import_equipment_request.form", compact('title', 'action', 'AllSupplier', 'AllEquipment'));
     }
 
     public function store_import_equipment_request(Request $request)

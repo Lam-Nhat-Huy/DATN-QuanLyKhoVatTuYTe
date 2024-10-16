@@ -20,6 +20,8 @@
         $d_none_update = 'd-none';
 
         $d_none_temp = '';
+
+        $hidden = '';
     } else {
         $action = route('equipment_request.edit_import', request('code'));
 
@@ -32,6 +34,8 @@
         $d_none_update = '';
 
         $d_none_temp = 'd-none';
+
+        $hidden = '';
     }
 @endphp
 
@@ -42,6 +46,12 @@
                 <span class="card-label fw-bolder fs-3 mb-1">Thông Tin Phiếu Yêu Cầu Mua Hàng</span>
             </h3>
             <div class="card-toolbar">
+                <button type="button" id="random-btn" class="btn rounded-pill btn-sm btn-info me-2 {{ $hidden }}">
+                    <span class="align-items-center d-flex">
+                        <i class="fa fa-random me-1"></i>
+                        Dữ Liệu Mẫu
+                    </span>
+                </button>
                 <a href="{{ route('equipment_request.import') }}" class="btn btn-sm btn-dark rounded-pill">
                     <span class="align-items-center d-flex">
                         <i class="fa fa-arrow-left me-1"></i>
@@ -59,7 +69,7 @@
                             <select name="supplier_code" id="supplier_code" onchange="changeSupplier()"
                                 class="form-select form-select-sm border border-success rounded-pill ps-5">
                                 <option value="0">Chọn Nhà Cung Cấp...</option>
-                                @foreach ($AllSuppiler as $item)
+                                @foreach ($AllSupplier as $item)
                                     <option value="{{ $item->code }}" id="option_supplier_{{ $item->code }}"
                                         {{ old('supplier_code', $editForm->supplier_code ?? '') == $item->code ? 'selected' : '' }}>
                                         {{ $item->name }}
@@ -250,7 +260,7 @@
                                 </tr>
                             </thead>
                             <tbody id="supplier-list">
-                                @foreach ($AllSuppiler as $item)
+                                @foreach ($AllSupplier as $item)
                                     <tr class="hover-table pointer" id="supplier-{{ $item->code }}">
                                         <td>{{ $item->name }}</td>
                                         <td class="text-center">
@@ -301,6 +311,49 @@
 
 @section('scripts')
     <script>
+        document.getElementById('random-btn').addEventListener('click', function(event) {
+            // Hàm random chuỗi
+            function getRandomString(length) {
+                let result = '';
+                const characters = '0123456789';
+                const charactersLength = characters.length;
+                for (let i = 0; i < length; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                }
+                return result;
+            }
+
+            // Hàm random số
+            function getRandomNumber(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            // Hàm random một phần tử từ mảng
+            function getRandomArr(item) {
+                return item[Math.floor(Math.random() * item.length)];
+            }
+
+            const allSuppliers = @json($AllSupplier->pluck('code')->toArray());
+            const allEquipments = @json($AllEquipment->pluck('code')->toArray());
+
+            // Lọc các thiết bị chưa được thêm
+            const availableEquipments = allEquipments.filter(function(equipment) {
+                return !addedEquipments.includes(equipment); // Loại bỏ các thiết bị đã thêm
+            });
+
+            // Nếu còn thiết bị để random
+            if (availableEquipments.length > 0) {
+                const randomSupplier = getRandomArr(allSuppliers);
+                const randomEquipment = getRandomArr(availableEquipments);
+
+                // Gán dữ liệu random vào form
+                document.getElementById('supplier_code').value = randomSupplier;
+                document.getElementById('note').value = 'Cạn Kiệt Thiết Bị';
+                document.getElementById('equipment').value = randomEquipment;
+                document.getElementById('quantity').value = getRandomNumber(50, 300);
+            }
+        });
+
         function countDown() {
             let timeLeft = 20;
             const countdownElement = document.getElementById('countdown');
