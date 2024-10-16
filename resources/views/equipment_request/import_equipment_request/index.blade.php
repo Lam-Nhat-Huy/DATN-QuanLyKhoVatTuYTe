@@ -34,7 +34,7 @@
                 <div class="col-lg-3 col-md-4 col-sm-12">
                     <select name="spr" class="mt-2 mb-2 form-select form-select-sm rounded-pill setupSelect2 w-100">
                         <option value="" selected>--Theo Nhà Cung Cấp--</option>
-                        @foreach ($AllSuppiler as $item)
+                        @foreach ($AllSupplier as $item)
                             <option value="{{ $item->code }}" {{ request()->spr == $item->code ? 'selected' : '' }}>
                                 {{ $item->name }}</option>
                         @endforeach

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Notification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Notification\CreateNotificationRequest;
 use App\Http\Requests\Notification\UpdateNotificationRequest;
-use App\Models\Notification_types;
 use App\Models\Notifications;
 use App\Models\Users;
 use Illuminate\Http\Request;
@@ -25,11 +24,9 @@ class NotificationController extends Controller
     {
         $title = 'Thông Báo';
 
-        $AllNotificationType = Notification_types::all();
-
         $AllUser = Users::all();
 
-        $AllNotification = $this->callModel::with(['notification_types', 'users'])
+        $AllNotification = $this->callModel::with(['users'])
             ->orderBy('created_at', 'DESC')
             ->whereIn('status', [0, 1])
             ->where('deleted_at', null);
@@ -92,14 +89,14 @@ class NotificationController extends Controller
             return redirect()->route('notification.index');
         }
 
-        return view("{$this->route}.notification", compact('title', 'AllNotification', 'AllUser', 'AllNotificationType'));
+        return view("{$this->route}.notification", compact('title', 'AllNotification', 'AllUser'));
     }
 
     public function notification_trash(Request $request)
     {
         $title = 'Thông Báo';
 
-        $AllNotificationTrash = $this->callModel::with(['notification_types', 'users'])
+        $AllNotificationTrash = $this->callModel::with(['users'])
             ->orderBy('deleted_at', 'DESC')
             ->onlyTrashed()
             ->paginate(10);
@@ -167,9 +164,7 @@ class NotificationController extends Controller
 
         $action = 'create';
 
-        $allNotificationType = Notification_types::orderBy('created_at', 'DESC')->get();
-
-        return view("{$this->route}.notification_form", compact('title', 'action', 'title_form', 'allNotificationType'));
+        return view("{$this->route}.notification_form", compact('title', 'action', 'title_form'));
     }
 
     public function notification_create(CreateNotificationRequest $request)
@@ -185,18 +180,20 @@ class NotificationController extends Controller
 
             $data['updated_at'] = null;
 
+            $data['notification_type'] = $request->notification_type;
+
             $data['important'] = $request->has('important') ? 1 : 0;
 
             $data['status'] = $request->has('status') ? 1 : 0;
 
-            $data['lock_warehouse'] = $request->has('lock_warehouse') ? 1 : 0;
+            $data['lock_warehouse'] = $data['notification_type'];
 
             if ($request->important == 1) {
                 $this->callModel::where('important', 1)
                     ->update(['important' => 0]);
             }
 
-            if ($request->lock_warehouse == 1) {
+            if ($data['notification_type'] == 1) {
                 $this->callModel::where('lock_warehouse', 1)
                     ->update(['lock_warehouse' => 0]);
             }
@@ -215,29 +212,27 @@ class NotificationController extends Controller
         if ($data) {
             $data['updated_at'] = now();
 
-            // Thiết lập thông báo là mới nếu cần
             $data['important'] = $request->has('important') ? 1 : 0;
-            $data['status'] = $request->has('status') ? 1 : 0; // hoặc bạn có thể đặt cố định 'status' => 0 để đánh dấu là mới
 
-            $data['lock_warehouse'] = $request->has('lock_warehouse') ? 1 : 0;
+            $data['status'] = $request->has('status') ? 1 : 0;
 
-            // Đảm bảo chỉ có 1 thông báo "quan trọng" cùng lúc
+            $data['notification_type'] = $request->notification_type;
+
+            $data['lock_warehouse'] = $data['notification_type'];
+
             if ($request->important == 1) {
                 $this->callModel::where('important', 1)
                     ->update(['important' => 0]);
             }
 
-            // Đảm bảo chỉ có 1 thông báo "khóa kho" cùng lúc
-            if ($request->lock_warehouse == 1) {
+            if ($data['notification_type'] == 1) {
                 $this->callModel::where('lock_warehouse', 1)
                     ->update(['lock_warehouse' => 0]);
             }
 
-            // Cập nhật thông báo
             $rs = $this->callModel::where('code', $code)->update($data);
 
             if ($rs) {
-                // Cập nhật thành công
                 toastr()->success('Đã cập nhật thông báo');
                 return redirect()->route('notification.index');
             }
@@ -256,61 +251,9 @@ class NotificationController extends Controller
 
         $action = 'edit';
 
-        $allNotificationType = Notification_types::all();
-
         $firstNotification = $this->callModel::where('code', $code)->first();
 
-        return view("{$this->route}.notification_form", compact('title', 'action', 'title_form', 'allNotificationType', 'firstNotification'));
-    }
-
-
-    public function create_notification_type(Request $request)
-    {
-        if (!empty($request->notification_type_name)) {
-
-            $rs = Notification_types::create([
-                'name' => $request->notification_type_name,
-            ]);
-
-            if ($rs) {
-
-                toastr()->success('Đã thêm loại thông báo');
-
-                return redirect()->back();
-            }
-
-            toastr()->error('Xảy ra lỗi, thử lại sau');
-
-            return redirect()->back();
-        }
-    }
-
-    public function delete_notification_type($id)
-    {
-        if (!empty($id)) {
-
-            $checkExists = Notifications::where('notification_type', $id)->exists();
-
-            if ($checkExists) {
-
-                toastr()->error('Không thể xóa');
-
-                return redirect()->back();
-            }
-
-            $rs = Notification_types::find($id)->delete();
-
-            if ($rs) {
-
-                toastr()->success('Đã xóa loại thông báo');
-
-                return redirect()->back();
-            }
-
-            toastr()->error('Xảy ra lỗi, thử lại sau');
-
-            return redirect()->back();
-        }
+        return view("{$this->route}.notification_form", compact('title', 'action', 'title_form', 'firstNotification'));
     }
 
     function generateRandomString($length = 9)

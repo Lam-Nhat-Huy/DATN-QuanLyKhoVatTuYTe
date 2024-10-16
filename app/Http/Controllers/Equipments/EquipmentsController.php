@@ -165,9 +165,9 @@ class EquipmentsController extends Controller
         // Tương tự với các đơn vị tính hoặc nhà cung cấp nếu cần thiết
         $units = Units::orderBy('name', 'ASC')->get();
         $suppliers = Suppliers::orderBy('name', 'ASC')->get();
-        $AllSuppiler = Suppliers::orderBy('name', 'ASC')->get();
+        $AllSupplier = Suppliers::orderBy('name', 'ASC')->get();
 
-        return view('equipments.form_equipment', compact('title', 'action', 'title_form', 'equipmentTypes', 'suppliers', 'units', 'AllSuppiler'));
+        return view('equipments.form_equipment', compact('title', 'action', 'title_form', 'equipmentTypes', 'suppliers', 'units', 'AllSupplier'));
     }
 
     public function create_equipment(CreateEquipmentRequest $request)
@@ -198,7 +198,7 @@ class EquipmentsController extends Controller
         $title_form = 'Cập Nhật Thiết Bị';
         $action = 'edit';
 
-        $AllSuppiler = Suppliers::orderBy('created_at', 'DESC')->get();
+        $AllSupplier = Suppliers::orderBy('created_at', 'DESC')->get();
 
         // Tìm thiết bị bằng code thay vì id
         $currentEquipment = $this->equipmentModal::where('code', $code)->firstOrFail();
@@ -207,7 +207,7 @@ class EquipmentsController extends Controller
         $units = Units::all();
 
         // Truyền currentEquipment sang view với tên 'equipment'
-        return view("equipments.form_equipment", compact('title', 'action', 'title_form', 'currentEquipment', 'equipmentTypes', 'suppliers', 'units', 'AllSuppiler'))
+        return view("equipments.form_equipment", compact('title', 'action', 'title_form', 'currentEquipment', 'equipmentTypes', 'suppliers', 'units', 'AllSupplier'))
             ->with('equipment', $currentEquipment);
     }
 

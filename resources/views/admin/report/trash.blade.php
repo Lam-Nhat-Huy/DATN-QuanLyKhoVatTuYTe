@@ -61,7 +61,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        {{ $item->report_types->name ?? 'N/A' }}
+                                        {{ $item->report_type }}
                                     </td>
                                     <td class="noPpg">
                                         @if (file_exists(storage_path('app/public/reports/' . $item->file)))

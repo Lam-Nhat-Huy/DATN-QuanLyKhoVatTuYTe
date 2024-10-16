@@ -230,7 +230,7 @@
             <div class="col-md-12 ps-10">
                 <div class="card border-0 shadow bg-white rounded-3">
                     <div class="table-responsive rounded bg-white shadow">
-                        <table class="table align-middle table-striped gs-0 gy-4" id="table_list_equipment">
+                        <table class="table align-middle mb-0 table-striped gs-0 gy-4" id="table_list_equipment">
                             <thead class="table-dark">
                                 <tr class="">
                                     @if (!empty($getListIERD))

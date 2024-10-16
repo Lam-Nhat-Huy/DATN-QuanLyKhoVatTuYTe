@@ -32,7 +32,7 @@ class EquipmentRequestController extends Controller
     {
         $title = 'Yêu Cầu Mua Hàng';
 
-        $AllSuppiler = Suppliers::orderBy('created_at', 'DESC')->get();
+        $AllSupplier = Suppliers::orderBy('created_at', 'DESC')->get();
 
         $AllUser = Users::orderBy('created_at', 'DESC')->get();
 
@@ -145,7 +145,7 @@ class EquipmentRequestController extends Controller
 
         $allReceiptNo = Receipts::pluck('receipt_no');
 
-        return view("{$this->route}.import_equipment_request.index", compact('title', 'AllEquipmentRequest', 'AllSuppiler', 'AllUser', 'allReceiptNo'));
+        return view("{$this->route}.import_equipment_request.index", compact('title', 'AllEquipmentRequest', 'AllSupplier', 'AllUser', 'allReceiptNo'));
     }
 
     public function import_equipment_request_trash(Request $request)
@@ -322,7 +322,7 @@ class EquipmentRequestController extends Controller
 
         $action = 'update';
 
-        $AllSuppiler = Suppliers::orderBy('created_at', 'DESC')->get();
+        $AllSupplier = Suppliers::orderBy('created_at', 'DESC')->get();
 
         $AllEquipment = Equipments::orderBy('created_at', 'DESC')->get();
 
@@ -337,7 +337,7 @@ class EquipmentRequestController extends Controller
             ->whereNull('deleted_at')
             ->first();
 
-        return view("{$this->route}.import_equipment_request.form", compact('title', 'action', 'AllEquipment', 'AllSuppiler', 'editForm', 'getList', 'checkList'));
+        return view("{$this->route}.import_equipment_request.form", compact('title', 'action', 'AllEquipment', 'AllSupplier', 'editForm', 'getList', 'checkList'));
     }
 
     public function edit_import_equipment_request(Request $request, $code)

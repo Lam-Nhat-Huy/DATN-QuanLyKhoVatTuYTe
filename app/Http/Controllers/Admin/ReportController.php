@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Report\CreateReportRequest;
 use App\Http\Requests\Report\UpdateReportRequest;
-use App\Models\Report_types;
 use App\Models\Reports;
 use App\Models\Users;
 use Illuminate\Support\Facades\Storage;
@@ -26,20 +25,14 @@ class ReportController extends Controller
     {
         $title = 'Báo Cáo';
 
-        $AllReportType = Report_types::orderBy('created_at', 'DESC')->get();
-
         $AllUser = Users::all();
 
-        $AllReport = $this->callModel::with(['report_types', 'users'])
+        $AllReport = $this->callModel::with('users')
             ->orderBy('created_at', 'DESC')
             ->where('deleted_at', null);
 
         if (isset($request->ur)) {
             $AllReport = $AllReport->where("user_code", $request->ur);
-        }
-
-        if (isset($request->rt)) {
-            $AllReport = $AllReport->where("report_type", $request->rt);
         }
 
         if (isset($request->st)) {
@@ -49,7 +42,8 @@ class ReportController extends Controller
         if (isset($request->kw)) {
             $AllReport = $AllReport->where(function ($query) use ($request) {
                 $query->where('content', 'like', '%' . $request->kw . '%')
-                    ->orWhere('code', 'like', '%' . $request->kw . '%');
+                    ->orWhere('code', 'like', '%' . $request->kw . '%')
+                    ->orWhere('report_type', 'like', '%' . $request->kw . '%');
             });
         }
 
@@ -92,14 +86,14 @@ class ReportController extends Controller
             return redirect()->route('report.index');
         }
 
-        return view("admin.{$this->route}.index", compact('title', 'AllReport', 'AllReportType', 'AllUser'));
+        return view("admin.{$this->route}.index", compact('title', 'AllReport', 'AllUser'));
     }
 
     public function report_trash(Request $request)
     {
         $title = 'Báo Cáo';
 
-        $AllReportTrash = $this->callModel::with(['report_types', 'users'])
+        $AllReportTrash = $this->callModel::with('users')
             ->orderBy('deleted_at', 'DESC')
             ->onlyTrashed()
             ->paginate(10);
@@ -163,39 +157,7 @@ class ReportController extends Controller
 
         $action = 'create';
 
-        $AllReportType = Report_types::orderBy('created_at', 'DESC')->get();
-
-        return view("admin.{$this->route}.form", compact('title', 'title_form', 'action', 'AllReportType'));
-    }
-
-    public function create_report_type(Request $request)
-    {
-        if (isset($request->name)) {
-
-            Report_types::create(['name' => $request->name]);
-
-            toastr()->success('Đã thêm loại báo cáo');
-
-            return redirect()->route('report.insert_report');
-        }
-    }
-
-    public function delete_report_type($id)
-    {
-        $checkExists = Reports::where('report_type', $id)->exists();
-
-        if ($checkExists) {
-
-            toastr()->error('Không thể xóa');
-
-            return redirect()->back();
-        }
-
-        Report_types::find($id)->delete();
-
-        toastr()->success('Đã xóa loại báo cáo');
-
-        return redirect()->route('report.insert_report');
+        return view("admin.{$this->route}.form", compact('title', 'title_form', 'action'));
     }
 
     public function create(CreateReportRequest $request)
@@ -209,6 +171,8 @@ class ReportController extends Controller
             $request->file->storeAs('public/reports', $fileName);
 
             $data['file'] = $fileName;
+
+            $data['report_type'] = $request->report_type;
 
             $data['code'] = 'RP' . $this->generateRandomString(8);
 
@@ -234,11 +198,9 @@ class ReportController extends Controller
 
         $action = 'update';
 
-        $AllReportType = Report_types::orderBy('created_at', 'DESC')->get();
-
         $FirstReport = $this->callModel::where('code', $code)->first();
 
-        return view("admin.{$this->route}.form", compact('title', 'title_form', 'action', 'AllReportType', 'FirstReport'));
+        return view("admin.{$this->route}.form", compact('title', 'title_form', 'action', 'FirstReport'));
     }
 
     public function edit(UpdateReportRequest $request, $code)
@@ -268,10 +230,11 @@ class ReportController extends Controller
                     unset($data['file']);
                 }
 
+                $data['report_type'] = $request->report_type;
+
                 $data['updated_at'] = now();
 
                 $record->update($data);
-
 
                 toastr()->success('Đã cập nhật báo cáo');
 

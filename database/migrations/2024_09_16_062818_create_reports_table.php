@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('reports', function (Blueprint $table) {
             $table->char('code', 20)->primary();
             $table->char('user_code', 20)->nullable();
-            $table->bigInteger('report_type')->unsigned()->nullable();
+            $table->string('report_type')->nullable();
             $table->text('content');
             $table->string('file');
             $table->boolean('status')->default(0);
@@ -19,7 +19,6 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->foreign('user_code')->references('code')->on('users')->onDelete('set null');
-            $table->foreign('report_type')->references('id')->on('report_types')->onDelete('set null');
         });
     }
 

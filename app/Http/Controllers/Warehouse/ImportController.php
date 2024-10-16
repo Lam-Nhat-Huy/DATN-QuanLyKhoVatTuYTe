@@ -431,7 +431,7 @@ class ImportController extends Controller
 
         $action = 'update';
 
-        $AllSuppiler = Suppliers::orderBy('created_at', 'DESC')->get();
+        $AllSupplier = Suppliers::orderBy('created_at', 'DESC')->get();
 
         $AllEquipment = Equipments::orderBy('created_at', 'DESC')->get();
 
@@ -448,7 +448,7 @@ class ImportController extends Controller
 
         return view("{$this->route}.import_warehouse.create_import", [
             'title' => $title,
-            'suppliers' => $AllSuppiler,
+            'suppliers' => $AllSupplier,
             'equipmentsWithStock' => $AllEquipment,
             'getList' => $getList,
             'checkList' => $checkList,

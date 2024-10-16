@@ -14,7 +14,7 @@ class ReportsSeeder extends Seeder
             [
                 'code' => 'RP59JF423K',
                 'user_code' => 'U001',
-                'report_type' => 1,
+                'report_type' => 'Nhập kho',
                 'content' => 'Welcome to the system!',
                 'file' => 'abc.com',
                 'created_at' => now(),

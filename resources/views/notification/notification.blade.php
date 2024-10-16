@@ -46,11 +46,9 @@
                 <div class="col-lg-2 col-md-4 col-sm-12">
                     <select name="rt" id="rt"
                         class="mt-2 mb-2 form-select form-select-sm rounded-pill border border-success setupSelect2 w-100">
-                        <option value="" selected>--Theo Loại Báo Cáo--</option>
-                        @foreach ($AllNotificationType as $item)
-                            <option value={{ $item->id }} {{ request()->rt == $item->id ? 'selected' : '' }}>
-                                {{ $item->name }}</option>
-                        @endforeach
+                        <option value="" {{ request()->rt == '' ? 'selected' : '' }}>--Theo Loại Báo Cáo--</option>
+                        <option value="0" {{ request()->rt == '0' ? 'selected' : '' }}>Mặc Định</option>
+                        <option value="1" {{ request()->rt == '1' ? 'selected' : '' }}>Kiểm Kho - Khóa Kho</option>
                     </select>
                 </div>
                 <div class="col-lg-2 col-md-4 col-sm-12">
@@ -119,7 +117,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        {{ $item->notification_types->name ?? 'Kiểm Kho' }}
+                                        {{ $item->notification_type == 0 ? 'Mặc Định' : 'Kiểm Kho - Khóa Kho' }}
                                     </td>
                                     <td>
                                         {{ $item->created_at->format('d-m-Y') }}
@@ -197,40 +195,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Modal Duyệt Thông Báo -->
-                                    {{-- <div class="modal fade" id="browse_{{ $item->code }}" data-bs-backdrop="static"
-                                        data-bs-keyboard="false" tabindex="-1" aria-labelledby="checkModalLabel"
-                                        aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content border-0 shadow">
-                                                <div class="modal-header bg-primary">
-                                                    <h5 class="modal-title text-white" id="checkModalLabel">Duyệt
-                                                        Thông Báo</h5>
-                                                    <button type="button" class="btn-close btn-close-white"
-                                                        data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <form action="{{ route('notification.index') }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="browse_notification"
-                                                        value="{{ $item->code }}">
-                                                    <div class="modal-body text-center pb-0">
-                                                        <p class="text-dark mb-4">Bạn có chắc chắn muốn duyệt thông báo
-                                                            này?
-                                                        </p>
-                                                    </div>
-                                                    <div class="modal-footer justify-content-center border-0">
-                                                        <button type="button"
-                                                            class="btn rounded-pill btn-sm btn-secondary px-4"
-                                                            data-bs-dismiss="modal">Đóng</button>
-                                                        <button type="submit"
-                                                            class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">Duyệt</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div> --}}
-
 
                                     {{-- Xóa --}}
                                     <div class="modal fade" id="deleteModal_{{ $item->code }}"

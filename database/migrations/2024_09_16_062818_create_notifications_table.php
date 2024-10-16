@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->char('code', 20)->primary();
             $table->char('user_code', 20)->nullable();
-            $table->bigInteger('notification_type')->unsigned()->nullable();
+            $table->boolean('notification_type')->nullable();
             $table->text('content');
             $table->boolean('important')->default(0)->nullable();
             $table->boolean('status')->default(0);
@@ -21,7 +21,6 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->foreign('user_code')->references('code')->on('users')->onDelete('set null');
-            $table->foreign('notification_type')->references('id')->on('notification_types')->onDelete('set null');
         });
     }
 

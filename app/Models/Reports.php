@@ -29,11 +29,6 @@ class Reports extends Model
         'deleted_at',
     ];
 
-    public function report_types()
-    {
-        return $this->belongsTo(Report_types::class, 'report_type', 'id');
-    }
-
     public function users()
     {
         return $this->belongsTo(Users::class, 'user_code', 'code');

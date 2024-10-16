@@ -22,7 +22,6 @@ class UpdateNotificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'notification_type' => 'not_in:0',
             'content' => 'required',
         ];
     }
@@ -30,7 +29,6 @@ class UpdateNotificationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'notification_type.not_in' => 'Vui lòng chọn loại thông báo',
             'content.required' => 'Nội dung thông báo không được để trống',
         ];
     }

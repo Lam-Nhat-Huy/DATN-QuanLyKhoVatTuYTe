@@ -156,7 +156,18 @@
                                             @foreach ($item['subModule'] as $sub)
                                                 @if (in_array(session('isAdmin'), (array) $sub['user_role']))
                                                     @if (Route::has($sub['route']))
-                                                        @if ($firstLockWarehouse == 1 && ($sub['route'] == 'warehouse.import' || $sub['route'] == 'warehouse.export'))
+                                                        @if (
+                                                            $firstLockWarehouse == 1 &&
+                                                                ($sub['route'] == 'warehouse.import' ||
+                                                                    $sub['route'] == 'warehouse.export' ||
+                                                                    $sub['route'] == 'warehouse.trash' ||
+                                                                    $sub['route'] == 'warehouse.create_import' ||
+                                                                    $sub['route'] == 'warehouse.create_export' ||
+                                                                    $sub['route'] == 'equipment_request.import' ||
+                                                                    $sub['route'] == 'equipment_request.export' ||
+                                                                    $sub['route'] == 'equipment_request.equipments_trash' ||
+                                                                    $sub['route'] == 'equipment_request.insert_equipments' ||
+                                                                    $sub['route'] == 'equipment_request.update_equipments'))
                                                         @else
                                                             <div class="menu-item">
                                                                 <a class="menu-link py-3 {{ in_array(Route::currentRouteName(), (array) $sub['route']) || in_array(Route::currentRouteName(), (array) $sub['route_action']) ? 'active' : '' }}"

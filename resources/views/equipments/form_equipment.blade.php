@@ -460,7 +460,7 @@
                                 </tr>
                             </thead>
                             <tbody id="supplier-list">
-                                @foreach ($AllSuppiler as $item)
+                                @foreach ($AllSupplier as $item)
                                     <tr class="hover-table pointer" id="supplier-{{ $item->code }}">
                                         <td>{{ $item->name }}</td>
                                         <td class="text-center">

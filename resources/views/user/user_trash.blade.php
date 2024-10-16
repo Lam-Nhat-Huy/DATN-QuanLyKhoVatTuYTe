@@ -163,7 +163,7 @@
                                                                                         <td class="fw-semibold">Vai Trò:
                                                                                         </td>
                                                                                         <td class="text-dark">
-                                                                                            {{ $item->position }}</td>
+                                                                                            {{ $item->isAdmin == 1 ? 'Admin' : 'Nhân Viên' }}</td>
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="fw-semibold">Ngày Xóa

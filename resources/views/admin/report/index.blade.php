@@ -30,7 +30,7 @@
         </div>
         <div class="card-body py-1">
             <form action="{{ route('report.index') }}" method="GET" class="row align-items-center">
-                <div class="col-lg-2 col-md-4 col-sm-12">
+                <div class="col-lg-3 col-md-4 col-sm-12">
                     <select name="ur" id="ur"
                         class="mt-2 mb-2 form-select form-select-sm rounded-pill border border-success setupSelect2">
                         <option value="" selected>--Theo Người Tạo--</option>
@@ -40,17 +40,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-lg-2 col-md-3 col-sm-12">
-                    <select name="rt" id="rt"
-                        class="mt-2 mb-2 form-select form-select-sm rounded-pill border border-success setupSelect2">
-                        <option value="" selected>--Theo Loại Báo Cáo--</option>
-                        @foreach ($AllReportType as $item)
-                            <option value={{ $item->id }} {{ request()->rt == $item->id ? 'selected' : '' }}>
-                                {{ $item->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-lg-2 col-md-3 col-sm-12">
+                <div class="col-lg-3 col-md-3 col-sm-12">
                     <select name="st" class="mt-2 mb-2 form-select form-select-sm rounded-pill setupSelect2">
                         <option value="" {{ request()->st == '' ? 'selected' : '' }}>--Theo Trạng Thái--</option>
                         <option value="0" {{ request()->st == '0' ? 'selected' : '' }}>Chưa Duyệt</option>
@@ -60,7 +50,7 @@
                 <div class="col-lg-6 col-md-12 col-sm-12">
                     <div class="row align-items-center">
                         <div class="col-7">
-                            <input type="search" name="kw" placeholder="Tìm Kiếm Mã Báo Cáo.."
+                            <input type="search" name="kw" placeholder="Tìm kiếm mã, loại báo cáo.."
                                 class="mt-2 mb-2 form-control form-control-sm rounded-pill border border-success w-100"
                                 value="{{ request()->kw }}">
                         </div>
@@ -114,10 +104,15 @@
                                         </span>
                                     </td>
                                     <td>
-                                        {{ $item->report_types->name ?? 'N/A' }}
+                                        {{ $item->report_type }}
                                     </td>
                                     <td class="noPpg">
-                                        @if (file_exists(storage_path('app/public/reports/' . $item->file)))
+                                        @if ($item->status == 0 && file_exists(storage_path('app/public/reports/' . $item->file)))
+                                            <a href="{{ asset('storage/reports/' . $item->file) }}" class="pointer"
+                                                style="color: rgb(33, 64, 178);" target="_blank">
+                                                <i class="fa fa-eye me-1"></i>Xem Trước
+                                            </a>
+                                        @elseif(file_exists(storage_path('app/public/reports/' . $item->file)))
                                             <a href="{{ asset('storage/reports/' . $item->file) }}" class="pointer"
                                                 style="color: rgb(33, 64, 178);" download="{{ basename($item->file) }}">
                                                 <i class="fa fa-download me-1"></i>Tải Xuống
@@ -125,7 +120,6 @@
                                         @else
                                             <span class="text-danger">File không khả dụng.</span>
                                         @endif
-
                                     </td>
                                     <td>
                                         @if ($item['status'] == 0)
