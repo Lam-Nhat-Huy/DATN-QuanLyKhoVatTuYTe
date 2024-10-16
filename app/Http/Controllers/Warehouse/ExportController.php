@@ -141,13 +141,35 @@ class ExportController extends Controller
         $export = Exports::where('code', $exportCode)->first();
 
         if (!$export) {
-            return redirect()->back()->with('error', 'Phiếu xuất không tồn tại.');
+            return redirect()->back();
+            toastr()->success('Phiếu xuất không tồn tại.');
+        }
+        if ($export->status) {
+            return redirect()->back();
+            toastr()->success('Phiếu xuất này đã được duyệt.');
         }
 
-        // Cập nhật trạng thái hoặc thực hiện các thao tác cần thiết
-        $export->status = true; // Hoặc một trạng thái khác mà bạn cần
+        $export->status = "1";
         $export->save();
 
-        return redirect()->route('warehouse.export')->with('success', 'Duyệt phiếu thành công.');
+        $exportDetails = Export_details::where('export_code', $exportCode)->get();
+        foreach ($exportDetails as $detail) {
+            $inventory = Inventories::where('equipment_code', $detail->equipment_code)
+                ->where('batch_number', $detail->batch_number)
+                ->first();
+            if ($inventory) {
+                if ($inventory->current_quantity >= $detail->quantity) {
+                    $inventory->current_quantity -= $detail->quantity;
+                    $inventory->save();
+                } else {
+                    return redirect()->back()->with('error', 'Số lượng trong kho không đủ để xuất cho vật tư ' . $detail->equipment_code . ' - Số lô: ' . $detail->batch_number . '.');
+                }
+            } else {
+                return redirect()->back()->with('error', 'Không tìm thấy vật tư trong kho cho ' . $detail->equipment_code . ' - Số lô: ' . $detail->batch_number . '.');
+            }
+        }
+
+        return redirect()->route('warehouse.export');
+        toastr()->success('Tạo phiếu xuất thành công');
     }
 }
