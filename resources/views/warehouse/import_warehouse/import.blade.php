@@ -51,7 +51,7 @@
                                         <td></td>
                                         <td>#{{ $item->code }}</td>
                                         <td>{{ $item->receipt_no }}</td>
-                                        <td class="custom-w">{{ $item->supplier->name }}</td>
+                                        <td class="custom-w">{{ $item->supplier->name ?? 'Không có' }}</td>
                                         <td>{{ $item->user->last_name . ' ' . $item->user->first_name }}</td>
                                         <td>
                                             {{ \Carbon\Carbon::parse($item->receipt_date)->format('d/m/Y') }}
@@ -129,7 +129,7 @@
                                                                                     cấp</strong>
                                                                             </td>
                                                                             <td class="text-dark" style="width: 550px;">
-                                                                                {{ $item->supplier->name }}
+                                                                                {{ $item->supplier->name ?? 'Không có' }}
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -285,7 +285,7 @@
                                             {{ $item->receipt_no }}
                                         </td>
                                         <td class="custom-w">
-                                            {{ $item->supplier->name }}
+                                            {{ $item->supplier->name ?? 'Không có' }}
                                         </td>
                                         <td>
                                             {{ $item->user->last_name . ' ' . $item->user->first_name }}
@@ -368,7 +368,7 @@
                                                                                     cấp</strong>
                                                                             </td>
                                                                             <td class="text-dark" style="width: 550px;">
-                                                                                {{ $item->supplier->name }}
+                                                                                {{ $item->supplier->name ?? 'Không có' }}
                                                                             </td>
                                                                         </tr>
                                                                         <tr>

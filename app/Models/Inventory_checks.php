@@ -24,6 +24,7 @@ class Inventory_checks extends Model
         'check_date',
         'note',
         'status',
+        'equipment_note',
         'created_at',
         'updated_at',
         'deleted_at',

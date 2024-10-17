@@ -89,52 +89,26 @@ function addProductToTable(
     );
 
     if (existingMaterial) {
-        document.getElementById(
-            "importantNotificationContent"
-        ).innerHTML = `Đã thêm tất cả thiết bị vào danh sách. Vui lòng tiến hành kiểm kê kho hàng!`;
-        $("#importantNotificationModal").modal("show");
         return;
     }
 
     var tableBody = document.getElementById("materialList");
     var rowCount = materialData.length;
 
-    var row = `
-    <tr data-index="${rowCount}" class="unchecked">
-        <td>${rowCount + 1}</td>
-        <td class="text-left">${equipment_code}</td>
-        <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</td>
-        <td>${batch_number}</td>
-        <td>${current_quantity}</td>
-        <td>
-            <input type="number" min="0" class="actual-quantity-input" 
-                style="width: 70px; height: 40px; border-radius: 8px;" 
-                oninput="validateQuantity(this, ${rowCount}); checkInputs()">
-        </td>
-        <td class="unequal-count" id="unequal-count-${rowCount}">0</td>
-        <td>
-            <textarea class="equipment_note rounded-3" 
-                placeholder="" name="equipment_note_${rowCount}"
-                style="width: 150px; height: 40px; border-radius: 8px; padding: 5px; font-size: 12px;"></textarea>
-        </td>
-        <td>
-            <a href="#" class="text-dark" title="Xóa thiết bị" onclick="removeProduct(${rowCount})">
-                <i class="fa fa-trash"></i>
-            </a>
-        </td>
-    </tr>
-    `;
-
-    tableBody.insertAdjacentHTML("beforeend", row);
-
-    materialData.push({
-        equipment_code: equipment_code,
-        current_quantity: current_quantity,
+    var product = {
+        name,
+        equipment_code,
+        current_quantity,
         actual_quantity: null,
         unequal: 0,
-        batch_number: batch_number,
-        equipment_note: "", // Sẽ được cập nhật sau khi người dùng nhập
-    });
+        batch_number,
+        equipment_note: "",
+    };
+
+    var row = generateTableRow(rowCount, product);
+    tableBody.insertAdjacentHTML("beforeend", row);
+
+    materialData.push(product);
 
     uncheckedCount++;
     updateCounts();
@@ -143,9 +117,85 @@ function addProductToTable(
         document.getElementById("noDataAlert").style.display = "none";
     }
 
-    // Lắng nghe sự kiện input trên tất cả các textarea để cập nhật equipment_note
+    addListeners();
+    checkInputs();
+}
+
+function populateTableWithProducts() {
+    var tableBody = document.getElementById("materialList");
+    tableBody.innerHTML = "";
+
+    if (!Array.isArray(productDetails)) {
+        return;
+    }
+
+    materialData = [];
+
+    productDetails.forEach((product, index) => {
+        var row = generateTableRow(index, product);
+        tableBody.insertAdjacentHTML("beforeend", row);
+
+        materialData.push({
+            equipment_code: product.equipment_code,
+            current_quantity: product.current_quantity,
+            actual_quantity: product.actual_quantity || 0,
+            unequal: product.unequal || 0,
+            batch_number: product.batch_number,
+            equipment_note: "",
+        });
+    });
+
+    if (productDetails.length === 0) {
+        document.getElementById("noDataAlert").style.display = "table-row";
+    } else {
+        document.getElementById("noDataAlert").style.display = "none";
+    }
+
+    addListeners();
+}
+
+function generateTableRow(index, product) {
+    const productName =
+        product.equipment && product.equipment.name
+            ? product.equipment.name
+            : product.name || "Không có tên";
+    return `
+        <tr data-index="${index}" class="unchecked">
+            <td>${index + 1}</td>
+            <td class="text-left">${product.equipment_code}</td>
+            <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                ${productName}
+            </td>
+            <td>${product.batch_number || ""}</td>
+            <td>${product.current_quantity}</td>
+            <td>
+                <input type="number" min="0" class="actual-quantity-input" 
+                    value="${product.actual_quantity || ""}" 
+                    oninput="validateQuantity(this, ${index}); checkInputs(); updateUnequal(${index}, this.value)" 
+                    style="width: 70px; height: 40px; border-radius: 8px;" />
+            </td>
+            <td class="unequal-count" id="unequal-count-${index}">
+                ${product.unequal || 0}
+            </td>
+            <td>
+                <textarea class="equipment_note rounded-3" 
+                    name="equipment_note_${index}" 
+                    style="width: 150px; height: 40px; border-radius: 8px; padding: 5px; font-size: 12px;">${
+                        product.equipment_note || ""
+                    }</textarea>
+            </td>
+            <td>
+                <a href="#" class="text-dark" title="Xóa thiết bị" onclick="removeProduct(${index})">
+                    <i class="fa fa-trash"></i>
+                </a>
+            </td>
+        </tr>
+    `;
+}
+
+function addListeners() {
     document
-        .querySelectorAll(`textarea[name^="equipment_note_"]`)
+        .querySelectorAll('textarea[name^="equipment_note_"]')
         .forEach((textarea, index) => {
             textarea.addEventListener("input", function () {
                 materialData[index].equipment_note = this.value;
@@ -160,26 +210,34 @@ function addProductToTable(
             if (event.key === "Enter") {
                 event.preventDefault();
                 const nextInput = actualQuantityInputs[index + 1];
-                if (nextInput) {
-                    nextInput.focus();
-                }
+                if (nextInput) nextInput.focus();
             } else if (event.key === "Shift") {
                 event.preventDefault();
                 const prevInput = actualQuantityInputs[index - 1];
-                if (prevInput) {
-                    prevInput.focus();
-                }
+                if (prevInput) prevInput.focus();
             }
         });
     });
-
-    checkInputs(); // Kiểm tra các input khi khởi tạo
 }
+
+function updateUnequal(index, actualQuantity) {
+    const row = document.querySelectorAll("#materialList tr")[index];
+    const currentQuantity = parseInt(row.cells[4].innerText);
+    const unequalInput = row.querySelector(".unequal-input");
+
+    const unequal = Math.abs(currentQuantity - actualQuantity);
+    unequalInput.value = unequal;
+
+    materialData[index].actual_quantity = parseInt(actualQuantity) || 0;
+}
+
+populateTableWithProducts();
 
 function submitMaterials() {
     const actualQuantityInputs = document.querySelectorAll(
         ".actual-quantity-input"
     );
+    const equipmentNoteInputs = document.querySelectorAll(".equipment_note");
     let hasEmptyInput = false;
 
     actualQuantityInputs.forEach((input) => {
@@ -200,7 +258,6 @@ function submitMaterials() {
     var created_by = document.getElementById("created_by").value;
     var status = document.querySelector('button[name="status"]:focus').value;
 
-    // Update materialData and calculate unequal values
     materialData = materialData.map(function (material, index) {
         const actualQuantity =
             parseInt(
@@ -208,14 +265,17 @@ function submitMaterials() {
             ) || 0;
         const unequal = Math.abs(material.current_quantity - actualQuantity);
 
+        const equipmentNote = equipmentNoteInputs[index].value.trim();
+
         return {
             ...material,
             check_date: checkDate,
             note: note,
             status: status,
             created_by: created_by,
-            actual_quantity: actualQuantity, // Use the latest input value
-            unequal: unequal, // Calculate the new unequal value
+            actual_quantity: actualQuantity,
+            unequal: unequal,
+            equipment_note: equipmentNote,
         };
     });
 
@@ -379,7 +439,6 @@ function updateCounts() {
         (material) => material.actual_quantity === null
     ).length;
 
-    // Cập nhật hiển thị số lượng
     document.getElementById("totalCount").textContent = totalCount;
     document.getElementById("matchedCount").textContent = matchedCount;
     document.getElementById("mismatchedCount").textContent = mismatchedCount;

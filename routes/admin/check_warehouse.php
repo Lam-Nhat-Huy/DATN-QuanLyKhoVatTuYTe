@@ -18,4 +18,8 @@ Route::prefix('check_warehouse')->middleware(CheckLogin::class)->group(function 
     Route::post('check-warehouse/cancel/{code}', [CheckWarehouseController::class, 'cancelCheck'])->name('check_warehouse.cancel');
 
     Route::post('/check-warehouse/delete/{code}', [CheckWarehouseController::class, 'deleteCheck'])->name('check_warehouse.delete');
+
+    Route::get('/inventory-edit/{code}', [CheckWarehouseController::class, 'edit'])->name('inventory_check.edit');
+
+    Route::post('/inventory-update/{code}', [CheckWarehouseController::class, 'update'])->name('inventory_check.update');
 });
