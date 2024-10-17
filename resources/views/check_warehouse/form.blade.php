@@ -189,10 +189,20 @@
 
 @section('content')
     <div class="container mt-4">
-        <form action="{{ route('check_warehouse.store') }}" method="POST">
+
+        @php
+            $code = $inventoryCheck['code'] ?? 'Mã không tồn tại';
+            $route =
+                isset($action) && $action === 'edit'
+                    ? route('inventory_check.update', $code)
+                    : route('check_warehouse.store');
+        @endphp
+
+
+        <form action="{{ $route }}" method="POST">
             @csrf
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-9">
                     <div class="card border-0 shadow-lg p-4 bg-body rounded-4">
                         <div class="container mt-4 position-relative px-0 pe-0">
                             <div class="input-group mb-3">
@@ -278,18 +288,19 @@
                             <table class="table text-center align-middle" style="background-color: #f4f6f9;">
                                 <thead style="background-color: #000000;">
                                     <tr>
-                                        <th style="width: 15%;">STT</th>
+                                        <th style="width: 10%;">STT</th>
                                         <th style="width: 15%;">Mã thiết bị</th>
                                         <th style="width: 15%;">Tên thiết bị</th>
-                                        <th style="width: 15%;">Số lô</th>
+                                        <th style="width: 10%;">Số lô</th>
                                         <th style="width: 15%;">Tồn kho</th>
                                         <th style="width: 15%;">Thực tế</th>
-                                        <th style="width: 10%;">SL lệch</th>
-                                        <th style="width: 25%;"></th>
+                                        <th style="width: 10%;">Lệch</th>
+                                        <th style="width: 25%;">Ghi chú</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody id="materialList">
-                                    {{-- Thông tin sau khi được thêm vật tư từ FORM 1 sẽ được hiển thị ở đây --}}
+                                    {{-- Thông tin danh sách thiết bị sẽ được hiển thị ở đây --}}
                                     <tr id="noDataAlert">
                                         <td colspan="12" class="text-center">
                                             <div class="alert alert-secondary d-flex flex-column align-items-center justify-content-center p-4"
@@ -297,11 +308,9 @@
                                                 style="border: 2px dashed #6c757d; background-color: #f8f9fa; color: #495057; height: 290px;">
                                                 <div class="mb-3">
                                                     <i class="fas fa-box" style="font-size: 36px; color: #6c757d;"></i>
-                                                    <!-- Đổi biểu tượng ở đây -->
                                                 </div>
                                                 <div class="text-center">
-                                                    <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thông
-                                                        tin
+                                                    <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Thông tin
                                                         danh sách kiểm kho trống</h5>
                                                     <p style="font-size: 14px; color: #6c757d; margin: 0;">
                                                         Hiện tại chưa có thiết bị nào được thêm vào danh sách kiểm kho. Vui
@@ -311,7 +320,6 @@
                                             </div>
                                         </td>
                                     </tr>
-
                                 </tbody>
                             </table>
 
@@ -319,12 +327,13 @@
                             <input type="hidden" id="materialData" name="materialData">
                         </div>
 
+
                     </div>
                 </div>
 
 
                 {{-- Giao diện kiểm kho mới --}}
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card border-0 shadow-lg p-4 bg-body rounded-4 mb-5">
                         <div class="d-flex justify-between">
                             <h3 class="mb-4 text-dark text-uppercase">Chi tiết kiểm kho</h3>
@@ -375,6 +384,7 @@
                         <div class="d-grid gap-3">
                             <button name="status" value="0" onclick="submitMaterials()" type="submit"
                                 class="btn btn-lg rounded-pill text-white" style="background-color: #007BFF;">Lưu phiếu
+                                tạm
                             </button>
 
 
@@ -445,9 +455,21 @@
 @endsection
 
 @section('scripts')
-    <script>
-        var products = @json($equipmentsWithStock);
-    </script>
+    @if ($action === 'create')
+        <script>
+            var products = @json($equipmentsWithStock);
+        </script>
+        <script src="{{ asset('js/check_warehouse/check_warehouse.js') }}"></script>
+    @elseif ($action === 'edit')
+        <script>
+            var productDetails = @json($equipmentsWithJson).original;
+            var products = @json($equipmentsWithStock);
+        </script>
+        <script src="{{ asset('js/check_warehouse/update_warehouse.js') }}"></script>
+    @endif
+
+
+
 
     <script>
         document.addEventListener('keydown', function(event) {
@@ -477,5 +499,4 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
-    <script src="{{ asset('js/check_warehouse/check_warehouse.js') }}"></script>
 @endsection

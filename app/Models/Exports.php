@@ -24,6 +24,7 @@ class Exports extends Model
         'note',
         'status',
         'export_date',
+        'created_by'
     ];
 
     public function exportDetail()

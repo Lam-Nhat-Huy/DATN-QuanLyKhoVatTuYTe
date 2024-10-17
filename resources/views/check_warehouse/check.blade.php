@@ -244,9 +244,10 @@
                                                                     <th style="width: 15%;" class="ps-3">Mã thiết bị</th>
                                                                     <th style="width: 15%;">Tên thiết bị</th>
                                                                     <th style="width: 15%;">Số lô</th>
-                                                                    <th style="width: 15%;">Tồn kho</th>
-                                                                    <th style="width: 15%;">Số lượng thực tế</th>
-                                                                    <th style="width: 15%;">Số lượng lệch</th>
+                                                                    <th style="width: 10%;">Tồn kho</th>
+                                                                    <th style="width: 10%;">Số lượng thực tế</th>
+                                                                    <th style="width: 10%;">Số lượng lệch</th>
+                                                                    <th style="width: 20%;">Ghi chú</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -256,7 +257,8 @@
                                                                         data-bs-target="#collapse{{ $detail['equipment_code'] }}"
                                                                         aria-expanded="false"
                                                                         aria-controls="collapse{{ $detail['equipment_code'] }}">
-                                                                        <td class="ps-4">#{{ $detail['equipment_code'] }}
+                                                                        <td class="ps-4 text-left">
+                                                                            #{{ $detail['equipment_code'] }}
                                                                         </td>
                                                                         <td title="{{ $detail->equipment->name }}"
                                                                             style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -285,6 +287,15 @@
                                                                                 <span>Chưa lệch</span>
                                                                             @endif
                                                                         </td>
+                                                                        <td>
+                                                                            <span class="text-gray">
+                                                                                @if (!empty($detail['equipment_note']))
+                                                                                    {{ $detail['equipment_note'] }}
+                                                                                @else
+                                                                                    không có ghi chú
+                                                                                @endif
+                                                                            </span>
+                                                                        </td>
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
@@ -302,8 +313,13 @@
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#browse-{{ $item->code }}" type="button">
                                                         <i class="fas fa-clipboard-check"></i>
-                                                        Duyệt Phiếu
+                                                        Duyệt phiếu
                                                     </button>
+
+                                                    <a href="{{ route('inventory_check.edit', $item->code) }}"
+                                                        class="btn btn-info btn-sm me-2 rounded-pill">
+                                                        <i class="fa fa-edit"></i> Chỉnh sửa
+                                                    </a>
 
                                                     <!-- Nút Xóa phiếu tạm -->
                                                     <button class="btn btn-danger btn-sm me-2 rounded-pill"
@@ -321,20 +337,20 @@
                                                     </button>
 
                                                     <!-- Nút Hủy Phiếu -->
-                                                    <button class="btn btn-danger btn-sm rounded-pill"
+                                                    {{-- <button class="btn btn-danger btn-sm rounded-pill"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#cancel-{{ $item->code }}">
                                                         <i class="fa fa-times"></i> Hủy Phiếu
-                                                    </button>
+                                                    </button> --}}
                                                 @endif
 
                                                 @if ($item['status'] == 3)
                                                     <!-- Nút Xóa phiếu đã hủy -->
-                                                    <button class="btn btn-danger btn-sm me-2 rounded-pill"
+                                                    {{-- <button class="btn btn-danger btn-sm me-2 rounded-pill"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#delete-{{ $item->code }}">
                                                         <i class="fa fa-trash"></i> Xóa Phiếu
-                                                    </button>
+                                                    </button> --}}
                                                 @endif
 
                                                 <!-- Modal Duyệt Phiếu -->
