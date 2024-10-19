@@ -245,12 +245,13 @@
                                     <label class="col-md-2 col-sm-12 fw-bold text-muted">Vai Trò</label>
                                     <div class="col-10 fv-row">
                                         <span
-                                            class="fw-bolder text-gray-800 fs-6 span-show">{{ !empty($getUserProfile->position) ? $getUserProfile->position : 'N/A' }}
+                                            class="fw-bolder text-gray-800 fs-6 span-show">{{ !empty($getUserProfile->isAdmin) == 1 ? 'Admin' : 'Nhân Viên' }}
                                         </span>
 
                                         <input type="text"
                                             class="form-control form-control-sm rounded-pill border border-success bg-secondary d-none input-edit"
-                                            value="{{ $getUserProfile->position }}" disabled />
+                                            value="{{ !empty($getUserProfile->isAdmin) == 1 ? 'Admin' : 'Nhân Viên' }}"
+                                            disabled />
                                     </div>
                                 </div>
                             </div>

@@ -19,7 +19,6 @@ return new class extends Migration
             $table->date('birth_day')->nullable();
             $table->string('gender', 5);
             $table->string('address', 255)->nullable();
-            $table->string('position', 255)->nullable();
             $table->boolean('isAdmin')->default(false);
             $table->boolean('status')->default(true);
             $table->timestamps();

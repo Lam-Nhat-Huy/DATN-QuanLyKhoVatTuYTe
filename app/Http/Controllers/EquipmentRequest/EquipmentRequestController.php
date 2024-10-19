@@ -221,7 +221,7 @@ class EquipmentRequestController extends Controller
             }
         }
 
-        if (!empty($request->equipment) && !empty($request->quantity)) {
+        if (!empty($request->equipment) && !empty($request->quantity) && !empty($request->price)) {
             $equipment = Equipments::where('code', $request->equipment)->first();
 
             if ($equipment) {
@@ -231,6 +231,7 @@ class EquipmentRequestController extends Controller
                     'inventory' => $equipment->inventories->sum('current_quantity'),
                     'unit' => $equipment->units->name,
                     'quantity' => $request->quantity,
+                    'price' => $request->price,
                     'equipment_code' => $equipment->code,
                 ]);
             }
@@ -280,6 +281,7 @@ class EquipmentRequestController extends Controller
                         'import_request_code' => $insertImportEquipmentRequest->code,
                         'equipment_code' => $equipment['equipment_code'],
                         'quantity' => $equipment['quantity'],
+                        'price' => $equipment['price'],
                         'status' => $request->input('importEquipmentStatus') == 4 ? 0 : $request->input('importEquipmentStatus'),
                         'created_at' => $insertImportEquipmentRequest->request_date,
                         'updated_at' => null,
@@ -395,6 +397,7 @@ class EquipmentRequestController extends Controller
                     ],
                     [
                         'quantity' => $equipment['quantity'],
+                        'price' => $equipment['price'],
                         'status' => $record->status,
                         'created_at' => now(),
                         'updated_at' => now()

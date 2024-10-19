@@ -137,23 +137,30 @@
                                                             <div class="table-responsive rounded">
                                                                 <table
                                                                     class="table table-striped table-sm table-hover mb-0">
-                                                                    <thead class="fw-bolder bg-danger">
-                                                                        <tr>
+                                                                    <thead class="bg-dark">
+                                                                        <tr class="text-center">
                                                                             <th class="ps-3">STT</th>
-                                                                            <th class="ps-3">Tên thiết bị</th>
+                                                                            <th class="">Tên thiết bị</th>
                                                                             <th>Đơn Vị Tính</th>
-                                                                            <th class="pe-3">Số lượng</th>
+                                                                            <th class="">Số lượng</th>
+                                                                            <th class="">Đơn Giá</th>
+                                                                            <th class="pe-3">Thành Tiền</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         @foreach ($item->import_equipment_request_details as $key => $detail)
-                                                                            <tr class="">
+                                                                            <tr class="text-center">
                                                                                 <td>{{ $key + 1 }}</td>
                                                                                 <td>{{ $detail->equipments->name }}
                                                                                 </td>
                                                                                 <td>{{ $detail->equipments->units->name }}
                                                                                 </td>
                                                                                 <td>{{ $detail->quantity }}</td>
+                                                                                <td>{{ number_format($detail->price, 0, ',', '.') }}
+                                                                                    VND</td>
+                                                                                <td>{{ number_format($detail->quantity * $detail->price, 0, ',', '.') }}
+                                                                                    VND
+                                                                                </td>
                                                                             </tr>
                                                                         @endforeach
                                                                     </tbody>

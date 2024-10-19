@@ -131,12 +131,20 @@
                         <div class="message_error" id="equipment_error"></div>
                     </div>
 
-                    <div class="col-md-6 fv-row">
+                    <div class="col-md-3 fv-row">
                         <label class="{{ $required }} fs-5 fw-bold mb-3">Số Lượng</label>
                         <input type="number" id="quantity" onchange="changeEquipmentQuantity()"
                             class="form-control form-control-sm border border-success rounded-pill" value="0"
                             name="quantity" min="0" />
                         <div class="message_error" id="quantity_error"></div>
+                    </div>
+
+                    <div class="col-md-3 fv-row">
+                        <label class="{{ $required }} fs-5 fw-bold mb-3">Đơn Giá</label>
+                        <input type="number" id="price" onchange="changeEquipmentPrice()"
+                            class="form-control form-control-sm border border-success rounded-pill" value="0"
+                            name="price" min="0" />
+                        <div class="message_error" id="price_error"></div>
                     </div>
                 </div>
             </div>
@@ -151,10 +159,12 @@
                 <table class="table table-striped align-middle gs-0 gy-4" id="table_list_equipment">
                     <thead class="table-dark">
                         <tr class="fw-bolder bg-success">
-                            <th class="ps-10" style="width: 35%;">Thiết Bị</th>
-                            <th class="" style="width: 20%;">Đơn Vị</th>
+                            <th class="ps-10" style="width: 20%;">Thiết Bị</th>
+                            <th class="" style="width: 10%;">Đơn Vị</th>
                             <th class="" style="width: 25%;">Số Lượng</th>
-                            <th class="pe-3 text-center" style="width: 20%;">Hành Động</th>
+                            <th class="" style="width: 25%;">Đơn Giá</th>
+                            <th class="" style="width: 10%;">Thành Tiền</th>
+                            <th class="pe-3 text-center" style="width: 10%;">Hành Động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -167,6 +177,7 @@
                                         <div class="d-flex align-items-center">
                                             <input type="number" id="quantity_change_{{ $item->equipment_code }}"
                                                 value="{{ $item->quantity }}"
+                                                oninput="chanQuantityTr('{{ $item->equipment_code }}'); calculateTotalPriceTr('{{ $item->equipment_code }}');"
                                                 class="form-control form-control-sm border border-success rounded-pill"
                                                 style="width: 30%;">
                                             <div class="message_error d-none ms-2 m-0 p-0"
@@ -176,6 +187,21 @@
                                             </div>
                                         </div>
                                     </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <input type="number" id="price_change_{{ $item->equipment_code }}"
+                                                value="{{ $item->price }}"
+                                                oninput="chanPriceTr('{{ $item->equipment_code }}'); calculateTotalPriceTr('{{ $item->equipment_code }}');"
+                                                class="form-control form-control-sm border border-success rounded-pill"
+                                                style="width: 30%;">
+                                            <div class="message_error d-none ms-2 m-0 p-0"
+                                                id="price_error_{{ $item->equipment_code }}">
+                                                (Giá phải lớn hơn 0)
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td id="total_price_{{ $item->equipment_code }}">
+                                        {{ number_format($item->quantity * $item->price, 0, ',', '.') . ' VND' }}</td>
                                     <td class="text-center">
                                         <span class="btn btn-sm btn-dark pointer rounded-pill"
                                             onclick="removeEquipment('{{ $item->equipment_code }}')">
@@ -351,6 +377,7 @@
                 document.getElementById('note').value = 'Cạn Kiệt Thiết Bị';
                 document.getElementById('equipment').value = randomEquipment;
                 document.getElementById('quantity').value = getRandomNumber(50, 300);
+                document.getElementById('price').value = getRandomNumber(10000, 300000);
             }
         });
 
@@ -390,11 +417,15 @@
                 let quantityInput = document.getElementById(`quantity_change_${equipmentCode}`);
                 let quantity = quantityInput.value.trim();
 
+                let priceInput = document.getElementById(`price_change_${equipmentCode}`);
+                let price = priceInput.value.trim();
+
                 // Đưa dữ liệu vào mảng
                 equipmentList.push({
                     equipment_code: equipmentCode,
                     unit: unit,
-                    quantity: quantity
+                    quantity: quantity,
+                    price: price
                 });
 
             });
@@ -520,6 +551,7 @@
                 let noDataAlert = document.getElementById('noDataAlert');
                 let equipment = document.getElementById('equipment').value;
                 let quantity = document.getElementById('quantity').value;
+                let price = document.getElementById('price').value;
                 let equipment_error = document.getElementById('equipment_error');
                 let quantity_error = document.getElementById('quantity_error');
 
@@ -531,8 +563,13 @@
                 }
 
                 if (quantity <= 0) {
-                    quantity_error.innerText = "Vui lòng nhập số lượng cần mua và phải lớn hơn 0";
+                    quantity_error.innerText = "Số lượng cần mua phải lớn hơn 0";
                 }
+
+                if (price <= 0) {
+                    price_error.innerText = "Giá thiết bị phải lớn hơn 0";
+                }
+
                 if (!equipment ||
                     quantity <= 0) {
                     document.getElementById('loading').style.display = 'none';
@@ -544,7 +581,8 @@
                 let formData = new
                 FormData();
                 formData.append('equipment', equipment);
-                formData.append('quantity', quantity); // AJAX request
+                formData.append('quantity', quantity);
+                formData.append('price', price);
 
                 fetch('{{ route('equipment_request.create_import') }}', {
                         method: 'POST',
@@ -566,14 +604,21 @@
                             let tableBody = document.querySelector('#table_list_equipment tbody');
                             let newRow = document.createElement('tr');
                             newRow.id = `equipment-row-${data.equipment_code}`;
-
+                            let totalPrice = (parseInt(data.quantity, 10) * parseInt(data.price, 10))
+                                .toLocaleString('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND',
+                                    minimumFractionDigits: 0
+                                })
+                                .replace("₫", "VND")
+                                .replace(",00", "");
                             newRow.innerHTML = `
                                 <td>${data.equipment_name} - (Tổng tồn: ${data.inventory})</td>
                                 <td>${data.unit}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <input type="number" id="quantity_change_${data.equipment_code}"
-                                            value="${parseInt(data.quantity, 10)}"
+                                            value="${parseInt(data.quantity, 10)}" oninput="chanQuantityTr('${data.equipment_code}'); calculateTotalPriceTr('${data.equipment_code}');"
                                             class="form-control form-control-sm border border-success rounded-pill" style="width: 30%;">
                                         <div class="message_error d-none ms-2 m-0 p-0"
                                             id="quantity_error_${data.equipment_code}">
@@ -582,6 +627,18 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <input type="number" id="price_change_${data.equipment_code}"
+                                            value="${data.price}" oninput="chanPriceTr('${data.equipment_code}'); calculateTotalPriceTr('${data.equipment_code}');"
+                                            class="form-control form-control-sm border border-success rounded-pill" style="width: 30%;">
+                                        <div class="message_error d-none ms-2 m-0 p-0"
+                                            id="price_error_${data.equipment_code}">
+                                            (Giá phải lớn hơn 0)
+                                        </div>
+                                    </div>
+                                </td>
+                                <td id="total_price_${data.equipment_code}">${totalPrice}</td>
                                 <td class="text-center">
                                     <span class="btn btn-sm btn-dark pointer rounded-pill" onclick="removeEquipment('${data.equipment_code}')">
                                         <i class="fa fa-trash p-0"></i>
@@ -593,6 +650,7 @@
                             // Reset form sau khi thêm thành công
                             document.getElementById('equipment').value = "";
                             document.getElementById('quantity').value = 0;
+                            document.getElementById('price').value = 0;
 
                             // Ẩn các tùy chọn đã thêm trong danh sách thiết bị
                             let equipmentOptions = document.querySelectorAll('#equipment option');
@@ -814,6 +872,15 @@
             }
         }
 
+        function changeEquipmentPrice() {
+            const priceValue = document.getElementById('price').value;
+            const errorMessagePrice = document.getElementById('price_error');
+
+            if (priceValue > 0) {
+                errorMessagePrice.innerText = '';
+            }
+        }
+
         function changeSupplier() {
             const selectedValue2 = document.getElementById('supplier_code').value;
             const errorMessage2 = document.getElementById('supplier_code_error');
@@ -821,6 +888,50 @@
             if (selectedValue2 !== "") {
                 errorMessage2.innerText = '';
             }
+        }
+
+        function chanQuantityTr(equipmentCode) {
+            const qttC = Number(document.getElementById(`quantity_change_${equipmentCode}`).value);
+            const qttE = document.getElementById(`quantity_error_${equipmentCode}`);
+
+            if (qttC > 0) {
+                qttE.classList.add('d-none');
+            } else {
+                qttE.classList.remove('d-none');
+            }
+        }
+
+        function chanPriceTr(equipmentCode) {
+            const priceC = document.getElementById(`price_change_${equipmentCode}`).value;
+            const priceE = document.getElementById(`price_error_${equipmentCode}`);
+
+            if (priceC > 0) {
+                priceE.classList.add('d-none');
+            } else {
+                priceE.classList.remove('d-none');
+            }
+        }
+
+        function calculateTotalPriceTr(equipment_code) {
+            const price = parseFloat(document.getElementById(`price_change_${equipment_code}`).value.replace(/,/g, '')) ||
+                0;
+            const quantity = parseFloat(document.getElementById(`quantity_change_${equipment_code}`).value.replace(/,/g,
+                '')) || 0;
+
+            // Tính toán thành tiền
+            const totalPrice = price * quantity;
+
+            // Định dạng lại thành tiền
+            const formattedTotalPrice = totalPrice.toLocaleString('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                    minimumFractionDigits: 0
+                })
+                .replace("₫", "VND")
+                .replace(",00", "");
+
+            // Cập nhật thành tiền trong HTML
+            document.getElementById(`total_price_${equipment_code}`).innerText = formattedTotalPrice;
         }
     </script>
 @endsection

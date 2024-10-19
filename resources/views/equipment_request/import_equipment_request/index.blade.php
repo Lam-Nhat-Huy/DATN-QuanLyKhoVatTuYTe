@@ -204,9 +204,11 @@
                                                                     <thead class="bg-dark">
                                                                         <tr class="text-center">
                                                                             <th class="ps-3">STT</th>
-                                                                            <th class="ps-3">Tên thiết bị</th>
+                                                                            <th class="">Tên thiết bị</th>
                                                                             <th>Đơn Vị Tính</th>
-                                                                            <th class="pe-3">Số lượng</th>
+                                                                            <th class="">Số lượng</th>
+                                                                            <th class="">Đơn Giá</th>
+                                                                            <th class="pe-3">Thành Tiền</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -218,6 +220,11 @@
                                                                                 <td>{{ $detail->equipments->units->name }}
                                                                                 </td>
                                                                                 <td>{{ $detail->quantity }}</td>
+                                                                                <td>{{ number_format($detail->price, 0, ',', '.') }}
+                                                                                    VND</td>
+                                                                                <td>{{ number_format($detail->quantity * $detail->price, 0, ',', '.') }}
+                                                                                    VND
+                                                                                </td>
                                                                             </tr>
                                                                         @endforeach
                                                                     </tbody>
@@ -229,8 +236,7 @@
                                             </div>
 
                                             <div class="card-body py-5 text-end bg-white">
-                                                <div
-                                                    class="button-group">
+                                                <div class="button-group">
                                                     @if (($item->status == 0 || $item->status == 3) && now()->gt(\Carbon\Carbon::parse($item->request_date)->addDays(3)))
                                                         {{-- Quá hạn yêu cầu 3 ngày --}}
                                                         <!-- Nút Hủy đơn -->
@@ -383,10 +389,10 @@
                                                                                     class="ps-3 text-dark">
                                                                                     STT
                                                                                 </th>
-                                                                                <th style="width: 35%;" class="text-dark">
+                                                                                <th style="width: 30%;" class="text-dark">
                                                                                     Thiết Bị
                                                                                 </th>
-                                                                                <th style="width: 15%;" class="text-dark">
+                                                                                <th style="width: 10%;" class="text-dark">
                                                                                     Đơn
                                                                                     Vị
                                                                                 </th>
@@ -394,20 +400,33 @@
                                                                                     Số
                                                                                     Lượng
                                                                                 </th>
-                                                                                <th style="width: 15%;" class="text-dark">
+                                                                                <th style="width: 20%;" class="text-dark">
                                                                                     Đơn
                                                                                     giá
                                                                                 </th>
                                                                                 <th class="pe-3 text-dark"
-                                                                                    style="width: 15%;">
+                                                                                    style="width: 20%;">
                                                                                     Thành tiền
                                                                                 </th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
+                                                                            @php
+                                                                                $totalQuantity = 0;
+                                                                                $totalPrice = 0;
+                                                                                $totalMoney = 0;
+                                                                            @endphp
                                                                             @foreach ($item->import_equipment_request_details as $key => $detail_in)
+                                                                                @php
+                                                                                    $totalQuantity +=
+                                                                                        $detail_in->quantity;
+                                                                                    $totalPrice += $detail_in->price;
+                                                                                    $totalMoney +=
+                                                                                        $detail_in->price *
+                                                                                        $detail_in->quantity;
+                                                                                @endphp
                                                                                 <tr class="border border-dark">
-                                                                                    <td class="ps-3 text-right">
+                                                                                    <td class="text-right">
                                                                                         {{ $key + 1 }}
                                                                                     </td>
                                                                                     <td class="text-left">
@@ -416,21 +435,33 @@
                                                                                     <td class="text-left">
                                                                                         {{ $detail_in->equipments->units->name }}
                                                                                     </td>
-                                                                                    <td class="pe-3 text-right">
+                                                                                    <td class="text-right">
                                                                                         {{ $detail_in->quantity }}
                                                                                     </td>
-                                                                                    <td></td>
-                                                                                    <td></td>
+                                                                                    <td class="text-right">
+                                                                                        {{ number_format($detail_in->price, 0, ',', '.') }}
+                                                                                        VND
+                                                                                    </td>
+                                                                                    <td class="text-right">
+                                                                                        {{ number_format($detail_in->quantity * $detail_in->price, 0, ',', '.') }}
+                                                                                        VND
+                                                                                    </td>
                                                                                 </tr>
                                                                             @endforeach
                                                                             <tr class=" border border-dark">
-                                                                                <td colspan="4">
+                                                                                <td colspan="3">
                                                                                 </td>
-                                                                                <td colspan="1"
+                                                                                <td colspan="1" class="text-right"
                                                                                     style="height: 30px; min-height: 30px;">
+                                                                                    {{ $totalQuantity }}
                                                                                 </td>
-                                                                                <td colspan="1"
+                                                                                <td colspan="1" class="text-right"
                                                                                     style="height: 30px; min-height: 30px;">
+                                                                                    {{ number_format($totalPrice, 0, ',', '.') }} VND
+                                                                                </td>
+                                                                                <td colspan="1" class="text-right"
+                                                                                    style="height: 30px; min-height: 30px;">
+                                                                                    {{ number_format($totalMoney, 0, ',', '.') }} VND
                                                                                 </td>
                                                                             </tr>
                                                                         </tbody>

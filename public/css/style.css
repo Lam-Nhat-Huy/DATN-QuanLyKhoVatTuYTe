@@ -52649,8 +52649,7 @@ code:not([class*=language-]) {
     bottom: 0;
     transform: translate(50%);
     border-left-width: 1px;
-    border-left-style: dashed;
-    border-left-color: #e4e6ef
+    border-left-color: #949494;
 }
 
 .timeline .timeline-icon {
