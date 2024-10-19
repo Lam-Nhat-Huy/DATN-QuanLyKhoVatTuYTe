@@ -42,7 +42,7 @@
     </style>
 </head>
 
-<body id="kt_body"
+<body id="kt_body" data-is-admin="{{ session('isAdmin', false) ? 'true' : 'false' }}"
     class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed aside-enabled aside-fixed"
     style="--kt-toolbar-height:55px;--kt-toolbar-height-tablet-and-mobile:55px">
 

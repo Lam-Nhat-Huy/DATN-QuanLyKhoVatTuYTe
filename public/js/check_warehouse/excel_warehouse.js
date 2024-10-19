@@ -172,7 +172,8 @@ function generateTableRow(index, product) {
                 <input type="number" min="0" class="actual-quantity-input" 
                     value="${product.actual_quantity || ""}" 
                     oninput="validateQuantity(this, ${index}); checkInputs(); updateUnequal(${index}, this.value)" 
-                    style="width: 70px; height: 40px; border-radius: 8px;" />
+                    style="width: 70px; height: 40px; border-radius: 8px;" 
+                    disabled />
             </td>
             <td class="unequal-count" id="unequal-count-${index}">
                 ${product.unequal || 0}

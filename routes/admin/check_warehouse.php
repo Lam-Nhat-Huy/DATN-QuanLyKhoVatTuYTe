@@ -22,4 +22,8 @@ Route::prefix('check_warehouse')->middleware(CheckLogin::class)->group(function 
     Route::get('/inventory-edit/{code}', [CheckWarehouseController::class, 'edit'])->name('inventory_check.edit');
 
     Route::post('/inventory-update/{code}', [CheckWarehouseController::class, 'update'])->name('inventory_check.update');
+
+    Route::get('/checkwarehouse-excel-export', [CheckWarehouseController::class, 'exportCheckWarehouseExcel'])->name('warehouse.exportCheckWarehouseExcel');
+
+    Route::post('/checkwarehouse-excel-import', [CheckWarehouseController::class, 'importCheckWarehouseExcel'])->name('warehouse.importCheckWarehouseExcel');
 });

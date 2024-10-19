@@ -133,7 +133,7 @@ function addProductToTable(
         actual_quantity: null,
         unequal: 0,
         batch_number: batch_number,
-        equipment_note: "", // Sẽ được cập nhật sau khi người dùng nhập
+        equipment_note: "",
     });
 
     uncheckedCount++;
@@ -143,7 +143,6 @@ function addProductToTable(
         document.getElementById("noDataAlert").style.display = "none";
     }
 
-    // Lắng nghe sự kiện input trên tất cả các textarea để cập nhật equipment_note
     document
         .querySelectorAll(`textarea[name^="equipment_note_"]`)
         .forEach((textarea, index) => {
@@ -173,7 +172,7 @@ function addProductToTable(
         });
     });
 
-    checkInputs(); // Kiểm tra các input khi khởi tạo
+    checkInputs();
 }
 
 function submitMaterials() {
@@ -230,7 +229,7 @@ function checkInputs() {
     let allFilled = true;
 
     actualQuantityInputs.forEach((input) => {
-        if (!input.value || input.value === "") {
+        if (!input.value.trim()) {
             allFilled = false;
         }
     });
@@ -242,15 +241,23 @@ function checkInputs() {
         'button[data-bs-target="#completeModal"]'
     );
 
+    const isAdmin = document.body.dataset.isAdmin === "true";
+
     if (allFilled) {
         saveButton.disabled = false;
-        completeButton.disabled = false;
         saveButton.textContent = "Lưu phiếu tạm";
-        completeButton.textContent = "Lưu và duyệt phiếu";
+
+        if (isAdmin) {
+            completeButton.disabled = false;
+            completeButton.textContent = "Lưu và duyệt phiếu";
+        } else {
+            completeButton.disabled = true;
+            completeButton.textContent = "Lưu và duyệt phiếu";
+        }
     } else {
         saveButton.disabled = true;
-        completeButton.disabled = true;
         saveButton.textContent = "Vui lòng nhập đủ số lượng";
+        completeButton.disabled = true;
         completeButton.textContent = "Không thể hoàn thành";
     }
 }

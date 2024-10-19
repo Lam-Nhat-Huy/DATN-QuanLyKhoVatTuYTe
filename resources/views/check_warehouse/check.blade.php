@@ -161,11 +161,6 @@
                                 </td>
                             </tr>
 
-
-
-
-
-
                             <!-- Collapse content -->
                             <tr class="collapse multi-collapse" id="collapse{{ $item['code'] }}">
                                 <td class="p-0" colspan="12"
@@ -309,24 +304,30 @@
                                             <div class="button-group">
                                                 <!-- Nút Duyệt đơn, chỉ hiển thị khi là Phiếu Tạm -->
                                                 @if ($item['status'] == 0)
-                                                    <button class="btn btn-sm btn-success me-2 rounded-pill"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#browse-{{ $item->code }}" type="button">
-                                                        <i class="fas fa-clipboard-check"></i>
-                                                        Duyệt phiếu
-                                                    </button>
+                                                    @if (session('isAdmin') == true)
+                                                        <button class="btn btn-sm btn-success me-2 rounded-pill"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#browse-{{ $item->code }}" type="button">
+                                                            <i class="fas fa-clipboard-check"></i>
+                                                            Duyệt phiếu
+                                                        </button>
+                                                    @endif
 
-                                                    <a href="{{ route('inventory_check.edit', $item->code) }}"
-                                                        class="btn btn-info btn-sm me-2 rounded-pill">
-                                                        <i class="fa fa-edit"></i> Chỉnh sửa
-                                                    </a>
+                                                    @if ($item['user_code'] == session('user_code') || session('isAdmin') == true)
+                                                        <a href="{{ route('inventory_check.edit', $item->code) }}"
+                                                            class="btn btn-info btn-sm me-2 rounded-pill">
+                                                            <i class="fa fa-edit"></i> Chỉnh sửa
+                                                        </a>
+                                                    @endif
 
-                                                    <!-- Nút Xóa phiếu tạm -->
-                                                    <button class="btn btn-danger btn-sm me-2 rounded-pill"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#delete-{{ $item->code }}">
-                                                        <i class="fa fa-trash"></i> Xóa Phiếu
-                                                    </button>
+                                                    @if ($item['user_code'] == session('user_code') || session('isAdmin') == true)
+                                                        <!-- Nút Xóa phiếu tạm -->
+                                                        <button class="btn btn-danger btn-sm me-2 rounded-pill"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#delete-{{ $item->code }}">
+                                                            <i class="fa fa-trash"></i> Xóa Phiếu
+                                                        </button>
+                                                    @endif
                                                 @endif
 
                                                 @if ($item['status'] == 1)
@@ -335,22 +336,6 @@
                                                         type="button">
                                                         <i class="fa fa-print"></i> In Phiếu
                                                     </button>
-
-                                                    <!-- Nút Hủy Phiếu -->
-                                                    {{-- <button class="btn btn-danger btn-sm rounded-pill"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#cancel-{{ $item->code }}">
-                                                        <i class="fa fa-times"></i> Hủy Phiếu
-                                                    </button> --}}
-                                                @endif
-
-                                                @if ($item['status'] == 3)
-                                                    <!-- Nút Xóa phiếu đã hủy -->
-                                                    {{-- <button class="btn btn-danger btn-sm me-2 rounded-pill"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#delete-{{ $item->code }}">
-                                                        <i class="fa fa-trash"></i> Xóa Phiếu
-                                                    </button> --}}
                                                 @endif
 
                                                 <!-- Modal Duyệt Phiếu -->

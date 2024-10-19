@@ -189,7 +189,6 @@
 
 @section('content')
     <div class="container mt-4">
-
         @php
             $code = $inventoryCheck['code'] ?? 'Mã không tồn tại';
             $route =
@@ -216,7 +215,7 @@
                                 </button>
                             </div>
 
-                            <div class="dropdown-menu w-750px" id="productDropdown" style="display:none;"></div>
+                            <div class="dropdown-menu w-850px" id="productDropdown" style="display:none;"></div>
 
                             <div class="modal fade" id="importantNotificationModal" data-bs-backdrop="static"
                                 data-bs-keyboard="false" tabindex="-1" aria-labelledby="DetailModal" aria-hidden="true">
@@ -316,6 +315,13 @@
                                                         Hiện tại chưa có thiết bị nào được thêm vào danh sách kiểm kho. Vui
                                                         lòng kiểm tra lại.
                                                     </p>
+                                                    <!-- Nút mở modal -->
+                                                    <button type="button"
+                                                        class="btn btn-success btn-sm mt-3 rounded-pill"
+                                                        data-bs-toggle="modal" data-bs-target="#importExcelModal"
+                                                        style="font-size: 12px;">
+                                                        Nhập Excel
+                                                    </button>
                                                 </div>
                                             </div>
                                         </td>
@@ -348,9 +354,15 @@
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted" style="font-size: 13px;">Trạng thái</span>
-                                <span class="badge"
-                                    style="background-color: #08d63fce; color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 9px;">Đang
-                                    kiểm</span>
+                                @if ($statusMessage == 'Đang kiểm')
+                                    <span class="badge"
+                                        style="background-color: #08d63fce; color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 9px;">Đang
+                                        kiểm</span>
+                                @else
+                                    <span class="badge"
+                                        style="background-color: #d6af1fce; color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 9px;">Đang
+                                        sửa</span>
+                                @endif
                             </div>
                         </div>
 
@@ -387,11 +399,10 @@
                                 tạm
                             </button>
 
-
                             <!-- Hoàn thành Button -->
                             <button type="button" class="btn text-white btn-lg rounded-pill"
-                                style="background-color: #66CC00;" data-bs-toggle="modal"
-                                data-bs-target="#completeModal">
+                                style="background-color: #66CC00;" data-bs-toggle="modal" data-bs-target="#completeModal"
+                                @if (!session('isAdmin')) disabled @endif>
                                 Lưu và duyệt phiếu
                             </button>
 
@@ -462,14 +473,19 @@
         <script src="{{ asset('js/check_warehouse/check_warehouse.js') }}"></script>
     @elseif ($action === 'edit')
         <script>
-            var productDetails = @json($equipmentsWithJson).original;
             var products = @json($equipmentsWithStock);
+            var productDetails = @json($equipmentsWithJson).original;
+            console.log(productDetails);
         </script>
         <script src="{{ asset('js/check_warehouse/update_warehouse.js') }}"></script>
+    @elseif ($action = 'excel')
+        <script>
+            var products = @json($equipmentsWithStock);
+            var productDetails = @json($equipmentsWithExcel);
+            console.log(productDetails);
+        </script>
+        <script src="{{ asset('js/check_warehouse/excel_warehouse.js') }}"></script>
     @endif
-
-
-
 
     <script>
         document.addEventListener('keydown', function(event) {
