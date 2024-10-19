@@ -66,7 +66,6 @@ class CheckWarehouseController extends Controller
                 ->where('current_quantity', '>', 0);
         }])->get();
 
-
         return view("{$this->route}.form", compact('title', 'action', 'equipmentsWithStock', 'statusMessage'));
     }
 
@@ -79,7 +78,7 @@ class CheckWarehouseController extends Controller
                 ->where('current_quantity', '>', 0);
         }])->get();
 
-        return Excel::download(new CheckWarehouseExport($equipmentsWithStock), 'checkwarehouse.xlsx');
+        return Excel::download(new CheckWarehouseExport($equipmentsWithStock), 'FileKiemKhoTatCaThietBi.xlsx');
     }
 
     public function importCheckWarehouseExcel(Request $request)
@@ -179,10 +178,8 @@ class CheckWarehouseController extends Controller
             'status' => $materialData[0]['status']
         ];
 
-
         $inventoryCheck->update($inventoryCheckData);
 
-        // Xóa chi tiết cũ
         Inventory_check_details::where('inventory_check_code', $code)->delete();
 
         $materialsForExport = [];
@@ -257,7 +254,7 @@ class CheckWarehouseController extends Controller
         ];
 
 
-        $inventoryCheckData['code'] = "KK" . $this->generateRandomString();
+        $inventoryCheckData['code'] = "KK" . $this->generateRandomString(8);
         $inventoryCheck = Inventory_checks::create($inventoryCheckData);
 
         if (!$inventoryCheck) {
@@ -272,7 +269,6 @@ class CheckWarehouseController extends Controller
         $materialsForImport = [];
 
         foreach ($materialData as $material) {
-            // Thêm chi tiết phiếu kiểm kho
             $inventoryCheckDetailData[] = [
                 'inventory_check_code' => $inventoryCheckCode,
                 'equipment_code' => $material['equipment_code'],
@@ -303,7 +299,6 @@ class CheckWarehouseController extends Controller
             return redirect()->back();
         }
         if ($inventoryCheckData['status'] == 1) {
-            $this->createNotificationAfterUpdateInventory($inventoryCheck->code, $inventoryCheck->user_code);
         }
 
         toastr()->success('Đã lưu phiếu kiểm kho thành công với mã ' . $inventoryCheckCode);
@@ -472,7 +467,6 @@ class CheckWarehouseController extends Controller
                 $this->updateInventoryByCheck($material);
             }
 
-            $this->createNotificationAfterUpdateInventory($inventoryCheck->code, $inventoryCheck->user_code);
             toastr()->success('Đã duyệt phiếu kiểm kho thành công với mã ' . $inventoryCheck->code);
             return redirect()->back();
         } else {
