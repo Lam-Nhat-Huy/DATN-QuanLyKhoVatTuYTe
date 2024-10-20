@@ -87,11 +87,12 @@
                         <tr class="bg-success text-center">
                             <th class="ps-3" style="width: 5%;"></th>
                             <th style="width: 8%;" class="ps-3">Mã kiểm kho</th>
-                            <th style="width: 8%;">Ngày cân bằng</th>
+                            <th style="width: 10%;">Ngày cân bằng</th>
                             <th style="width: 10%;">Tổng chênh lệch</th>
-                            <th style="width: 11%;">Số lượng lệch tăng</th>
-                            <th style="width: 11%;">Số lượng lệch giảm</th>
+                            <th style="width: 10%;">Lệch tăng</th>
+                            <th style="width: 10%;">Lệch giảm</th>
                             <th style="width: 10%;">Trạng Thái</th>
+                            <th style="width: 10%;">Lần kiểm</th>
                             <th style="width: 15%;">Ghi chú</th>
                         </tr>
                     </thead>
@@ -160,12 +161,19 @@
                                         <span class="label label-temp text-danger">Phiếu đã hủy</span>
                                     @endif
                                 </td>
-                                <td class="text-start" title="{{ $item['note'] }}"
+                                <td>
+                                    Lần thứ {{ $item['check_count'] }}
+                                </td>
+                                <td title="{{ $item['note'] }}"
                                     style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                     @if (!empty($item['note']))
-                                        {{ $item['note'] }}
+                                        <span class="text-start">
+                                            {{ $item['note'] }}
+                                        </span>
                                     @else
-                                        Không có ghi chú
+                                        <span class="text-center">
+                                            Không có ghi chú
+                                        </span>
                                     @endif
                                 </td>
                             </tr>
@@ -202,9 +210,15 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <td class=""><strong>Ngày cân bằng</strong></td>
-                                                                    <td class="text-gray-800">
-                                                                        {{ \Carbon\Carbon::parse($item['check_date'])->format('d/m/Y') }}
-                                                                    </td>
+                                                                    @if ($item['check_date'])
+                                                                        <td class="text-gray-800">
+                                                                            {{ \Carbon\Carbon::parse($item['check_date'])->format('d/m/Y') }}
+                                                                        </td>
+                                                                    @else
+                                                                        <td class="text-gray-800">
+                                                                            Không có
+                                                                        </td>
+                                                                    @endif
                                                                 </tr>
                                                                 <tr>
                                                                     <td class=""><strong>Ghi chú</strong></td>
@@ -229,12 +243,27 @@
                                                                         @endif
                                                                     </td>
                                                                 </tr>
+
                                                                 <tr>
-                                                                    <td class=""><strong>Tài khoản tạo</strong></td>
+                                                                    <td class=""><strong>Người tạo phiếu (Kiểm lần
+                                                                            1)</strong></td>
                                                                     <td class="text-gray-800">
                                                                         {{ $item->user->last_name . ' ' . $item->user->first_name }}
                                                                     </td>
                                                                 </tr>
+                                                                <tr>
+                                                                    <td class=""><strong>Người xác nhận (Kiểm lần
+                                                                            2)</strong></td>
+                                                                    <td class="text-gray-800">
+                                                                        @if ($item->recheckUser)
+                                                                            {{ $item->recheckUser->last_name . ' ' . $item->recheckUser->first_name }}
+                                                                        @else
+                                                                            <span class="text-muted">Chưa kiểm lần 2</span>
+                                                                        @endif
+                                                                    </td>
+                                                                </tr>
+
+
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -288,7 +317,7 @@
                                                                                     style="color: #dc3545;"
                                                                                     title="Lệch âm"></i>
                                                                             @else
-                                                                                <span>Chưa lệch</span>
+                                                                                <span>Không lệch</span>
                                                                             @endif
                                                                         </td>
                                                                         <td>
@@ -322,12 +351,13 @@
                                                         </button>
                                                     @endif
 
-                                                    @if ($item['user_code'] == session('user_code') || session('isAdmin') == true)
+                                                    @if ($item['user_code'] == session('user_code'))
                                                         <a href="{{ route('inventory_check.edit', $item->code) }}"
                                                             class="btn btn-info btn-sm me-2 rounded-pill">
                                                             <i class="fa fa-edit"></i> Chỉnh sửa
                                                         </a>
                                                     @endif
+
 
                                                     @if ($item['user_code'] == session('user_code') || session('isAdmin') == true)
                                                         <!-- Nút Xóa phiếu tạm -->
@@ -339,12 +369,12 @@
                                                     @endif
                                                 @endif
 
-                                                @if ($item['status'] == 1)
+                                                @if ($item['check_count'] == 1 && $item['user_code'] != session('user_code'))
                                                     <!-- Nút In Phiếu -->
-                                                    {{-- <button class="btn btn-sm btn-dark me-2 rounded-pill" id="printPdfBtn"
-                                                        type="button">
-                                                        <i class="fa fa-print"></i> In Phiếu
-                                                    </button> --}}
+                                                    <a href="{{ route('inventory_check.check', $item->code) }}"
+                                                        class="btn btn-info btn-sm me-2 rounded-pill">
+                                                        <i class="fa fa-check"></i> Kiểm phiếu lại
+                                                    </a>
                                                 @endif
 
                                                 <!-- Modal Duyệt Phiếu -->

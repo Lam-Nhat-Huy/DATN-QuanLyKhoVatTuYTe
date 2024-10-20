@@ -194,8 +194,11 @@
             $route =
                 isset($action) && $action === 'edit'
                     ? route('inventory_check.update', $code)
-                    : route('check_warehouse.store');
+                    : (isset($action) && $action === 'checkAgain'
+                        ? route('inventory_check.updateCheckAgain', $code)
+                        : route('check_warehouse.store'));
         @endphp
+
 
 
         <form action="{{ $route }}" method="POST">
@@ -288,13 +291,16 @@
                                 <thead style="background-color: #000000;">
                                     <tr>
                                         <th style="width: 10%;">STT</th>
-                                        <th style="width: 15%;">Mã thiết bị</th>
-                                        <th style="width: 15%;">Tên thiết bị</th>
+                                        <th style="width: 12%;">Mã thiết bị</th>
+                                        <th style="width: 12%;">Tên thiết bị</th>
                                         <th style="width: 10%;">Số lô</th>
-                                        <th style="width: 15%;">Tồn kho</th>
+                                        <th style="width: 15%;">TK</th>
+                                        @if ($action === 'checkAgain')
+                                            <th style="width: 12%;">Lần 1</th>
+                                        @endif
                                         <th style="width: 15%;">Thực tế</th>
                                         <th style="width: 10%;">Lệch</th>
-                                        <th style="width: 25%;">Ghi chú</th>
+                                        <th style="width: 20%;">Ghi chú</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -360,10 +366,14 @@
                                     <span class="badge"
                                         style="background-color: #08d63fce; color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 9px;">Đang
                                         kiểm</span>
-                                @else
+                                @elseif($statusMessage == 'Đang sửa')
                                     <span class="badge"
                                         style="background-color: #d6af1fce; color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 9px;">Đang
                                         sửa</span>
+                                @elseif ($statusMessage == 'Kiểm lại')
+                                    <span class="badge"
+                                        style="background-color: #ff0000ce; color: white; padding: 0.5rem 1rem; border-radius: 50px; font-size: 9px;">Đang
+                                        kiểm</span>
                                 @endif
                             </div>
                         </div>
@@ -477,16 +487,20 @@
         <script>
             var products = @json($equipmentsWithStock);
             var productDetails = @json($equipmentsWithJson).original;
-            console.log(productDetails);
         </script>
         <script src="{{ asset('js/check_warehouse/update_warehouse.js') }}"></script>
-    @elseif ($action = 'excel')
+    @elseif ($action === 'excel')
         <script>
             var products = @json($equipmentsWithStock);
             var productDetails = @json($equipmentsWithExcel);
-            console.log(productDetails);
         </script>
         <script src="{{ asset('js/check_warehouse/excel_warehouse.js') }}"></script>
+    @elseif ($action === 'checkAgain')
+        <script>
+            var products = @json($equipmentsWithStock);
+            var productDetails = @json($equipmentsWithJson).original;
+        </script>
+        <script src="{{ asset('js/check_warehouse/checkAgain_warehouse.js') }}"></script>
     @endif
 
     <script>
