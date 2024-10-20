@@ -1,28 +1,76 @@
 @forelse ($inventoryChecks as $item)
     @php
-        $totalUnequal = collect($item['details'])->sum('unequal');
-    @endphp
+        // Total unequal calculation (absolute values)
+        $totalUnequal = collect($item['details'])->sum(function ($detail) {
+            return abs($detail['unequal']);
+        });
 
+        // Calculate positive and negative unequal sums
+        $unequalPositive = $item['details']->where('unequal', '>', 0)->sum('unequal');
+        $unequalNegative = $item['details']->where('unequal', '<', 0)->sum('unequal');
+    @endphp
     <tr class="text-center hover-table pointer" data-bs-toggle="collapse" data-bs-target="#collapse{{ $item['code'] }}"
         aria-expanded="false" aria-controls="collapse{{ $item['code'] }}">
         <td>
-            <!-- Sử dụng Font Awesome icon để hiển thị mũi tên -->
             <i class="row-icon fa fa-chevron-right"></i>
         </td>
-        <td>{{ $item['code'] }}</td>
+        <td>#{{ $item['code'] }}</td>
         <td>{{ \Carbon\Carbon::parse($item['check_date'])->format('d/m/Y') }}</td>
-        <td>{{ $totalUnequal }}</td> <!-- Hiển thị tổng chênh lệch -->
-        <td>{{ $item['details']->where('unequal', '>', 0)->sum('unequal') }}</td>
-        <!-- Số lượng lệch tăng -->
-        <td>{{ $item['details']->where('unequal', '<', 0)->sum('unequal') }}</td>
-        <!-- Số lượng lệch giảm -->
+        <td>
+            @if ($totalUnequal == 0)
+                <span style="color: #6c757d;">Không lệch</span> <!-- Màu xám cho không lệch -->
+            @else
+                <span style="color: #dc3545; font-weight: bold;">{{ $totalUnequal }}</span>
+                <i class="fa fa-arrow-right-arrow-left" style="color: #dc3545;" title="Tổng chênh lệch"></i>
+            @endif
+        </td>
+        <td>
+            @if ($unequalPositive > 0)
+                <span style="color: #28a745; font-weight: bold;">+{{ $unequalPositive }}</span>
+                <!-- Màu xanh lá cho lệch dương -->
+                <i class="fa fa-arrow-up" style="color: #28a745;" title="Tăng"></i>
+                <!-- Mũi tên lên -->
+            @elseif ($unequalPositive < 0)
+                <span style="color: #dc3545; font-weight: bold;">{{ $unequalPositive }}</span>
+                <!-- Màu đỏ cho lệch âm -->
+                <i class="fa fa-arrow-down" style="color: #dc3545;" title="Giảm"></i>
+                <!-- Mũi tên xuống -->
+            @else
+                <span style="color: #6c757d;">Không lệch</span> <!-- Màu xám cho không lệch -->
+            @endif
+        </td>
+        <td>
+            @if ($unequalNegative < 0)
+                <span style="color: #dc3545; font-weight: bold;">{{ $unequalNegative }}</span>
+                <!-- Màu đỏ cho lệch âm -->
+                <i class="fa fa-arrow-down" style="color: #dc3545;" title="Giảm"></i>
+                <!-- Mũi tên xuống -->
+            @else
+                <span style="color: #6c757d;">Không lệch</span> <!-- Màu xám cho không lệch -->
+            @endif
+        </td>
         <td>
             @if ($item['status'] == 0)
                 <span class="label label-temp text-warning">Phiếu lưu tạm</span>
-            @elseif($item['status'] == 1)
+            @elseif ($item['status'] == 1)
                 <span class="label label-final text-success">Đã cân bằng</span>
             @else
                 <span class="label label-temp text-danger">Phiếu đã hủy</span>
+            @endif
+        </td>
+        <td>
+            Lần thứ {{ $item['check_count'] }}
+        </td>
+        <td title="{{ $item['note'] }}"
+            style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            @if (!empty($item['note']))
+                <span class="text-start">
+                    {{ $item['note'] }}
+                </span>
+            @else
+                <span class="text-center">
+                    Không có ghi chú
+                </span>
             @endif
         </td>
     </tr>
@@ -36,7 +84,9 @@
                     style="padding-top: 0px !important; padding-bottom: 0px !important;">
                     <div class="card-header d-flex justify-content-between align-items-center p-2"
                         style="padding-top: 0 !important; padding-bottom: 0px !important;">
-                        <h4 class="fw-bold m-0">Chi tiết phiếu kiểm kho</h4>
+                        <h4 class="fw-bold m-0 text-uppercase fw-bolder">Chi tiết phiếu
+                            kiểm kho
+                        </h4>
                     </div>
                     <div class="card-body p-2" style="padding-top: 0px !important">
                         <div class="row py-5" style="padding-top: 0px !important">
@@ -47,7 +97,7 @@
                                         <tr>
                                             <td class="" style="width: 150px;"><strong>Mã kiểm
                                                     kho</strong></td>
-                                            <td class="text-gray-800">{{ $item['code'] }}</td>
+                                            <td class="text-gray-800">#{{ $item['code'] }}</td>
                                         </tr>
                                         <tr>
                                             <td class=""><strong>Thời gian</strong></td>
@@ -103,21 +153,55 @@
                                             <th style="width: 15%;" class="ps-3">Mã thiết bị</th>
                                             <th style="width: 15%;">Tên thiết bị</th>
                                             <th style="width: 15%;">Số lô</th>
-                                            <th style="width: 15%;">Tồn kho</th>
-                                            <th style="width: 15%;">Số lượng thực tế</th>
-                                            <th style="width: 15%;">Số lượng lệch</th>
+                                            <th style="width: 10%;">Tồn kho</th>
+                                            <th style="width: 10%;">Số lượng thực tế</th>
+                                            <th style="width: 10%;">Số lượng lệch</th>
+                                            <th style="width: 20%;">Ghi chú thiết bị</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($item['details'] as $detail)
-                                            <tr class="text-center">
-                                                <td class="ps-4">{{ $detail['equipment_code'] }}
+                                            <tr class="text-center hover-table pointer" data-bs-toggle="collapse"
+                                                data-bs-target="#collapse{{ $detail['equipment_code'] }}"
+                                                aria-expanded="false"
+                                                aria-controls="collapse{{ $detail['equipment_code'] }}">
+                                                <td class="ps-4 text-left">
+                                                    #{{ $detail['equipment_code'] }}
                                                 </td>
-                                                <td>{{ $detail->equipment->name }}</td>
+                                                <td title="{{ $detail->equipment->name }}"
+                                                    style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                    {{ $detail->equipment->name }}
+                                                </td>
                                                 <td>{{ $detail['batch_number'] }}</td>
                                                 <td>{{ $detail['current_quantity'] }}</td>
                                                 <td>{{ $detail['actual_quantity'] }}</td>
-                                                <td>{{ $detail['unequal'] }}</td>
+                                                <td
+                                                    style="
+                                                color: 
+                                                @if ($detail['unequal'] > 0) #28a745; font-weight: bold; 
+                                                @elseif ($detail['unequal'] < 0) #dc3545; font-weight: bold; 
+                                                @else #6c757d; @endif">
+                                                    @if ($detail['unequal'] > 0)
+                                                        <span>+{{ $detail['unequal'] }}</span>
+                                                        <i class="fa fa-arrow-up" style="color: #28a745;"
+                                                            title="Lệch dương"></i>
+                                                    @elseif ($detail['unequal'] < 0)
+                                                        <span>{{ $detail['unequal'] }}</span>
+                                                        <i class="fa fa-arrow-down" style="color: #dc3545;"
+                                                            title="Lệch âm"></i>
+                                                    @else
+                                                        <span>Không lệch</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <span class="text-gray">
+                                                        @if (!empty($detail['equipment_note']))
+                                                            {{ $detail['equipment_note'] }}
+                                                        @else
+                                                            không có ghi chú
+                                                        @endif
+                                                    </span>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -131,45 +215,43 @@
                     <div class="button-group">
                         <!-- Nút Duyệt đơn, chỉ hiển thị khi là Phiếu Tạm -->
                         @if ($item['status'] == 0)
-                            <button style="font-size: 10px;" class="btn btn-sm btn-success me-2 rounded-pill"
-                                data-bs-toggle="modal" data-bs-target="#browse-{{ $item->code }}" type="button">
-                                <i style="font-size: 10px;" class="fas fa-clipboard-check"></i>
-                                Duyệt Phiếu
-                            </button>
+                            @if (session('isAdmin') == true)
+                                <button class="btn btn-sm btn-success me-2 rounded-pill" data-bs-toggle="modal"
+                                    data-bs-target="#browse-{{ $item->code }}" type="button">
+                                    <i class="fas fa-clipboard-check"></i>
+                                    Duyệt phiếu
+                                </button>
+                            @endif
 
-                            <!-- Nút Xóa phiếu tạm -->
-                            <button style="font-size: 10px;" class="btn btn-danger btn-sm me-2 rounded-pill"
-                                data-bs-toggle="modal" data-bs-target="#delete-{{ $item->code }}">
-                                <i style="font-size: 10px;" class="fa fa-trash"></i> Xóa Phiếu
-                            </button>
+                            @if ($item['user_code'] == session('user_code'))
+                                <a href="{{ route('inventory_check.edit', $item->code) }}"
+                                    class="btn btn-info btn-sm me-2 rounded-pill">
+                                    <i class="fa fa-edit"></i> Chỉnh sửa
+                                </a>
+                            @endif
+
+
+                            @if ($item['user_code'] == session('user_code') || session('isAdmin') == true)
+                                <!-- Nút Xóa phiếu tạm -->
+                                <button class="btn btn-danger btn-sm me-2 rounded-pill" data-bs-toggle="modal"
+                                    data-bs-target="#delete-{{ $item->code }}">
+                                    <i class="fa fa-trash"></i> Xóa Phiếu
+                                </button>
+                            @endif
                         @endif
 
-                        @if ($item['status'] == 1)
+                        @if ($item['check_count'] == 1 && $item['user_code'] != session('user_code'))
                             <!-- Nút In Phiếu -->
-                            <button style="font-size: 10px;" class="btn btn-sm btn-dark me-2 rounded-pill"
-                                id="printPdfBtn" type="button">
-                                <i style="font-size: 10px;" class="fa fa-print"></i> In Phiếu
-                            </button>
-
-                            <!-- Nút Hủy Phiếu -->
-                            <button style="font-size: 10px;" class="btn btn-danger btn-sm rounded-pill"
-                                data-bs-toggle="modal" data-bs-target="#cancel-{{ $item->code }}">
-                                <i style="font-size: 10px;" class="fa fa-times"></i> Hủy Phiếu
-                            </button>
-                        @endif
-
-                        @if ($item['status'] == 3)
-                            <!-- Nút Xóa phiếu đã hủy -->
-                            <button style="font-size: 10px;" class="btn btn-danger btn-sm me-2 rounded-pill"
-                                data-bs-toggle="modal" data-bs-target="#delete-{{ $item->code }}">
-                                <i style="font-size: 10px;" class="fa fa-trash"></i> Xóa Phiếu
-                            </button>
+                            <a href="{{ route('inventory_check.check', $item->code) }}"
+                                class="btn btn-info btn-sm me-2 rounded-pill">
+                                <i class="fa fa-check"></i> Kiểm phiếu lại
+                            </a>
                         @endif
 
                         <!-- Modal Duyệt Phiếu -->
                         <div class="modal fade" id="browse-{{ $item['code'] }}" data-bs-backdrop="static"
-                            data-bs-keyboard="false" tabindex="-1" aria-labelledby="browseLabel-{{ $item['code'] }}"
-                            aria-hidden="true">
+                            data-bs-keyboard="false" tabindex="-1"
+                            aria-labelledby="browseLabel-{{ $item['code'] }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-md">
                                 <div class="modal-content border-0 shadow">
                                     <div class="modal-header bg-success text-white">

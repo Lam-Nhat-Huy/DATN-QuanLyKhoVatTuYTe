@@ -29,9 +29,10 @@ class CheckWarehouseController extends Controller
     {
         $title = 'Kiểm Kho';
 
-        $inventoryChecks = Inventory_checks::with(['details.equipment', 'user'])
+        $inventoryChecks = Inventory_checks::with(['details.equipment', 'user', 'recheckUser'])
             ->orderBy('created_at', 'DESC')
             ->paginate(10);
+
 
         $countAll = Inventory_checks::count();
         $countBalanced = Inventory_checks::where('status', 1)->count();
@@ -123,7 +124,7 @@ class CheckWarehouseController extends Controller
                         'unequal' => ($inventory->current_quantity !== $row['thuc_te']) ? abs($inventory->current_quantity - $row['thuc_te']) : 0,
                         'batch_number' => $row['so_lo'],
                         'equipment_note' => $row['ghi_chu'],
-                        'check_date' => $row['check_date'] ?? now()->toDateString(),
+                        // 'check_date' => $row['check_date'] ?? now()->toDateString(),
                         'note' => '',
                         'status' => '0',
                         'created_by' => $row['created_by'] ?? 'U002',
@@ -247,7 +248,6 @@ class CheckWarehouseController extends Controller
 
         $inventoryCheckData = [
             'equipment_code' => $materialData[0]['equipment_code'],
-            'check_date' => $materialData[0]['check_date'],
             'note' => $materialData[0]['note'],
             'user_code' => $materialData[0]['created_by'],
             'status' => $materialData[0]['status']
@@ -401,7 +401,6 @@ class CheckWarehouseController extends Controller
         toastr()->info("Phiếu nhập kho {$receiptCode} đã được tạo.");
     }
 
-
     public function approveCheck($code)
     {
         $inventoryCheck = Inventory_checks::where('code', $code)->first();
@@ -477,6 +476,7 @@ class CheckWarehouseController extends Controller
         toastr()->success('Phiếu kiểm kho đã được duyệt trước đó.');
         return redirect()->back();
     }
+
 
     private function updateInventoryByCheck($material)
     {
@@ -594,5 +594,102 @@ class CheckWarehouseController extends Controller
         ];
 
         Notifications::create($payload);
+    }
+
+    public function checkInventoryAgain($code)
+    {
+        $title = 'Kiểm phiếu lại';
+
+        $action = 'checkAgain';
+
+        $statusMessage = 'Kiểm lại';
+
+        $inventoryCheck = Inventory_checks::findOrFail($code);
+
+        $equipmentsWithStock = Equipments::whereHas('inventories', function ($query) {
+            $query->where('current_quantity', '>', 0);
+        })->with(['inventories' => function ($query) {
+            $query->select('equipment_code', 'current_quantity', 'batch_number')
+                ->where('current_quantity', '>', 0);
+        }])->get();
+
+        $equipmentsWithJson = $this->showInventoryCheckAgain($code);
+
+        return view("{$this->route}.form", compact('title', 'action', 'equipmentsWithJson', 'inventoryCheck', 'equipmentsWithStock', 'statusMessage'));
+    }
+
+    public function updateCheckAgain(Request $request, $code)
+    {
+        $inventoryCheck = Inventory_checks::where('code', $code)->firstOrFail();
+
+        $materialData = json_decode($request->input('materialData'), true);
+        // dd($materialData);
+        if (empty($materialData)) {
+            toastr()->error('Không có dữ liệu để cập nhật.');
+            return redirect()->back();
+        }
+
+        $inventoryCheckData = [
+            'note' => $materialData[0]['note'],
+            'recheck_user_code' => $materialData[0]['created_by'],
+            'status' => $materialData[0]['status'],
+            'check_count' => 2
+        ];
+
+        $inventoryCheck->update($inventoryCheckData);
+
+        Inventory_check_details::where('inventory_check_code', $code)->delete();
+
+        $materialsForExport = [];
+        $materialsForImport = [];
+        $inventoryCheckDetailData = [];
+
+        foreach ($materialData as $material) {
+            $inventoryCheckDetailData[] = [
+                'inventory_check_code' => $code,
+                'equipment_code' => $material['equipment_code'],
+                'batch_number' => $material['batch_number'],
+                'current_quantity' => $material['current_quantity'],
+                'actual_quantity' => $material['actual_quantity'],
+                'unequal' => $material['unequal'],
+                'equipment_note' => $material['equipment_note']
+            ];
+
+            $this->handleStockDiscrepancy($material, $materialsForExport, $materialsForImport);
+        }
+
+        if ($inventoryCheckData['status'] == 1) {
+            if (!empty($materialsForExport)) {
+                $this->createExportReceipt($materialsForExport);
+            }
+
+            if (!empty($materialsForImport)) {
+                $this->createImportReceipt($materialsForImport);
+            }
+        }
+
+        try {
+            Inventory_check_details::insert($inventoryCheckDetailData);
+        } catch (\Exception $e) {
+            toastr()->error('Lỗi khi lưu chi tiết phiếu kiểm kho: ' . $e->getMessage());
+            return redirect()->back();
+        }
+
+        toastr()->success('Đã kiểm lần '  . $inventoryCheck->check_count .  ' thành công với mã ' . $inventoryCheck->code);
+        return redirect()->route('check_warehouse.index');
+    }
+
+
+    public function showInventoryCheckAgain($code)
+    {
+        $inventoryCheckEdit = Inventory_check_details::where('inventory_check_code', $code)
+            ->with('equipment')
+            ->get();
+
+        if ($inventoryCheckEdit->isEmpty()) {
+            return response()->json(['message' => 'Không tìm thấy chi tiết cho phiếu kiểm kho này.'], 404);
+        }
+
+        return response()->json($inventoryCheckEdit);
     }
 }

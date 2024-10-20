@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User;
 
 class Inventory_checks extends Model
 {
@@ -21,10 +22,12 @@ class Inventory_checks extends Model
     protected $fillable = [
         'code',
         'user_code',
+        'recheck_user_code',
         'check_date',
         'note',
         'status',
         'equipment_note',
+        'check_count',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -38,5 +41,10 @@ class Inventory_checks extends Model
     public function user()
     {
         return $this->belongsTo(Users::class, 'user_code', 'code');
+    }
+
+    public function recheckUser()
+    {
+        return $this->belongsTo(Users::class, 'recheck_user_code', 'code');
     }
 }
