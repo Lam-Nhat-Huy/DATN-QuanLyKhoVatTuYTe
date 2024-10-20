@@ -320,8 +320,10 @@
                                                         class="btn btn-success btn-sm mt-3 rounded-pill"
                                                         data-bs-toggle="modal" data-bs-target="#importExcelModal"
                                                         style="font-size: 12px;">
-                                                        Nhập Excel
+                                                        <i class="fas fa-file-import me-2"></i> <!-- Icon thêm vào -->
+                                                        Chọn file dữ liệu
                                                     </button>
+
                                                 </div>
                                             </div>
                                         </td>

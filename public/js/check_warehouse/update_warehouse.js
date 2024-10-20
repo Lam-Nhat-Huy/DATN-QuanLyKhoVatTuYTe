@@ -162,7 +162,7 @@ function generateTableRow(index, product) {
     return `
         <tr data-index="${index}" class="unchecked">
             <td>${index + 1}</td>
-            <td class="text-left">${product.equipment_code}</td>
+            <td class="text-left equipment-code">${product.equipment_code}</td>
             <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 ${productName}
             </td>
@@ -323,23 +323,32 @@ function checkInputs() {
     }
 }
 
+// Sự kiện để lắng nghe phím Alt + Q
 document.addEventListener("keydown", function (event) {
-    if (event.altKey && event.key === "q") {
+    if (event.altKey && event.key.toLowerCase() === "q") {
         const focusedElement = document.activeElement;
 
         if (
             focusedElement &&
             focusedElement.classList.contains("actual-quantity-input")
         ) {
-            const rowIndex = focusedElement
-                .closest("tr")
-                .getAttribute("data-index");
+            const row = focusedElement.closest("tr");
+            const rowIndex = parseInt(row.getAttribute("data-index"), 10);
 
-            const current_quantity = materialData[rowIndex].current_quantity;
+            console.log("Row index:", rowIndex); // Kiểm tra chỉ số hàng
 
-            focusedElement.value = current_quantity;
-            updateProduct(rowIndex, current_quantity);
-            checkInputs();
+            // Đảm bảo hàng và dữ liệu tồn tại
+            if (materialData[rowIndex]) {
+                const currentQuantity = materialData[rowIndex].current_quantity;
+                console.log("Current quantity:", currentQuantity); // Kiểm tra số lượng hiện tại
+
+                // Điền giá trị vào ô input và cập nhật dữ liệu
+                focusedElement.value = currentQuantity;
+                updateProduct(rowIndex, currentQuantity);
+                checkInputs();
+            } else {
+                console.error("Không tìm thấy dữ liệu cho hàng này.");
+            }
         }
     }
 });
@@ -352,15 +361,16 @@ function validateQuantity(input, rowCount) {
 }
 
 function removeProduct(index) {
-    var tableBody = document.getElementById("materialList");
-    var row = tableBody.querySelector(`tr[data-index="${index}"]`);
+    const tableBody = document.getElementById("materialList");
+    const row = tableBody.querySelector(`tr[data-index="${index}"]`);
+
     if (row) {
         tableBody.removeChild(row);
-        materialData.splice(index, 1);
-        totalCount--;
-        uncheckedCount--;
-        updateRowIndices();
+        materialData.splice(index, 1); // Xóa sản phẩm khỏi mảng dữ liệu
+
+        updateRowIndices(); // Cập nhật lại chỉ số hàng
         updateCounts();
+
         if (tableBody.rows.length === 0) {
             document.getElementById("noDataAlert").style.display = "table-row";
         }
@@ -368,10 +378,16 @@ function removeProduct(index) {
 }
 
 function updateRowIndices() {
-    var tableBody = document.getElementById("materialList");
+    const tableBody = document.getElementById("materialList");
+
     Array.from(tableBody.rows).forEach((row, index) => {
-        row.setAttribute("data-index", index);
-        row.cells[1].textContent = index + 1;
+        row.setAttribute("data-index", index); // Cập nhật lại data-index
+        row.cells[0].textContent = index + 1; // Cập nhật số thứ tự
+
+        // Đảm bảo mảng materialData được đồng bộ với thứ tự hàng
+        if (materialData[index]) {
+            materialData[index].index = index;
+        }
     });
 }
 
