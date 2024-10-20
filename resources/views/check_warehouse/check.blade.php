@@ -86,12 +86,13 @@
                     <thead>
                         <tr class="bg-success text-center">
                             <th class="ps-3" style="width: 5%;"></th>
-                            <th style="width: 15%;" class="ps-3">Mã kiểm kho</th>
-                            <th style="width: 15%;">Ngày cân bằng</th>
-                            <th style="width: 15%;">Tổng chênh lệch</th>
-                            <th style="width: 15%;">Số lượng lệch tăng</th>
-                            <th style="width: 15%;">Số lượng lệch giảm</th>
-                            <th style="width: 15%;">Trạng Thái</th>
+                            <th style="width: 8%;" class="ps-3">Mã kiểm kho</th>
+                            <th style="width: 8%;">Ngày cân bằng</th>
+                            <th style="width: 10%;">Tổng chênh lệch</th>
+                            <th style="width: 11%;">Số lượng lệch tăng</th>
+                            <th style="width: 11%;">Số lượng lệch giảm</th>
+                            <th style="width: 10%;">Trạng Thái</th>
+                            <th style="width: 15%;">Ghi chú</th>
                         </tr>
                     </thead>
 
@@ -157,6 +158,14 @@
                                         <span class="label label-final text-success">Đã cân bằng</span>
                                     @else
                                         <span class="label label-temp text-danger">Phiếu đã hủy</span>
+                                    @endif
+                                </td>
+                                <td class="text-start" title="{{ $item['note'] }}"
+                                    style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    @if (!empty($item['note']))
+                                        {{ $item['note'] }}
+                                    @else
+                                        Không có ghi chú
                                     @endif
                                 </td>
                             </tr>
@@ -242,7 +251,7 @@
                                                                     <th style="width: 10%;">Tồn kho</th>
                                                                     <th style="width: 10%;">Số lượng thực tế</th>
                                                                     <th style="width: 10%;">Số lượng lệch</th>
-                                                                    <th style="width: 20%;">Ghi chú</th>
+                                                                    <th style="width: 20%;">Ghi chú thiết bị</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -332,10 +341,10 @@
 
                                                 @if ($item['status'] == 1)
                                                     <!-- Nút In Phiếu -->
-                                                    <button class="btn btn-sm btn-dark me-2 rounded-pill" id="printPdfBtn"
+                                                    {{-- <button class="btn btn-sm btn-dark me-2 rounded-pill" id="printPdfBtn"
                                                         type="button">
                                                         <i class="fa fa-print"></i> In Phiếu
-                                                    </button>
+                                                    </button> --}}
                                                 @endif
 
                                                 <!-- Modal Duyệt Phiếu -->

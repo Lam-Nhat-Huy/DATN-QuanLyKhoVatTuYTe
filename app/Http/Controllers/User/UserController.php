@@ -213,7 +213,7 @@ class UserController extends Controller
 
         $data['password'] = Hash::make($data['password']);
 
-        $data['position'] = $request->isAdmin == 1 ? 'Admin' : 'Nhân Viên';
+        // $data['position'] = $request->isAdmin == 1 ? 'Admin' : 'Nhân Viên';
 
         $data['isAdmin'] = $request->isAdmin == 1 ? 1 : 0;
 
@@ -285,7 +285,7 @@ class UserController extends Controller
             $data['avatar'] = $request->file('avatar')->store('uploads', 'public');
         }
 
-        $data['position'] = $request->isAdmin == 1 ? 'Admin' : 'Nhân Viên';
+        // $data['position'] = $request->isAdmin == 1 ? 'Admin' : 'Nhân Viên';
 
         $data['isAdmin'] = $request->isAdmin == 1 ? 1 : 0;
 
