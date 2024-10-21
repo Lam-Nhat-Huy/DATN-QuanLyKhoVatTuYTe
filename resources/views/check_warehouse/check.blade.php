@@ -343,12 +343,15 @@
                                                 <!-- Nút Duyệt đơn, chỉ hiển thị khi là Phiếu Tạm -->
                                                 @if ($item['status'] == 0)
                                                     @if (session('isAdmin') == true)
-                                                        <button class="btn btn-sm btn-success me-2 rounded-pill"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#browse-{{ $item->code }}" type="button">
-                                                            <i class="fas fa-clipboard-check"></i>
-                                                            Duyệt phiếu
-                                                        </button>
+                                                        @if ($item->check_count == 2)
+                                                            <button class="btn btn-sm btn-success me-2 rounded-pill"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#browse-{{ $item->code }}"
+                                                                type="button">
+                                                                <i class="fas fa-clipboard-check"></i>
+                                                                Duyệt phiếu
+                                                            </button>
+                                                        @endif
                                                     @endif
 
                                                     @if ($item['user_code'] == session('user_code'))

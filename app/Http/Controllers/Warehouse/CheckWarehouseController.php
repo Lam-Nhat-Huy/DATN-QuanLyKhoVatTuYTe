@@ -55,10 +55,12 @@ class CheckWarehouseController extends Controller
     public function create()
     {
         $title = 'Kiểm Kho';
-
         $action = 'create';
-
         $statusMessage = 'Đang kiểm';
+
+        $userCode = session('user_code');
+        $user = Users::where('code', $userCode)->first();
+        $userName = $user->last_name . ' ' . $user->first_name;
 
         $equipmentsWithStock = Equipments::whereHas('inventories', function ($query) {
             $query->where('current_quantity', '>', 0);
@@ -67,8 +69,9 @@ class CheckWarehouseController extends Controller
                 ->where('current_quantity', '>', 0);
         }])->get();
 
-        return view("{$this->route}.form", compact('title', 'action', 'equipmentsWithStock', 'statusMessage'));
+        return view("{$this->route}.form", compact('title', 'action', 'equipmentsWithStock', 'statusMessage', 'userName'));
     }
+
 
     public function exportCheckWarehouseExcel()
     {
@@ -87,6 +90,10 @@ class CheckWarehouseController extends Controller
         $title = 'Excel';
 
         $action = 'excel';
+
+        $userCode = session('user_code');
+        $user = Users::where('code', $userCode)->first();
+        $userName = $user->last_name . ' ' . $user->first_name;
 
         $statusMessage = 'Đang kiểm';
 
@@ -136,7 +143,7 @@ class CheckWarehouseController extends Controller
 
         $equipmentsWithExcel = $importedData;
 
-        return view("{$this->route}.form", compact('title', 'action', 'equipmentsWithExcel', 'equipmentsWithStock', 'statusMessage'));
+        return view("{$this->route}.form", compact('title', 'action', 'equipmentsWithExcel', 'equipmentsWithStock', 'statusMessage', 'userName'));
     }
 
     public function edit($code)
@@ -146,6 +153,10 @@ class CheckWarehouseController extends Controller
         $action = 'edit';
 
         $statusMessage = 'Đang sửa';
+
+        $userCode = session('user_code');
+        $user = Users::where('code', $userCode)->first();
+        $userName = $user->last_name . ' ' . $user->first_name;
 
         $inventoryCheck = Inventory_checks::findOrFail($code);
 
@@ -158,7 +169,7 @@ class CheckWarehouseController extends Controller
 
         $equipmentsWithJson = $this->showInventoryCheckEdits($code);
 
-        return view("{$this->route}.form", compact('title', 'action', 'equipmentsWithJson', 'inventoryCheck', 'equipmentsWithStock', 'statusMessage'));
+        return view("{$this->route}.form", compact('title', 'action', 'equipmentsWithJson', 'inventoryCheck', 'equipmentsWithStock', 'statusMessage', 'userName'));
     }
 
     public function update(Request $request, $code)
@@ -604,6 +615,10 @@ class CheckWarehouseController extends Controller
 
         $statusMessage = 'Kiểm lại';
 
+        $userCode = session('user_code');
+        $user = Users::where('code', $userCode)->first();
+        $userName = $user->last_name . ' ' . $user->first_name;
+
         $inventoryCheck = Inventory_checks::findOrFail($code);
 
         $equipmentsWithStock = Equipments::whereHas('inventories', function ($query) {
@@ -615,7 +630,7 @@ class CheckWarehouseController extends Controller
 
         $equipmentsWithJson = $this->showInventoryCheckAgain($code);
 
-        return view("{$this->route}.form", compact('title', 'action', 'equipmentsWithJson', 'inventoryCheck', 'equipmentsWithStock', 'statusMessage'));
+        return view("{$this->route}.form", compact('title', 'action', 'equipmentsWithJson', 'inventoryCheck', 'equipmentsWithStock', 'statusMessage', 'userName'));
     }
 
     public function updateCheckAgain(Request $request, $code)
