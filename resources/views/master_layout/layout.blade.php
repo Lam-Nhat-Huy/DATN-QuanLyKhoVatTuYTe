@@ -122,6 +122,91 @@
         </div>
 
         <div id="loading-overlay" class="loading-overlay"></div>
+
+        <div class="chatbox" id="chatbox">
+            <div class="chatbox-header">
+                <h3 class="text-white">Nhắn Tin</h3>
+                <button id="chatbox-close" style="font-size: 20px;">&times;</button>
+            </div>
+            <div class="chatbox-body">
+                <div class="messages">
+                    <div class="d-flex justify-content-start">
+                        <div class="me-3">
+                            <img class="border-dark border rounded-circle " width="35" height="35"
+                                src="https://images.g2crowd.com/uploads/product/image/large_detail/large_detail_b541e326e0acd44b1ef931c92154c6b9/ai-chat.png"
+                                alt="">
+                        </div>
+                        <div class="text-left">
+                            <h6 class="mb-1">Chatbox</h6>
+                            <span>Chào Bạn Nghe, Có Cặc Gì Mới Hong??</span>
+                        </div>
+                    </div>
+                    <div class="mt-5 d-flex justify-content-end">
+                        <div class="text-end">
+                            <h6 class="mb-1">{{ session('fullname') }}</h6>
+                            <span>Đéo</span>
+                        </div>
+                        <div class="ms-3">
+                            <img class="border-dark border rounded-circle " width="35" height="35"
+                                src="{{ !empty(session('avatar')) ? asset('storage/' . session('avatar')) : 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png' }}"
+                                alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="chatbox-footer">
+                <input type="text" id="chatbox-input" placeholder="Nhập tin nhắn...">
+                <button id="chatbox-send">Gửi</button>
+            </div>
+        </div>
+
+        <img class="open-chatbox-btn rounded-circle shadow" style="width: 50px; height: 50px;" id="open-chatbox-btn"
+            src="https://images.g2crowd.com/uploads/product/image/large_detail/large_detail_b541e326e0acd44b1ef931c92154c6b9/ai-chat.png"
+            alt="">
+
+        <script>
+            // Lấy các phần tử chatbox và nút mở chatbox
+            const chatbox = document.getElementById('chatbox');
+            const openChatboxBtn = document.getElementById('open-chatbox-btn');
+
+            // Hiển thị chatbox khi nhấn vào nút và ẩn nút mở chatbox
+            openChatboxBtn.addEventListener('click', function() {
+                chatbox.style.display = 'block'; // Hiển thị chatbox
+                openChatboxBtn.style.display = 'none'; // Ẩn nút mở chatbox
+            });
+
+            // Đóng chatbox khi nhấn vào nút close và hiển thị lại nút mở chatbox
+            document.getElementById('chatbox-close').addEventListener('click', function() {
+                chatbox.style.display = 'none'; // Ẩn chatbox
+                openChatboxBtn.style.display = 'block'; // Hiển thị lại nút mở chatbox
+            });
+
+            // Gửi tin nhắn
+            document.querySelector('#chatbox-send').addEventListener('click', function() {
+                const input = document.querySelector('#chatbox-input');
+                const message = input.value.trim();
+                if (message) {
+                    const messageElement = document.createElement('div');
+                    messageElement.innerHTML = `
+                        <div class="mt-5 d-flex justify-content-end">
+                            <div class="text-end">
+                                <h6 class="mb-1">{{ session('fullname') }}</h6>
+                                <span>${message}</span>
+                            </div>
+                            <div class="ms-3">
+                                <img class="border-dark border rounded-circle " width="35" height="35"
+                                    src="{{ !empty(session('avatar')) ? asset('storage/' . session('avatar')) : 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png' }}"
+                                    alt="">
+                            </div>
+                        </div>
+                    `;
+                    document.querySelector('.messages').appendChild(messageElement);
+                    input.value = ''; // Clear input field
+                    document.querySelector('.chatbox-body').scrollTop = document.querySelector('.chatbox-body')
+                        .scrollHeight;
+                }
+            });
+        </script>
     @endif
 
     {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
