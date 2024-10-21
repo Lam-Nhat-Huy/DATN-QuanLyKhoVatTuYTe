@@ -378,6 +378,15 @@
                             </div>
                         </div>
 
+                        <!-- Người kiểm -->
+                        <div class="mb-4">
+                            <label for="code" class="form-label fw-semibold text-dark" style="font-size: 13px;">Người
+                                kiểm</label>
+                            <input type="text" id="code" class="form-control form-control-sm rounded-pill"
+                                value="{{ $userName }}" style="font-size: 12px;" readonly>
+                        </div>
+
+
                         <!-- Mã kiểm kho -->
                         <div class="mb-4">
                             <label for="code" class="form-label fw-semibold text-dark" style="font-size: 13px;">Mã
@@ -407,16 +416,15 @@
                         <!-- Buttons -->
                         <div class="d-grid gap-3">
                             <button name="status" value="0" onclick="submitMaterials()" type="submit"
-                                class="btn btn-lg rounded-pill text-white" style="background-color: #007BFF;">Lưu phiếu
-                                tạm
+                                class="btn btn-lg rounded-pill text-white" style="background-color: #66CC00;">Lưu phiếu
                             </button>
 
                             <!-- Hoàn thành Button -->
-                            <button type="button" class="btn text-white btn-lg rounded-pill"
-                                style="background-color: #66CC00;" data-bs-toggle="modal" data-bs-target="#completeModal"
+                            {{-- <button type="button" class="btn text-white btn-lg rounded-pill"
+                                style="background-color: #007BFF;" data-bs-toggle="modal" data-bs-target="#completeModal"
                                 @if (!session('isAdmin')) disabled @endif>
                                 Lưu và duyệt phiếu
-                            </button>
+                            </button> --}}
 
                             <!-- Modal Hoàn thành -->
                             <div class="modal fade" id="completeModal" data-bs-backdrop="static"
