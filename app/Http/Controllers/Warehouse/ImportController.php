@@ -104,8 +104,6 @@ class ImportController extends Controller
                             'batch_number' => $item->batch_number,
                             'current_quantity' => $current_quantity,
                             'import_code' => $item->receipt_code,
-                            'expiry_date' => !empty($item->expiry_date) ? $item->expiry_date : null,
-                            'manufacture_date' => $item->manufacture_date,
                             'created_at' => now(),
                             'updated_at' => now(),
                         ]
@@ -231,11 +229,8 @@ class ImportController extends Controller
         if (
             !empty($request->equipment) &&
             !empty($request->price) &&
-            !empty($request->product_date) &&
             !empty($request->batch_number) &&
-            !empty($request->quantity) &&
-            !empty($request->discount_rate) &&
-            !empty($request->VAT)
+            !empty($request->quantity)
         ) {
             $equipment = Equipments::where('code', $request->equipment)->first();
 
@@ -245,12 +240,10 @@ class ImportController extends Controller
                     'equipment_code' => $equipment->code,
                     'equipment_name' => $equipment->name,
                     'price' => $request->price,
-                    'product_date' => $request->product_date,
-                    'expiry_date' => $request->expiry_date,
                     'batch_number' => $request->batch_number,
                     'quantity' => $request->quantity,
-                    'discount_rate' => $request->discount_rate,
-                    'vat' => $request->VAT,
+                    'discount_rate' => $request->discount_rate ?? 0,
+                    'vat' => $request->VAT ?? 0,
                 ]);
             }
         }
@@ -306,8 +299,6 @@ class ImportController extends Controller
                     Receipt_details::create([
                         'receipt_code' => $record->code,
                         'batch_number' => $equipment['batch_number'],
-                        'expiry_date' => !empty($equipment['expiry_date']) ? $equipment['expiry_date'] : NULL,
-                        'manufacture_date' => $equipment['product_date'],
                         'quantity' => $equipment['quantity'],
                         'VAT' => $equipment['vat'],
                         'discount' => $equipment['discount_rate'],
@@ -368,8 +359,6 @@ class ImportController extends Controller
                     $record_detail = Receipt_details::create([
                         'receipt_code' => $record->code,
                         'batch_number' => $equipment['batch_number'],
-                        'expiry_date' => !empty($equipment['expiry_date']) ? $equipment['expiry_date'] : NULL,
-                        'manufacture_date' => $equipment['product_date'],
                         'quantity' => $equipment['quantity'],
                         'VAT' => $equipment['vat'],
                         'discount' => $equipment['discount_rate'],
@@ -410,8 +399,6 @@ class ImportController extends Controller
                             'batch_number' => $item['batch_number'],
                             'current_quantity' => $current_quantity,
                             'import_code' => $record->code,
-                            'expiry_date' => !empty($item['expiry_date']) ? $item['expiry_date'] : null,
-                            'manufacture_date' => $item['manufacture_date'],
                             'created_at' => $record->receipt_date,
                             'updated_at' => now(),
                         ]
@@ -502,8 +489,6 @@ class ImportController extends Controller
                     [
                         'quantity' => $equipment['quantity'],
                         'batch_number' => $equipment['batch_number'],
-                        'expiry_date' => !empty($equipment['expiry_date']) ? $equipment['expiry_date'] : NULL,
-                        'manufacture_date' => $equipment['product_date'],
                         'quantity' => $equipment['quantity'],
                         'VAT' => $equipment['vat'],
                         'discount' => $equipment['discount_rate'],
@@ -561,8 +546,6 @@ class ImportController extends Controller
         if (!empty($request->browse_code)) {
             $existingRequest = Receipts::find($request->browse_code);
 
-            $record = $existingRequest->first();
-
             $existingRequest->update([
                 'status' => 1,
             ]);
@@ -589,8 +572,6 @@ class ImportController extends Controller
                         'batch_number' => $item['batch_number'],
                         'current_quantity' => $current_quantity,
                         'import_code' => $request->browse_code,
-                        'expiry_date' => !empty($item['expiry_date']) ? $item['expiry_date'] : null,
-                        'manufacture_date' => $item['manufacture_date'],
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]

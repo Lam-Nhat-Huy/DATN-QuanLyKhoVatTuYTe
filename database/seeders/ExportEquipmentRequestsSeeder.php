@@ -19,6 +19,7 @@ class ExportEquipmentRequestsSeeder extends Seeder
                 'note' => 'Urgent export required for new office setup',
                 'status' => false,
                 'request_date' => now(),
+                'required_date' => now()->addDays(3),
                 'created_at' => now(),
                 'updated_at' => null,
                 'deleted_at' => null,
