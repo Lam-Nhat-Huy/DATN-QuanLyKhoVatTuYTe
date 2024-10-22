@@ -12,8 +12,6 @@ return new class extends Migration
             $table->id();
             $table->char('receipt_code', 20)->nullable();
             $table->char('batch_number', 20)->nullable();
-            $table->timestamp('expiry_date')->nullable();
-            $table->timestamp('manufacture_date')->nullable();
             $table->integer('quantity');
             $table->decimal('VAT', 10, 2)->nullable();
             $table->decimal('discount', 10, 2)->nullable();

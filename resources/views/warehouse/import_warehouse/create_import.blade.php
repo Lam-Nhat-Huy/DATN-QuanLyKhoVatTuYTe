@@ -157,25 +157,6 @@
                         <div class="message_error" id="price_error"></div>
                     </div>
 
-                    <div class="col-6 mb-4">
-                        <label for="product_date" class="{{ $required }} form-label fw-semibold"
-                            id="product_date_label">Ngày sản
-                            xuất</label>
-                        <input type="date" tabindex="8" onchange="cProductDate()"
-                            class="form-control form-control-sm border border-success rounded-pill" id="product_date"
-                            name="product_date">
-                        <div class="message_error" id="product_date_error"></div>
-                    </div>
-
-                    <div class="col-6 mb-4">
-                        <label for="expiry_date" class="form-label fw-semibold" id="expiry_date_label">Ngày hết
-                            hạn</label>
-                        <input type="date" tabindex="9" onchange="cExpiryDate()"
-                            class="form-control form-control-sm border border-success rounded-pill" id="expiry_date"
-                            name="expiry_date">
-                        <div class="message_error" id="expiry_date_error"></div>
-                    </div>
-
                     <div class="col-3 mb-4">
                         <label for="batch_number" class="{{ $required }} form-label fw-semibold"
                             id="batch_number_label">Số lô</label>
@@ -195,8 +176,7 @@
                     </div>
 
                     <div class="col-3 mb-4">
-                        <label for="discount_rate" class="{{ $required }} form-label fw-semibold"
-                            id="discount_rate_label">Chiết khấu
+                        <label for="discount_rate" class="form-label fw-semibold" id="discount_rate_label">Chiết khấu
                             (%)</label>
                         <input type="text" tabindex="12" onchange="cDiscountRate()"
                             class="form-control form-control-sm border border-success rounded-pill" id="discount_rate"
@@ -205,7 +185,7 @@
                     </div>
 
                     <div class="col-3 mb-4">
-                        <label for="VAT" class="{{ $required }} form-label fw-semibold" id="vat_label">VAT
+                        <label for="VAT" class="form-label fw-semibold" id="vat_label">VAT
                             (%)</label>
                         <input type="text" tabindex="13" onchange="cVAT()"
                             class="form-control form-control-sm border border-success rounded-pill" id="VAT"
@@ -235,21 +215,17 @@
                                 <tr class="">
                                     @if (!empty($getListIERD))
                                         <th style="width: 25%;" class="ps-5">Thiết bị</th>
-                                        <th style="width: 16%;">Số lô</th>
-                                        <th style="width: 16%;">Giá</th>
+                                        <th style="width: 17%;">Số lô</th>
+                                        <th style="width: 17%;">Giá</th>
                                         <th style="width: 10%;">SL</th>
-                                        <th style="width: 1%;">NSX</th>
-                                        <th style="width: 1%;">HSD</th>
                                         <th style="width: 9%;">CK</th>
                                         <th style="width: 9%;">VAT</th>
                                         <th style="width: 20%;" class="pe-5">Thành tiền</th>
                                     @else
                                         <th style="width: 24%;" class="ps-5">Thiết bị</th>
-                                        <th style="width: 11%;">Số lô</th>
+                                        <th style="width: 12%;">Số lô</th>
                                         <th style="width: 12%;">Giá</th>
-                                        <th style="width: 9%;">SL</th>
-                                        <th style="width: 1%;">NSX</th>
-                                        <th style="width: 1%;">HSD</th>
+                                        <th style="width: 10%;">SL</th>
                                         <th style="width: 9%;">CK</th>
                                         <th style="width: 9%;">VAT</th>
                                         <th style="width: 14%;" class="pe-5">Thành tiền</th>
@@ -293,24 +269,6 @@
                                                         value="{{ $item->quantity }}" max="{{ $item->quantity }}"
                                                         min="0"
                                                         oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom(); showNote('{{ $item->equipment_code }}', '{{ $item->equipments->name }}', '{{ $item->quantity }}', '{{ $infoIER->note }}');"
-                                                        class="form-control form-control-sm border border-success rounded-pill">
-                                                </div>
-                                            </td>
-                                            <td class="">
-                                                <div class="d-flex align-items-center">
-                                                    <input type="date"
-                                                        id="product_date_change_{{ $item->equipment_code }}"
-                                                        value="{{ $item->manufacture_date ? \Carbon\Carbon::parse($item->manufacture_date)->format('Y-m-d') : null }}"
-                                                        style="width: 110px;"
-                                                        class="form-control form-control-sm border border-success rounded-pill">
-                                                </div>
-                                            </td>
-                                            <td class="">
-                                                <div class="d-flex align-items-center">
-                                                    <input type="date"
-                                                        id="expiry_date_change_{{ $item->equipment_code }}"
-                                                        value="{{ $item->expiry_date ? \Carbon\Carbon::parse($item->expiry_date)->format('Y-m-d') : null }}"
-                                                        style="width: 110px;"
                                                         class="form-control form-control-sm border border-success rounded-pill">
                                                 </div>
                                             </td>
@@ -373,24 +331,6 @@
                                                     <input type="number"
                                                         id="quantity_change_{{ $item->equipment_code }}"
                                                         value="{{ $item->quantity }}" min="0"
-                                                        class="form-control form-control-sm border border-success rounded-pill">
-                                                </div>
-                                            </td>
-                                            <td class="">
-                                                <div class="d-flex align-items-center">
-                                                    <input type="date"
-                                                        id="product_date_change_{{ $item->equipment_code }}"
-                                                        value="{{ \Carbon\Carbon::parse($item->manufacture_date)->format('Y-m-d') }}"
-                                                        style="width: 110px;"
-                                                        class="form-control form-control-sm border border-success rounded-pill">
-                                                </div>
-                                            </td>
-                                            <td class="">
-                                                <div class="d-flex align-items-center">
-                                                    <input type="date"
-                                                        id="expiry_date_change_{{ $item->equipment_code }}"
-                                                        value="{{ $item->expiry_date ? \Carbon\Carbon::parse($item->expiry_date)->format('Y-m-d') : null }}"
-                                                        style="width: 110px;"
                                                         class="form-control form-control-sm border border-success rounded-pill">
                                                 </div>
                                             </td>
@@ -472,32 +412,15 @@
                                 và phải
                                 lớn hơn 0</span>
 
-                            <span class="mt-1 mb-1 d-none" id="product_date_error_{{ $item->equipment_code }}"> <i
-                                    class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
-                                <strong>Ngày sản xuất</strong> của thiết bị <strong>{{ $item->equipments->name }}</strong>
-                                là bắt
-                                buộc</span>
-
-                            <span class="mt-1 mb-1 d-none" id="expiry_date_error_{{ $item->equipment_code }}"> <i
-                                    class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
-                                <strong>Ngày hết hạn</strong> của thiết bị <strong>{{ $item->equipments->name }}</strong>
-                                phải lớn
-                                hơn ngày
-                                sản xuất ít nhất 6 tháng</span>
-
                             <span class="mt-1 mb-1 d-none" id="discount_rate_error_{{ $item->equipment_code }}"> <i
                                     class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
-                                <strong>Chiết khấu</strong> của thiết bị <strong>{{ $item->equipments->name }}</strong> là
-                                bắt
-                                buộc và
-                                phải lớn hơn 0, bé hơn 100</span>
+                                <strong>Chiết khấu</strong> của thiết bị <strong>{{ $item->equipments->name }}</strong>
+                                phải bé hơn 100</span>
 
                             <span class="mt-1 d-none" id="vat_error_{{ $item->equipment_code }}"> <i
                                     class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
-                                <strong>VAT</strong> của thiết bị <strong>{{ $item->equipments->name }}</strong> là bắt
-                                buộc và
-                                phải lớn
-                                hơn 0, bé hơn 100</span>
+                                <strong>VAT</strong> của thiết bị <strong>{{ $item->equipments->name }}</strong>
+                                phải bé hơn 100</span>
                         </div>
                     @endforeach
                 @elseif (!empty($getListIERD))
@@ -535,37 +458,17 @@
                                 là
                                 bắt buộc
                                 và phải
-                                lớn hơn 0</span>
-
-                            <span class="mt-1 mb-1 d-none" id="product_date_error_{{ $item->equipment_code }}"> <i
-                                    class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
-                                <strong>Ngày sản xuất</strong> của thiết bị
-                                <strong>{{ $item->equipments->name }}</strong>
-                                là bắt
-                                buộc</span>
-
-                            <span class="mt-1 mb-1 d-none" id="expiry_date_error_{{ $item->equipment_code }}"> <i
-                                    class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
-                                <strong>Ngày hết hạn</strong> của thiết bị
-                                <strong>{{ $item->equipments->name }}</strong>
-                                phải lớn
-                                hơn ngày
-                                sản xuất ít nhất 6 tháng</span>
+                                lớn hơn hoặc bằng 0</span>
 
                             <span class="mt-1 mb-1 d-none" id="discount_rate_error_{{ $item->equipment_code }}"> <i
                                     class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
                                 <strong>Chiết khấu</strong> của thiết bị <strong>{{ $item->equipments->name }}</strong>
-                                là
-                                bắt
-                                buộc và
-                                phải lớn hơn 0, bé hơn 100</span>
+                                phải bé hơn 100</span>
 
                             <span class="mt-1 d-none" id="vat_error_{{ $item->equipment_code }}"> <i
                                     class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
-                                <strong>VAT</strong> của thiết bị <strong>{{ $item->equipments->name }}</strong> là bắt
-                                buộc và
-                                phải lớn
-                                hơn 0, bé hơn 100</span>
+                                <strong>VAT</strong> của thiết bị <strong>{{ $item->equipments->name }}</strong>
+                                phải bé hơn 100</span>
                         </div>
                     @endforeach
                 @endif
@@ -861,7 +764,7 @@
                             'd-none');
                     }
 
-                    if (!item.quantity || item.quantity <= 0) {
+                    if (!item.quantity || item.quantity < 0) {
                         document.getElementById(`error_quantity_card_${item.equipment_code}`).classList
                             .remove(
                                 'd-none');
@@ -874,43 +777,7 @@
                             'd-none');
                     }
 
-                    if (!item.product_date) {
-                        document.getElementById(`error_quantity_card_${item.equipment_code}`).classList
-                            .remove(
-                                'd-none');
-                        document.getElementById(`product_date_error_${item.equipment_code}`).classList
-                            .remove(
-                                'd-none');
-                        hasError = true;
-                    } else {
-                        document.getElementById(`product_date_error_${item.equipment_code}`).classList
-                            .add(
-                                'd-none');
-                    }
-
-                    if (item.expiry_date) {
-                        const expiryDateObj = new Date(item.expiry_date);
-
-                        if (expiryDateObj <= new Date(item.product_date) || expiryDateObj <
-                            six_month) {
-                            document.getElementById(`error_quantity_card_${item.equipment_code}`)
-                                .classList
-                                .remove(
-                                    'd-none');
-                            document.getElementById(`expiry_date_error_${item.equipment_code}`)
-                                .classList
-                                .remove(
-                                    'd-none');
-                            hasError = true;
-                        } else {
-                            document.getElementById(`expiry_date_error_${item.equipment_code}`)
-                                .classList
-                                .add(
-                                    'd-none');
-                        }
-                    }
-
-                    if (!item.discount_rate || item.discount_rate <= 0) {
+                    if (item.discount_rate < 0 || item.discount_rate > 100) {
                         document.getElementById(`error_quantity_card_${item.equipment_code}`).classList
                             .remove(
                                 'd-none');
@@ -924,7 +791,7 @@
                                 'd-none');
                     }
 
-                    if (!item.vat || item.vat <= 0) {
+                    if (item.vat < 0 || item.vat > 100) {
                         document.getElementById(`error_quantity_card_${item.equipment_code}`).classList
                             .remove(
                                 'd-none');
@@ -989,8 +856,6 @@
                 let noDataAlert = document.getElementById('noDataAlert');
                 let equipment = document.getElementById('equipment').value.trim();
                 let price = document.getElementById('price').value.trim();
-                let product_date = document.getElementById('product_date').value.trim();
-                let expiry_date = document.getElementById('expiry_date').value.trim();
                 let batch_number = document.getElementById('batch_number').value.trim();
                 let quantity = document.getElementById('quantity').value.trim();
                 let discount_rate = document.getElementById('discount_rate').value.trim();
@@ -999,8 +864,6 @@
 
                 let equipment_error = document.getElementById('equipment_error');
                 let price_error = document.getElementById('price_error');
-                let product_date_error = document.getElementById('product_date_error');
-                let expiry_date_error = document.getElementById('expiry_date_error');
                 let batch_number_error = document.getElementById('batch_number_error');
                 let quantity_error = document.getElementById('quantity_error');
                 let discount_rate_error = document.getElementById('discount_rate_error');
@@ -1009,22 +872,12 @@
                 // Reset lỗi
                 equipment_error.innerText = '';
                 price_error.innerText = '';
-                product_date_error.innerText = '';
-                expiry_date_error.innerText = '';
                 batch_number_error.innerText = '';
                 quantity_error.innerText = '';
                 discount_rate_error.innerText = '';
                 VAT_error.innerText = '';
 
                 let hasError = false;
-                let six_months_after_product_date;
-
-                // 6 months after product date
-                if (product_date) {
-                    six_months_after_product_date = new Date(product_date);
-                    six_months_after_product_date.setMonth(six_months_after_product_date
-                        .getMonth() + 6);
-                }
 
                 // Validation
                 if (!equipment) {
@@ -1035,31 +888,6 @@
                 if (!price || price <= 0) {
                     price_error.innerText = "Vui lòng điền giá nhập và phải lớn hơn 0";
                     hasError = true;
-                }
-
-                if (!product_date) {
-                    product_date_error.innerText = "Vui lòng thêm ngày sản xuất";
-                    hasError = true;
-                } else {
-                    const currentDate = new Date();
-                    const productDateObj = new Date(product_date);
-
-                    if (productDateObj > currentDate) {
-                        product_date_error.innerText =
-                            "Ngày sản xuất không được lớn hơn ngày hiện tại";
-                        hasError = true;
-                    }
-                }
-
-                if (expiry_date) {
-                    const expiryDateObj = new Date(expiry_date);
-
-                    if (expiryDateObj <= new Date(product_date) || expiryDateObj <
-                        six_months_after_product_date) {
-                        expiry_date_error.innerText =
-                            "Ngày hết hạn phải lớn hơn ngày sản xuất 6 tháng";
-                        hasError = true;
-                    }
                 }
 
                 if (!batch_number) {
@@ -1088,13 +916,13 @@
                     hasError = true;
                 }
 
-                if (!discount_rate || discount_rate <= 0 || discount_rate > 100) {
-                    discount_rate_error.innerText = "Chiết khấu phải lớn hơn 0 và bé hơn 100";
+                if (discount_rate < 0 || discount_rate > 100) {
+                    discount_rate_error.innerText = "Chiết khấu phải bé hơn 100";
                     hasError = true;
                 }
 
-                if (!VAT || VAT <= 0 || VAT > 100) {
-                    VAT_error.innerText = "Thuế VAT phải lớn hơn 0 và bé hơn 100";
+                if (VAT < 0 || VAT > 100) {
+                    VAT_error.innerText = "Thuế VAT phải bé hơn 100";
                     hasError = true;
                 }
 
@@ -1109,16 +937,10 @@
                 // Prepare and send data if no errors
                 let formData = new FormData();
                 formData.append('equipment', equipment);
-                formData
-                    .append('price', price);
-                formData.append('product_date', product_date);
-                formData
-                    .append('expiry_date', expiry_date);
-                formData.append('batch_number',
-                    batch_number);
+                formData.append('price', price);
+                formData.append('batch_number', batch_number);
                 formData.append('quantity', quantity);
-                formData.append(
-                    'discount_rate', discount_rate);
+                formData.append('discount_rate', discount_rate);
                 formData.append('VAT', VAT);
 
                 const total_price = price * quantity * (1 - discount_rate / 100) * (1 + VAT /
@@ -1174,20 +996,6 @@
                                 </td>
                                 <td class="">
                                     <div class="d-flex align-items-center">
-                                        <input type="date" id="product_date_change_${data.equipment_code}"
-                                            value="${ new Date(data.product_date).toISOString().split('T')[0] }" style="width: 110px;"
-                                            class="form-control form-control-sm border border-success rounded-pill">
-                                    </div>
-                                </td>
-                                <td class="">
-                                    <div class="d-flex align-items-center">
-                                        <input type="date" id="expiry_date_change_${data.equipment_code}"
-                                            value="${ data.expiry_date ? new Date(data.expiry_date).toISOString().split('T')[0] : '' }" style="width: 110px;"
-                                            class="form-control form-control-sm border border-success rounded-pill">
-                                    </div>
-                                </td>
-                                <td class="">
-                                    <div class="d-flex align-items-center">
                                         <input type="number" id="discount_rate_change_${data.equipment_code}"
                                             value="${data.discount_rate}"
                                             class="form-control form-control-sm border border-success rounded-pill"
@@ -1227,11 +1035,6 @@
                             let batch_number_Label = document.getElementById(
                                     'batch_number_label')
                                 .textContent;
-                            let product_date_Label = document.getElementById(
-                                    'product_date_label')
-                                .textContent;
-                            let expiry_date_Label = document.getElementById('expiry_date_label')
-                                .textContent;
                             let discount_rate_Label = document.getElementById(
                                     'discount_rate_label')
                                 .textContent;
@@ -1251,18 +1054,12 @@
 
                                 <span class="mt-1 mb-1 d-none" id="quantity_error_${data.equipment_code}"> <i class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
                                     <strong>${quantity_Label}</strong> của thiết bị <strong>${data.equipment_name}</strong> là bắt buộc và phải lớn hơn 0</span>
-                                    
-                                <span class="mt-1 mb-1 d-none" id="product_date_error_${data.equipment_code}"> <i class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
-                                    <strong>${product_date_Label}</strong> của thiết bị <strong>${data.equipment_name}</strong> là bắt buộc</span>
-                                    
-                                <span class="mt-1 mb-1 d-none" id="expiry_date_error_${data.equipment_code}"> <i class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
-                                    <strong>${expiry_date_Label}</strong> của thiết bị <strong>${data.equipment_name}</strong> phải lớn hơn ngày sản xuất ít nhất 6 tháng</span>
-                                    
+
                                 <span class="mt-1 mb-1 d-none" id="discount_rate_error_${data.equipment_code}"> <i class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
-                                    <strong>${discount_rate_Label}</strong> của thiết bị <strong>${data.equipment_name}</strong> là bắt buộc và phải lớn hơn 0, bé hơn 100</span>
-                                    
+                                    <strong>${discount_rate_Label}</strong> của thiết bị <strong>${data.equipment_name}</strong> phải bé hơn 100</span>
+
                                 <span class="mt-1 d-none" id="vat_error_${data.equipment_code}"> <i class ="fa fa-warning text-warning me-2" style="font-size: 18px;"></i>
-                                    <strong>${vat_Label}</strong> của thiết bị <strong>${data.equipment_name}</strong> là bắt buộc và phải lớn hơn 0, bé hơn 100</span>
+                                    <strong>${vat_Label}</strong> của thiết bị <strong>${data.equipment_name}</strong> phải bé hơn 100</span>
                             `;
 
                             error_quantity_container.appendChild(newDivErr);
@@ -1270,8 +1067,6 @@
                             // Reset form sau khi thêm thành công
                             document.getElementById('equipment').value = "";
                             document.getElementById('price').value = "";
-                            document.getElementById('product_date').value = "";
-                            document.getElementById('expiry_date').value = "";
                             document.getElementById('batch_number').value = "";
                             document.getElementById('quantity').value = "";
                             document.getElementById('discount_rate').value = "";
@@ -1379,10 +1174,6 @@
                 let quantityValue = quantityInput.value.trim();
                 let batch_numberInput = document.getElementById(`batch_number_change_${equipmentCode}`);
                 let batch_numberValue = batch_numberInput.value.trim();
-                let product_dateInput = document.getElementById(`product_date_change_${equipmentCode}`);
-                let product_dateValue = product_dateInput.value.trim();
-                let expiry_dateInput = document.getElementById(`expiry_date_change_${equipmentCode}`);
-                let expiry_dateValue = expiry_dateInput.value.trim();
                 let discount_rateInput = document.getElementById(`discount_rate_change_${equipmentCode}`);
                 let discount_rateValue = discount_rateInput.value.trim();
                 let vatInput = document.getElementById(`vat_change_${equipmentCode}`);
@@ -1394,8 +1185,6 @@
                     price: priceValue,
                     quantity: quantityValue,
                     batch_number: batch_numberValue,
-                    product_date: product_dateValue,
-                    expiry_date: expiry_dateValue ?? null,
                     discount_rate: discount_rateValue,
                     vat: vatValue,
                 });
@@ -1680,24 +1469,6 @@
             }
         }
 
-        function cProductDate() {
-            const cProductDate = document.getElementById('product_date').value;
-            const cProductDateErr = document.getElementById('product_date_error');
-
-            if (cProductDate !== '') {
-                cProductDateErr.innerText = '';
-            }
-        }
-
-        function cExpiryDate() {
-            const cExpiryDate = document.getElementById('expiry_Date').value;
-            const cExpiryDateErr = document.getElementById('expiry_Date_error');
-
-            if (cExpiryDate !== '') {
-                cExpiryDateErr.innerText = '';
-            }
-        }
-
         function cBatchNumber() {
             const cBatchNumber = document.getElementById('batch_number').value;
             const cBatchNumberErr = document.getElementById('batch_number_error');
@@ -1770,10 +1541,6 @@
             document.getElementById('equipment').value = getRandomArr(availableEquipments);
             document.getElementById('price').value = getRandomNumber(50000,
                 500000);
-            document.getElementById('product_date').value = new Date().toISOString().split('T')[
-                0];
-            document.getElementById('expiry_date').value = new Date(new Date().setFullYear(new Date()
-                .getFullYear() + 1)).toISOString().split('T')[0];
             document.getElementById('batch_number').value = 'LH' + getRandomString(
                 4);
             document.getElementById('quantity').value = getRandomNumber(50,

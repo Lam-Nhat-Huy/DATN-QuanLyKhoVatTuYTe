@@ -125,38 +125,30 @@
 
         <div class="chatbox" id="chatbox">
             <div class="chatbox-header">
-                <h3 class="text-white">Nhắn Tin</h3>
-                <button id="chatbox-close" style="font-size: 20px;">&times;</button>
+                <h3 class="text-white p-0 m-0">Chat</h3>
+                <button id="chatbox-close" style="font-size: 20px;" data-bs-toggle="tooltip" data-bs-placement="top"
+                    title="Đóng Đoạn Chat">&times;</button>
             </div>
             <div class="chatbox-body">
                 <div class="messages">
-                    <div class="d-flex justify-content-start">
+                    <div class="d-flex justify-content-start mb-4">
                         <div class="me-3">
-                            <img class="border-dark border rounded-circle " width="35" height="35"
+                            <img class="border-dark border rounded-circle"
+                                style="width: 35px !important; height: 35px !important;"
                                 src="https://images.g2crowd.com/uploads/product/image/large_detail/large_detail_b541e326e0acd44b1ef931c92154c6b9/ai-chat.png"
                                 alt="">
                         </div>
                         <div class="text-left">
                             <h6 class="mb-1">Chatbox</h6>
-                            <span>Chào Bạn Nghe, Có Cặc Gì Mới Hong??</span>
-                        </div>
-                    </div>
-                    <div class="mt-5 d-flex justify-content-end">
-                        <div class="text-end">
-                            <h6 class="mb-1">{{ session('fullname') }}</h6>
-                            <span>Đéo</span>
-                        </div>
-                        <div class="ms-3">
-                            <img class="border-dark border rounded-circle " width="35" height="35"
-                                src="{{ !empty(session('avatar')) ? asset('storage/' . session('avatar')) : 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png' }}"
-                                alt="">
+                            <span>Xin Chào, Bạn Cần Gì?</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="chatbox-footer">
-                <input type="text" id="chatbox-input" placeholder="Nhập tin nhắn...">
-                <button id="chatbox-send">Gửi</button>
+            <div class="chatbox-footer mb-4">
+                <input type="text" id="chatbox-input" class="form-control form-control-sm me-2" style="height: 30px;"
+                    placeholder="Nhập tin nhắn...">
+                <button id="chatbox-send" class="btn btn-success btn-sm" style="height: 30px;">Gửi</button>
             </div>
         </div>
 
@@ -165,20 +157,19 @@
             alt="">
 
         <script>
-            // Lấy các phần tử chatbox và nút mở chatbox
             const chatbox = document.getElementById('chatbox');
             const openChatboxBtn = document.getElementById('open-chatbox-btn');
 
             // Hiển thị chatbox khi nhấn vào nút và ẩn nút mở chatbox
             openChatboxBtn.addEventListener('click', function() {
-                chatbox.style.display = 'block'; // Hiển thị chatbox
-                openChatboxBtn.style.display = 'none'; // Ẩn nút mở chatbox
+                chatbox.classList.add('show');
+                openChatboxBtn.classList.add('hide');
             });
 
             // Đóng chatbox khi nhấn vào nút close và hiển thị lại nút mở chatbox
             document.getElementById('chatbox-close').addEventListener('click', function() {
-                chatbox.style.display = 'none'; // Ẩn chatbox
-                openChatboxBtn.style.display = 'block'; // Hiển thị lại nút mở chatbox
+                chatbox.classList.remove('show');
+                openChatboxBtn.classList.remove('hide');
             });
 
             // Gửi tin nhắn
@@ -187,17 +178,16 @@
                 const message = input.value.trim();
                 if (message) {
                     const messageElement = document.createElement('div');
+                    messageElement.classList.add('mb-4', 'd-flex', 'justify-content-end', 'ms-20');
                     messageElement.innerHTML = `
-                        <div class="mt-5 d-flex justify-content-end">
-                            <div class="text-end">
-                                <h6 class="mb-1">{{ session('fullname') }}</h6>
-                                <span>${message}</span>
-                            </div>
-                            <div class="ms-3">
-                                <img class="border-dark border rounded-circle " width="35" height="35"
-                                    src="{{ !empty(session('avatar')) ? asset('storage/' . session('avatar')) : 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png' }}"
-                                    alt="">
-                            </div>
+                        <div class="text-left">
+                            <h6 class="mb-1 text-right">{{ session('fullname') }}</h6>
+                            <span style="word-break: break-word;">${message}</span>
+                        </div>
+                        <div class="ms-3" style="flex-shrink: 0; min-width: 35px; height: 35px;">
+                            <img class="border-dark border rounded-circle" style="width: 35px !important; height: 35px !important;"
+                                src="{{ !empty(session('avatar')) ? asset('storage/' . session('avatar')) : 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png' }}"
+                                alt="">
                         </div>
                     `;
                     document.querySelector('.messages').appendChild(messageElement);
@@ -205,6 +195,13 @@
                     document.querySelector('.chatbox-body').scrollTop = document.querySelector('.chatbox-body')
                         .scrollHeight;
                 }
+            });
+
+            const container = document.querySelector('.chatbox-body');
+
+            container.addEventListener('wheel', function(event) {
+                event.preventDefault();
+                container.scrollTop += event.deltaY;
             });
         </script>
     @endif
