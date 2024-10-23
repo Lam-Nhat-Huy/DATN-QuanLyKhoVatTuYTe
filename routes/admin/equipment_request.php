@@ -18,6 +18,8 @@ Route::prefix('equipment_request')->middleware(CheckLogin::class)->name('equipme
     Route::post('/store_import', [EquipmentRequestController::class, 'store_import_equipment_request'])->name('store_import');
     Route::get('/update_import/{code}', [EquipmentRequestController::class, 'update_import_equipment_request'])->name('update_import');
     Route::post('/edit_import/{code}', [EquipmentRequestController::class, 'edit_import_equipment_request'])->name('edit_import');
+    Route::post('/edit_price/{code}', [EquipmentRequestController::class, 'edit_import_equipment_request_price'])->name('edit_import_price');
+    Route::get('/exportExcelEquipmentRequestList/{code}', [EquipmentRequestController::class, 'exportExcelEquipmentRequestList'])->name('exportExcelEquipmentRequestList');
 
     // Xuất
     Route::get('/export', [EquipmentRequestController::class, 'export_equipment_request'])->name('export');

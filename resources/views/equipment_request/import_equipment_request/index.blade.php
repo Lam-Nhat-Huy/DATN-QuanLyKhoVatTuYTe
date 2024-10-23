@@ -1,6 +1,8 @@
 @extends('master_layout.layout')
 
 @section('styles')
+    <style>
+    </style>
 @endsection
 
 @section('title')
@@ -105,13 +107,19 @@
                                         @if (($item->status == 3 || $item->status == 0) && $item->user_code == session('user_code'))
                                             <input type="checkbox" name="import_reqest_codes[]" value="{{ $item->code }}"
                                                 class="row-checkbox" />
-                                        @elseif ($item->status == 4)
-                                            <i class="fa fa-check text-success" data-bs-toggle="tooltip"
-                                                data-bs-placement="top" title="Hoàn Thành"></i>
+                                        @elseif ($item->status == 2)
+                                            <i class="fa fa-clock text-dark" data-bs-toggle="tooltip"
+                                                data-bs-placement="top" title="Chờ Báo Giá"></i>
+                                        @elseif ($item->status == 5)
+                                            <i class="fa fa-tag text-dark" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Đang Nhập Giá"></i>
                                         @elseif ($item->status == 1)
                                             <i class="fa-solid fa-circle-exclamation text-danger" style="font-size: 13px;"
                                                 data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="Phiếu Yêu Cầu Chưa Được Nhập Kho"></i>
+                                        @elseif ($item->status == 4)
+                                            <i class="fa fa-check text-success" data-bs-toggle="tooltip"
+                                                data-bs-placement="top" title="Hoàn Thành"></i>
                                         @endif
                                     </td>
                                     <td>
@@ -138,6 +146,14 @@
                                         @elseif ($item->status == 0)
                                             <div class="rounded-pill px-2 py-1 text-white bg-danger">
                                                 Chờ Duyệt
+                                            </div>
+                                        @elseif ($item->status == 2)
+                                            <div class="rounded-pill px-2 py-1 text-white bg-dark">
+                                                Chờ Báo Giá
+                                            </div>
+                                        @elseif ($item->status == 5)
+                                            <div class="rounded-pill px-2 py-1 text-dark bg-secondary">
+                                                Nhập Giá
                                             </div>
                                         @elseif ($item->status == 1)
                                             <div class="rounded-pill px-2 py-1 text-white bg-primary">
@@ -183,6 +199,14 @@
                                                             @elseif ($item->status == 0)
                                                                 <div class="rounded-pill px-2 py-1 text-white bg-danger">
                                                                     Chờ Duyệt
+                                                                </div>
+                                                            @elseif ($item->status == 2)
+                                                                <div class="rounded-pill px-2 py-1 text-white bg-dark">
+                                                                    Chờ Báo Giá
+                                                                </div>
+                                                            @elseif ($item->status == 5)
+                                                                <div class="rounded-pill px-2 py-1 text-dark bg-secondary">
+                                                                    Đang Nhập Giá
                                                                 </div>
                                                             @elseif ($item->status == 1)
                                                                 <div class="rounded-pill px-2 py-1 text-white bg-primary">
@@ -317,12 +341,43 @@
                                                             <i class="fa fa-print" style="margin-bottom: 2px;"></i> In
                                                             Phiếu
                                                         </button>
+                                                    @elseif ($item->status == 2)
+                                                        <!-- Nút Xác Nhận Đã Nhận Báo Giá -->
+                                                        <button class="btn btn-sm rounded-pill btn-success me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#quote_received_{{ $item->code }}"
+                                                            type="button">
+                                                            <i class="fa fa-check" style="margin-bottom: 2px;"></i>Đã Nhận
+                                                            Báo Giá
+                                                        </button>
+                                                        <a href="{{ route('equipment_request.exportExcelEquipmentRequestList', $item->code) }}"
+                                                            class="btn btn-sm rounded-pill btn-twitter me-2">
+                                                            <i class="fas fa-file-excel" style="margin-bottom: 2px;"></i>
+                                                            Xuất Danh Sách
+                                                        </a>
+                                                    @elseif ($item->status == 5)
+                                                        <!-- Nút Xác Nhận Đã Nhập Giá -->
+                                                        <button class="btn btn-sm rounded-pill btn-success me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#price_entered_{{ $item->code }}"
+                                                            type="button">
+                                                            <i class="fa fa-check" style="margin-bottom: 2px;"></i>
+                                                            Đã Nhập Giá
+                                                        </button>
+                                                        <a href="{{ route('equipment_request.update_import', ['code' => $item->code, 'status' => 5]) }}"
+                                                            class="btn btn-sm rounded-pill btn-dark me-2">
+                                                            <i class="fas fa-edit" style="margin-bottom: 2px;"></i>
+                                                            Cập Nhật Giá
+                                                        </a>
                                                     @endif
                                                 </div>
                                             </div>
 
                                             {{-- In --}}
                                             <div class="fade modal" id="printArea_{{ $item->code }}">
+                                                <span class="link-primary position-absolute"
+                                                    style="top: 5%; right: 4%;"><strong class="text-danger">Số Hóa Đơn:
+                                                    </strong>{{ $item->code }}</span>
                                                 <div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
                                                     <div class="d-flex mb-5">
                                                         <img src="{{ asset('image/logo_warehouse.png') }}" width="100"
@@ -335,13 +390,9 @@
                                                         </div>
                                                     </div>
                                                     <form action="" method="post">
-                                                        <div class="text-center mb-13">
-                                                            <h1 class="mb-3 text-uppercase text-primary">Phiếu Yêu Cầu
-                                                                Đặt Mua Thiết Bị
+                                                        <div class="text-center mb-7">
+                                                            <h1 class="mb-3 text-uppercase text-primary">ĐƠN ĐẶT HÀNG
                                                             </h1>
-                                                            <div class="text-muted fw-bold fs-6">Thông Tin Chi Tiết Về
-                                                                Phiếu Yêu Cầu Đặt Mua Thiết Bị
-                                                            </div>
                                                             <div class="text-muted fs-30">
                                                                 Ngày Lập
                                                                 {{ \Carbon\Carbon::parse($item->request_date)->format('d-m-Y') }}
@@ -351,14 +402,6 @@
                                                             <!-- Begin::Receipt Info -->
                                                             <div class="mb-4">
                                                                 <div class="pt-2">
-                                                                    <p><strong>Người Giao:</strong>
-                                                                        .................................................................................................................................................................................
-                                                                    </p>
-                                                                    <p><strong>Theo Số Hóa Đơn:</strong>
-                                                                        <span id="modalSupplier">
-                                                                            {{ $item->code }}
-                                                                        </span>
-                                                                    </p>
                                                                     <h6><span id="modalSupplier"
                                                                             style="line-height: 1.6;">
                                                                             Công Ty <span
@@ -376,9 +419,6 @@
 
                                                             <!-- Begin::Receipt Items -->
                                                             <div class="mb-4 mt-3">
-                                                                <h4 class="text-primary mb-3">
-                                                                    Danh Sách Thiết Bị
-                                                                </h4>
                                                                 <div class="table-responsive rounded">
                                                                     <table
                                                                         class="table border border-dark align-middle gs-0 gy-4">
@@ -457,24 +497,49 @@
                                                                                 </td>
                                                                                 <td colspan="1" class="text-right"
                                                                                     style="height: 30px; min-height: 30px;">
-                                                                                    {{ number_format($totalPrice, 0, ',', '.') }} VND
+                                                                                    {{ number_format($totalPrice, 0, ',', '.') }}
+                                                                                    VND
                                                                                 </td>
                                                                                 <td colspan="1" class="text-right"
                                                                                     style="height: 30px; min-height: 30px;">
-                                                                                    {{ number_format($totalMoney, 0, ',', '.') }} VND
+                                                                                    {{ number_format($totalMoney, 0, ',', '.') }}
+                                                                                    VND
                                                                                 </td>
                                                                             </tr>
                                                                         </tbody>
                                                                     </table>
                                                                 </div>
                                                                 <div>
-                                                                    <p><strong>Ghi Chú:
-                                                                        </strong><span>{{ $item->note }}</span>
-                                                                    </p>
+                                                                    <div class="order-form">
+                                                                        <p class="mb-0"><strong>Thời gian giao
+                                                                                hàng:</strong></p>
+                                                                        <div class="dotted-line"></div>
+                                                                        <div class="dotted-line"></div>
+
+                                                                        <p class="mb-0"><strong>Phương thức thanh
+                                                                                toán:</strong></p>
+                                                                        <div class="dotted-line"></div>
+                                                                        <div class="dotted-line"></div>
+                                                                    </div>
+
+                                                                    <style>
+                                                                        .order-form {
+                                                                            width: 100%;
+                                                                            font-family: Arial, sans-serif;
+                                                                        }
+
+                                                                        .dotted-line {
+                                                                            width: 100%;
+                                                                            border-bottom: 1px dotted #000;
+                                                                            margin-bottom: 15px;
+                                                                            height: 20px;
+                                                                        }
+                                                                    </style>
+
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-8"></div>
-                                                                    <div class="col-4">
+                                                                    <div class="col-4 mb-3">
                                                                         <p class="m-0 p-0">
                                                                             Cần Thơ, ngày
                                                                             {{ \Carbon\Carbon::now()->day }}
@@ -676,9 +741,8 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow">
                     <div class="modal-header bg-primary">
-                        <h5 class="modal-title text-white" id="saveModalLabel">Tạo Phiếu Yêu Cầu
-                            Mua
-                            Hàng
+                        <h5 class="modal-title text-white" id="saveModalLabel">
+                            Tạo Phiếu Yêu Cầu Mua Hàng
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -686,14 +750,75 @@
                         @csrf
                         <input type="hidden" name="save_status" value="{{ $item->code }}">
                         <div class="modal-body pb-0 text-center">
-                            <p class="text-primary mb-4">Tạo Phiếu Yêu Cầu Mua Hàng
-                                Này?</p>
+                            <p class="text-primary mb-4">
+                                Tạo Phiếu Yêu Cầu Mua Hàng Này?
+                            </p>
                         </div>
                         <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
                                 data-bs-dismiss="modal">Đóng</button>
                             <button type="submit"
                                 class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">Tạo</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Xác nhận đã nhận báo giá --}}
+        <div class="modal fade" id="quote_received_{{ $item->code }}" data-bs-backdrop="static"
+            data-bs-keyboard="false" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-primary">
+                        <h5 class="modal-title text-white" id="saveModalLabel">
+                            Xác Nhận Đã Nhận Báo Giá
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('equipment_request.import') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="quote_received" value="{{ $item->code }}">
+                        <div class="modal-body pb-0 text-center">
+                            <p class="text-primary mb-4">
+                                Xác Nhận Đã Nhận Báo Giá Cho Danh Sách Thiết Bị Này?
+                            </p>
+                        </div>
+                        <div class="modal-footer justify-content-center border-0">
+                            <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
+                                data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">Xác
+                                Nhận</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Xác nhận đã nhập giá --}}
+        <div class="modal fade" id="price_entered_{{ $item->code }}" data-bs-backdrop="static"
+            data-bs-keyboard="false" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-primary">
+                        <h5 class="modal-title text-white" id="saveModalLabel">
+                            Xác Nhận Đã Nhập Giá Cho Danh Sách Thiết Bị
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('equipment_request.import') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="price_entered" value="{{ $item->code }}">
+                        <div class="modal-body pb-0 text-center">
+                            <p class="text-primary mb-4">
+                                Xác Nhận Đã Nhập Giá Cho Danh Sách Thiết Bị Này?
+                            </p>
+                        </div>
+                        <div class="modal-footer justify-content-center border-0">
+                            <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
+                                data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn rounded-pill btn-sm btn-twitter px-4 load_animation">Xác
+                                Nhận</button>
                         </div>
                     </form>
                 </div>

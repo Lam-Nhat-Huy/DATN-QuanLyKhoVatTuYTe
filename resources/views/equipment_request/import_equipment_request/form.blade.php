@@ -22,6 +22,20 @@
         $d_none_temp = '';
 
         $hidden = '';
+    } elseif (request('status') == 5) {
+        $action = route('equipment_request.edit_import_price', request('code'));
+
+        $button_text = 'Cập Nhật';
+
+        $required = '';
+
+        $d_none_save = 'd-none';
+
+        $d_none_update = '';
+
+        $d_none_temp = 'd-none';
+
+        $hidden = 'd-none';
     } else {
         $action = route('equipment_request.edit_import', request('code'));
 
@@ -63,7 +77,7 @@
         <div class="py-3 px-lg-17">
             <div class="me-n7 pe-7">
                 <div class="row align-items-center">
-                    <div class="col-md-6 fv-row">
+                    <div class="col-md-12 fv-row">
                         <label class="{{ $required }} fs-5 fw-bold mb-3">Nhà Cung Cấp</label>
                         <div class="d-flex align-items-center">
                             <select name="supplier_code" id="supplier_code" onchange="changeSupplier()"
@@ -86,11 +100,10 @@
                         <div class="message_error" id="supplier_code_error"></div>
                     </div>
 
-                    <div class="col-md-6 fv-row">
+                    <div class="col-md-12 fv-row">
                         <label class="fs-5 fw-bold mb-3">Ghi Chú</label>
-                        <input type="text" class="form-control form-control-sm border border-success rounded-pill"
-                            placeholder="Nhập ghi chú cho phiếu yêu cầu nhập.." name="note" id="note"
-                            value="{{ old('note', $editForm->note ?? '') }}" />
+                        <textarea type="text" class="form-control form-control-sm border border-success rounded" rows="5"
+                            placeholder="Nhập ghi chú cho phiếu yêu cầu nhập.." name="note" id="note">{{ old('note', $editForm->note ?? '') }}</textarea>
                         <div class="message_error" id="supplier_code_error"></div>
                     </div>
                 </div>
@@ -105,7 +118,7 @@
             </h3>
         </div>
         <div class="py-3 px-lg-17">
-            <div class="me-n7 pe-7">
+            <div class="me-n7 pe-7 {{ request('status') == 5 ? 'd-none' : '' }}">
                 <div class="row align-items-center">
                     <div class="col-md-6 fv-row">
                         <label class="{{ $required }} fs-5 fw-bold mb-3">Thiết Bị</label>
@@ -131,25 +144,17 @@
                         <div class="message_error" id="equipment_error"></div>
                     </div>
 
-                    <div class="col-md-3 fv-row">
+                    <div class="col-md-6 fv-row">
                         <label class="{{ $required }} fs-5 fw-bold mb-3">Số Lượng</label>
                         <input type="number" id="quantity" onchange="changeEquipmentQuantity()"
                             class="form-control form-control-sm border border-success rounded-pill" value="0"
                             name="quantity" min="0" />
                         <div class="message_error" id="quantity_error"></div>
                     </div>
-
-                    <div class="col-md-3 fv-row">
-                        <label class="{{ $required }} fs-5 fw-bold mb-3">Đơn Giá</label>
-                        <input type="number" id="price" onchange="changeEquipmentPrice()"
-                            class="form-control form-control-sm border border-success rounded-pill" value="0"
-                            name="price" min="0" />
-                        <div class="message_error" id="price_error"></div>
-                    </div>
                 </div>
             </div>
 
-            <div class="modal-footer flex-right pe-0 py-5">
+            <div class="modal-footer flex-right pe-0 py-5 {{ request('status') == 5 ? 'd-none' : '' }}">
                 <button type="butotn" class="btn btn-danger btn-sm rounded-pill" id="btn_add_equipment">
                     <i class="fa fa-plus" style="margin-bottom: 2px;"></i>Thêm Vào Danh Sách
                 </button>
@@ -159,55 +164,86 @@
                 <table class="table table-striped align-middle gs-0 gy-4" id="table_list_equipment">
                     <thead class="table-dark">
                         <tr class="fw-bolder bg-success">
-                            <th class="ps-10" style="width: 20%;">Thiết Bị</th>
-                            <th class="" style="width: 10%;">Đơn Vị</th>
-                            <th class="" style="width: 25%;">Số Lượng</th>
-                            <th class="" style="width: 25%;">Đơn Giá</th>
-                            <th class="" style="width: 10%;">Thành Tiền</th>
-                            <th class="pe-3 text-center" style="width: 10%;">Hành Động</th>
+                            @if (!empty(request('status') == 5))
+                                <th class="ps-10" style="width: 30%;">Thiết Bị</th>
+                                <th class="" style="width: 10%;">Đơn Vị</th>
+                                <th class="" style="width: 20%;">Số Lượng</th>
+                                <th class="" style="width: 20%;">Giá Tiền</th>
+                                <th class="" style="width: 15%;">Tổng Cộng</th>
+                            @else
+                                <th class="ps-10" style="width: 45%;">Thiết Bị</th>
+                                <th class="" style="width: 15%;">Đơn Vị</th>
+                                <th class="" style="width: 25%;">Số Lượng</th>
+                                <th class="pe-3 text-center" style="width: 15%;">Hành Động</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
                         @if (!empty($getList))
                             @foreach ($getList as $item)
                                 <tr id="equipment-row-{{ $item->equipment_code }}">
-                                    <td>{{ $item->equipments->name }}</td>
-                                    <td>{{ $item->equipments->units->name }}</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <input type="number" id="quantity_change_{{ $item->equipment_code }}"
-                                                value="{{ $item->quantity }}"
-                                                oninput="chanQuantityTr('{{ $item->equipment_code }}'); calculateTotalPriceTr('{{ $item->equipment_code }}');"
-                                                class="form-control form-control-sm border border-success rounded-pill"
-                                                style="width: 30%;">
-                                            <div class="message_error d-none ms-2 m-0 p-0"
-                                                id="quantity_error_{{ $item->equipment_code }}">
-                                                (Số lượng
-                                                phải lớn hơn 0)
+                                    @if (!empty(request('status') == 5))
+                                        <td>{{ $item->equipments->name }}</td>
+                                        <td>{{ $item->equipments->units->name }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <input type="number" id="quantity_change_{{ $item->equipment_code }}"
+                                                    value="{{ $item->quantity }}"
+                                                    oninput="calculateTotalPriceTr('{{ $item->equipment_code }}'); showNote('{{ $item->equipment_code }}', '{{ $item->equipments->name }}', '{{ $item->quantity }}', '{{ $editForm->note }}');"
+                                                    class="form-control form-control-sm border border-success rounded-pill"
+                                                    style="width: 50%;">
+                                                <div class="message_error d-none ms-2 m-0 p-0"
+                                                    id="quantity_error_{{ $item->equipment_code }}">
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <input type="number" id="price_change_{{ $item->equipment_code }}"
-                                                value="{{ $item->price }}"
-                                                oninput="chanPriceTr('{{ $item->equipment_code }}'); calculateTotalPriceTr('{{ $item->equipment_code }}');"
-                                                class="form-control form-control-sm border border-success rounded-pill"
-                                                style="width: 30%;">
-                                            <div class="message_error d-none ms-2 m-0 p-0"
-                                                id="price_error_{{ $item->equipment_code }}">
-                                                (Giá phải lớn hơn 0)
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <input type="number" id="price_change_{{ $item->equipment_code }}"
+                                                    value="{{ $item->price ?? 0 }}" min="0"
+                                                    oninput="calculateTotalPriceTr('{{ $item->equipment_code }}');"
+                                                    class="form-control form-control-sm border border-success rounded-pill"
+                                                    style="width: 50%;">
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td id="total_price_{{ $item->equipment_code }}">
-                                        {{ number_format($item->quantity * $item->price, 0, ',', '.') . ' VND' }}</td>
-                                    <td class="text-center">
-                                        <span class="btn btn-sm btn-dark pointer rounded-pill"
-                                            onclick="removeEquipment('{{ $item->equipment_code }}')">
-                                            <i class="fa fa-trash p-0"></i>
-                                        </span>
-                                    </td>
+                                        </td>
+                                        <td id="total_price_{{ $item->equipment_code }}">
+                                            {{ number_format($item->quantity * $item->price, 0, ',', '.') . ' VND' }}</td>
+                                    @else
+                                        <td>{{ $item->equipments->name }}</td>
+                                        <td>{{ $item->equipments->units->name }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <input type="number" id="quantity_change_{{ $item->equipment_code }}"
+                                                    value="{{ $item->quantity }}"
+                                                    oninput="chanQuantityTr('{{ $item->equipment_code }}'); calculateTotalPriceTr('{{ $item->equipment_code }}');"
+                                                    class="form-control form-control-sm border border-success rounded-pill"
+                                                    style="width: 30%;">
+                                                <div class="message_error d-none ms-2 m-0 p-0"
+                                                    id="quantity_error_{{ $item->equipment_code }}">
+                                                    (Số lượng
+                                                    phải lớn hơn 0)
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="d-none">
+                                            <div class="d-flex align-items-center">
+                                                <input type="number" id="price_change_{{ $item->equipment_code }}"
+                                                    value="{{ $item->price }}" min="0"
+                                                    oninput="calculateTotalPriceTr('{{ $item->equipment_code }}');"
+                                                    class="form-control form-control-sm border border-success rounded-pill"
+                                                    style="width: 30%;">
+                                                <div class="message_error d-none ms-2 m-0 p-0"
+                                                    id="price_error_{{ $item->equipment_code }}">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="btn btn-sm btn-dark pointer rounded-pill"
+                                                onclick="removeEquipment('{{ $item->equipment_code }}')">
+                                                <i class="fa fa-trash p-0"></i>
+                                            </span>
+                                        </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         @endif
@@ -220,9 +256,9 @@
                                         <i class="fas fa-box-open" style="font-size: 36px; color: #6c757d;"></i>
                                     </div>
                                     <div class="text-center">
-                                        <h5 style="font-size: 16px; font-weight: 600; color: #495057;">Danh sách thiết
-                                            bị
-                                            trống</h5>
+                                        <h5 style="font-size: 16px; font-weight: 600; color: #495057;">
+                                            Danh sách thiết bị trống
+                                        </h5>
                                         <p style="font-size: 14px; color: #6c757d; margin: 0;">
                                             Hiện chưa có thiết bị nào được thêm vào danh sách yêu cầu.
                                         </p>
@@ -374,7 +410,7 @@
 
                 // Gán dữ liệu random vào form
                 document.getElementById('supplier_code').value = randomSupplier;
-                document.getElementById('note').value = 'Cạn Kiệt Thiết Bị';
+                document.getElementById('note').value = '';
                 document.getElementById('equipment').value = randomEquipment;
                 document.getElementById('quantity').value = getRandomNumber(50, 300);
                 document.getElementById('price').value = getRandomNumber(10000, 300000);
@@ -425,7 +461,7 @@
                     equipment_code: equipmentCode,
                     unit: unit,
                     quantity: quantity,
-                    price: price
+                    price: price ?? 0,
                 });
 
             });
@@ -513,8 +549,10 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            window.location.href = "{{ route('equipment_request.import') }}";
                             toastr.success(data.message);
+                            setTimeout(() => {
+                                window.location.href = "{{ route('equipment_request.import') }}";
+                            }, 1000);
                         } else {
                             toastr.error(data.message);
                             countDown();
@@ -551,7 +589,6 @@
                 let noDataAlert = document.getElementById('noDataAlert');
                 let equipment = document.getElementById('equipment').value;
                 let quantity = document.getElementById('quantity').value;
-                let price = document.getElementById('price').value;
                 let equipment_error = document.getElementById('equipment_error');
                 let quantity_error = document.getElementById('quantity_error');
 
@@ -566,12 +603,7 @@
                     quantity_error.innerText = "Số lượng cần mua phải lớn hơn 0";
                 }
 
-                if (price <= 0) {
-                    price_error.innerText = "Giá thiết bị phải lớn hơn 0";
-                }
-
-                if (!equipment ||
-                    quantity <= 0) {
+                if (!equipment || quantity <= 0) {
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('loading-overlay').style.display = 'none';
                     this.disabled = false;
@@ -582,7 +614,6 @@
                 FormData();
                 formData.append('equipment', equipment);
                 formData.append('quantity', quantity);
-                formData.append('price', price);
 
                 fetch('{{ route('equipment_request.create_import') }}', {
                         method: 'POST',
@@ -604,7 +635,7 @@
                             let tableBody = document.querySelector('#table_list_equipment tbody');
                             let newRow = document.createElement('tr');
                             newRow.id = `equipment-row-${data.equipment_code}`;
-                            let totalPrice = (parseInt(data.quantity, 10) * parseInt(data.price, 10))
+                            let totalPrice = (parseInt(data.quantity, 10) * 0)
                                 .toLocaleString('vi-VN', {
                                     style: 'currency',
                                     currency: 'VND',
@@ -622,23 +653,22 @@
                                             class="form-control form-control-sm border border-success rounded-pill" style="width: 30%;">
                                         <div class="message_error d-none ms-2 m-0 p-0"
                                             id="quantity_error_${data.equipment_code}">
-                                            (Số lượng
-                                            phải lớn hơn 0)
+                                            (Số lượng phải lớn hơn 0)
                                         </div>
                                     </div>
                                 </td>
-                                <td>
+                                <td class="d-none">
                                     <div class="d-flex align-items-center">
                                         <input type="number" id="price_change_${data.equipment_code}"
-                                            value="${data.price}" oninput="chanPriceTr('${data.equipment_code}'); calculateTotalPriceTr('${data.equipment_code}');"
-                                            class="form-control form-control-sm border border-success rounded-pill" style="width: 30%;">
+                                            value="0" min="0"
+                                            oninput="calculateTotalPriceTr('${data.equipment_code}');"
+                                            class="form-control form-control-sm border border-success rounded-pill"
+                                            style="width: 30%;">
                                         <div class="message_error d-none ms-2 m-0 p-0"
                                             id="price_error_${data.equipment_code}">
-                                            (Giá phải lớn hơn 0)
                                         </div>
                                     </div>
                                 </td>
-                                <td id="total_price_${data.equipment_code}">${totalPrice}</td>
                                 <td class="text-center">
                                     <span class="btn btn-sm btn-dark pointer rounded-pill" onclick="removeEquipment('${data.equipment_code}')">
                                         <i class="fa fa-trash p-0"></i>
@@ -901,17 +931,6 @@
             }
         }
 
-        function chanPriceTr(equipmentCode) {
-            const priceC = document.getElementById(`price_change_${equipmentCode}`).value;
-            const priceE = document.getElementById(`price_error_${equipmentCode}`);
-
-            if (priceC > 0) {
-                priceE.classList.add('d-none');
-            } else {
-                priceE.classList.remove('d-none');
-            }
-        }
-
         function calculateTotalPriceTr(equipment_code) {
             const price = parseFloat(document.getElementById(`price_change_${equipment_code}`).value.replace(/,/g, '')) ||
                 0;
@@ -932,6 +951,54 @@
 
             // Cập nhật thành tiền trong HTML
             document.getElementById(`total_price_${equipment_code}`).innerText = formattedTotalPrice;
+        }
+
+        // let notes = {}; // Object để lưu các thiết bị đã thay đổi số lượng và chênh lệch
+
+        // function showNote(equipment_code, equipment_name, equipment_quantity, noteDefault) {
+
+        //     const quantity_showNote = document.getElementById(`quantity_change_${equipment_code}`).value;
+
+        //     let quantityCalculate = equipment_quantity - quantity_showNote;
+        //     let quantityShowNote = Math.abs(quantityCalculate);
+
+        //     if (quantity_showNote == 0) {
+        //         notes[equipment_name] = `Thiết Bị "${equipment_name}" đã hết hàng`;
+        //     } else if (quantityCalculate > 0) {
+        //         notes[equipment_name] =
+        //             `Thiết Bị "${equipment_name}" thiếu "${quantityShowNote}" so với yêu cầu ban đầu là "${equipment_quantity}"`;
+        //     } else if (quantityCalculate < 0) {
+        //         notes[equipment_name] =
+        //             `Thiết Bị "${equipment_name}" dư "${quantityShowNote}" so với yêu cầu ban đầu là "${equipment_quantity}"`;
+        //     } else if (quantityCalculate === 0) {
+        //         delete notes[equipment_name];
+        //     }
+
+        //     let noteText = noteDefault ? `${noteDefault}` : ''; // Kiểm tra giá trị noteDefault
+
+        //     // Kiểm tra nếu có thiết bị chênh lệch để chèn thêm nội dung mới
+        //     if (Object.keys(notes).length > 0) {
+        //         let additionalText = Object.keys(notes).map(name => {
+        //             return `${notes[name]}`;
+        //         }).join(', ');
+
+        //         // Nếu có giá trị noteDefault, nối với additionalText; nếu không, chỉ hiển thị additionalText
+        //         noteText = noteDefault ? `${noteText}, ${additionalText}` : additionalText;
+        //     }
+
+        //     document.getElementById('note').value = noteText;
+        // }
+
+        function displayFileName() {
+            const fileInput = document.getElementById('excel_file');
+            const fileNameDisplay = document.getElementById('fileName');
+
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name; // Lấy tên file
+                fileNameDisplay.textContent = `File đã tải lên: ${fileName}`; // Hiển thị tên file
+            } else {
+                fileNameDisplay.textContent = ''; // Nếu không có file nào được chọn, xóa nội dung
+            }
         }
     </script>
 @endsection

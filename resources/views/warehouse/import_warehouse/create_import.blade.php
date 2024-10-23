@@ -214,13 +214,13 @@
                             <thead class="table-dark">
                                 <tr class="">
                                     @if (!empty($getListIERD))
-                                        <th style="width: 25%;" class="ps-5">Thiết bị</th>
-                                        <th style="width: 17%;">Số lô</th>
-                                        <th style="width: 17%;">Giá</th>
+                                        <th style="width: 30%;" class="ps-5">Thiết bị</th>
+                                        <th style="width: 15%;">Số lô</th>
+                                        <th style="width: 10%;">Giá</th>
                                         <th style="width: 10%;">SL</th>
                                         <th style="width: 9%;">CK</th>
                                         <th style="width: 9%;">VAT</th>
-                                        <th style="width: 20%;" class="pe-5">Thành tiền</th>
+                                        <th style="width: 25%;" class="pe-5">Thành tiền</th>
                                     @else
                                         <th style="width: 24%;" class="ps-5">Thiết bị</th>
                                         <th style="width: 12%;">Số lô</th>
@@ -257,7 +257,7 @@
                                                 <div class="d-flex align-items-center">
                                                     <input type="number" id="price_change_{{ $item->equipment_code }}"
                                                         value="{{ number_format($item->price, 0, ',', '') }}"
-                                                        min="0"
+                                                        min="0" disabled
                                                         class="form-control form-control-sm border border-success rounded-pill"
                                                         oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom();">
                                                 </div>
@@ -266,8 +266,7 @@
                                                 <div class="d-flex align-items-center">
                                                     <input type="number"
                                                         id="quantity_change_{{ $item->equipment_code }}"
-                                                        value="{{ $item->quantity }}" max="{{ $item->quantity }}"
-                                                        min="0"
+                                                        value="{{ $item->quantity }}" min="0"
                                                         oninput="calculateTotalPriceTop('{{ $item->equipment_code }}'); calculateTotalPriceBottom(); showNote('{{ $item->equipment_code }}', '{{ $item->equipments->name }}', '{{ $item->quantity }}', '{{ $infoIER->note }}');"
                                                         class="form-control form-control-sm border border-success rounded-pill">
                                                 </div>
@@ -506,24 +505,49 @@
                     @endif
 
                     @if (!empty($getListIERD))
+                        @php
+                            $totalPriceIerd = 0;
+                            $totalDiscountIerd = 0;
+                            $totalVATIerd = 0;
+
+                            foreach ($getListIERD as $detail) {
+                                $priceIerd = $detail->price ?? 0;
+                                $quantityIerd = $detail->quantity;
+                                $discountIerd = $detail->discount ?? 0;
+                                $vatIerd = $detail->VAT ?? 0;
+
+                                $totalPriceIerd += $quantityIerd * $priceIerd;
+
+                                $totalDiscountIerd += $totalPriceIerd * ($discountIerd / 100);
+
+                                $totalVATIerd += $totalPriceIerd * ($vatIerd / 100);
+                            }
+
+                            $totalAmount = $totalPriceIerd - $totalDiscountIerd + $totalVATIerd;
+                        @endphp
                         <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
                             <span class="fw-semibold">Tổng Đầu</span>
-                            <span id="totalPrice" class="fw-bolder text-danger">0 VND</span>
+                            <span id="totalPrice"
+                                class="fw-bolder text-danger">{{ number_format($totalPriceIerd, 0, ',', '.') }} VND</span>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="fw-semibold">Tổng Chiết Khấu</span>
-                            <span id="totalDiscount" class="fw-bolder text-danger">0 VND</span>
+                            <span id="totalDiscount"
+                                class="fw-bolder text-danger">{{ number_format($totalDiscountIerd, 0, ',', '.') }}
+                                VND</span>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="fw-semibold">Tổng VAT</span>
-                            <span id="totalVAT" class="fw-bolder text-danger">0 VND</span>
+                            <span id="totalVAT"
+                                class="fw-bolder text-danger">{{ number_format($totalVATIerd, 0, ',', '.') }} VND</span>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="fw-semibold">Tổng Cuối</span>
-                            <span id="totalAmount" class="fw-bolder text-danger">0 VND</span>
+                            <span id="totalAmount"
+                                class="fw-bolder text-danger">{{ number_format($totalAmount, 0, ',', '.') }} VND</span>
                         </div>
                     @else
                         <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
@@ -1695,13 +1719,22 @@
         let notes = {}; // Object để lưu các thiết bị đã thay đổi số lượng và chênh lệch
 
         function showNote(equipment_code, equipment_name, equipment_quantity, noteDefault) {
-            const quantity = document.getElementById(`quantity_change_${equipment_code}`).value;
-            let quantityShowNote = equipment_quantity - quantity;
 
-            if (quantityShowNote === 0) {
+            const quantity_showNote = document.getElementById(`quantity_change_${equipment_code}`).value;
+
+            let quantityCalculate = equipment_quantity - quantity_showNote;
+            let quantityShowNote = Math.abs(quantityCalculate);
+
+            if (quantity_showNote == 0) {
+                notes[equipment_name] = `Thiết Bị "${equipment_name}" đã hết hàng`;
+            } else if (quantityCalculate > 0) {
+                notes[equipment_name] =
+                    `Thiết Bị "${equipment_name}" thiếu "${quantityShowNote}" so với ban đầu là "${equipment_quantity}"`;
+            } else if (quantityCalculate < 0) {
+                notes[equipment_name] =
+                    `Thiết Bị "${equipment_name}" dư "${quantityShowNote}" so với ban đầu là "${equipment_quantity}"`;
+            } else if (quantityCalculate === 0) {
                 delete notes[equipment_name];
-            } else {
-                notes[equipment_name] = quantityShowNote;
             }
 
             let noteText = noteDefault ? `${noteDefault}` : ''; // Kiểm tra giá trị noteDefault
@@ -1709,14 +1742,14 @@
             // Kiểm tra nếu có thiết bị chênh lệch để chèn thêm nội dung mới
             if (Object.keys(notes).length > 0) {
                 let additionalText = Object.keys(notes).map(name => {
-                    return `Số lượng của "${name}" chênh lệch "-${notes[name]}" so với yêu cầu`;
+                    return `${notes[name]}`;
                 }).join(', ');
 
                 // Nếu có giá trị noteDefault, nối với additionalText; nếu không, chỉ hiển thị additionalText
                 noteText = noteDefault ? `${noteText}, ${additionalText}` : additionalText;
             }
 
-            document.getElementById('note').innerText = noteText;
+            document.getElementById('note').value = noteText;
         }
     </script>
 @endsection

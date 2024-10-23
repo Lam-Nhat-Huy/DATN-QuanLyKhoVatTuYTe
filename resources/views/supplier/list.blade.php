@@ -4,6 +4,21 @@
 @endsection
 
 @section('scripts')
+    <script>
+        function displayFileName() {
+            const fileInput = document.getElementById('excel_file');
+            const fileNameDisplay = document.getElementById('fileName');
+            const submit_quote = document.getElementById('submit_quote');
+
+            if (fileInput.files.length > 0) {
+                submit_quote.disabled = false;
+                const fileName = fileInput.files[0].name; // Lấy tên file
+                fileNameDisplay.textContent = `File đã tải lên: ${fileName}`; // Hiển thị tên file
+            } else {
+                fileNameDisplay.textContent = ''; // Nếu không có file nào được chọn, xóa nội dung
+            }
+        }
+    </script>
 @endsection
 
 @section('title')
@@ -17,6 +32,13 @@
                 <span class="card-label fw-bolder fs-3 mb-1">Danh Sách Nhà Cung Cấp</span>
             </h3>
             <div class="card-toolbar">
+                <a href="{{ route('supplier.quote_history') }}?{{ request()->getQueryString() }}"
+                    class="btn rounded-pill btn-sm btn-success me-2">
+                    <span class="align-items-center d-flex">
+                        <i class="fa fa-clock-rotate-left me-1"></i>
+                        Lịch Sử Báo Giá
+                    </span>
+                </a>
                 <a href="{{ route('supplier.trash') }}?{{ request()->getQueryString() }}"
                     class="btn rounded-pill btn-sm btn-danger me-2">
                     <span class="align-items-center d-flex">
@@ -52,8 +74,9 @@
                 </div>
             </form>
         </div>
-        <form action="{{ route('supplier.list') }} " method="POST">
+        <form action="{{ route('supplier.list') }} " method="POST" enctype="multipart/form-data">
             @csrf
+            <input type="hidden" name="action_type" id="action_type" value="">
             <div class="card-body py-3">
                 <div class="table-responsive rounded">
                     <table class="table align-middle gs-0 gy-4">
@@ -198,8 +221,12 @@
                             <span>Chọn Thao Tác</span>
                         </span>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item pointer" data-bs-toggle="modal" data-bs-target="#browseAll">
+                                    <i class="fa-solid fa-hand-holding-dollar me-2" style="margin-bottom: 2px;"></i>Báo
+                                    Giá</a>
+                            </li>
                             <li><a class="dropdown-item pointer" data-bs-toggle="modal" data-bs-target="#deleteAll">
-                                    <i class="fas fa-trash me-2 text-danger"></i>Xóa</a>
+                                    <i class="fas fa-trash me-2 text-danger" style="margin-bottom: 2px;"></i>Xóa</a>
                             </li>
                         </ul>
                     </div>
@@ -210,18 +237,47 @@
                 </div>
             @endif
 
+            {{-- Modal Xác Nhận Báo Giá All --}}
+            <div class="modal fade" id="browseAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="browseAllLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-md">
+                    <div class="modal-content border-0 shadow">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title text-white" id="browseAllLabel">Gửi Báo Giá Đến Nhà Cung Cấp</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center" style="padding-bottom: 0px;">
+                            <label for="excel_file" class="btn btn-sm btn-twitter w-100"><i class="fa fa-upload me-1"
+                                    style="margin-bottom: 2px;"></i>Tải File Lên</label>
+                            <input type="file" class="d-none" name="excel_file" id="excel_file" accept=".xls,.xlsx"
+                                onchange="displayFileName()">
+                            <div id="fileName" class="mt-3 fw-semibold text-dark"></div>
+                        </div>
+                        <div class="modal-footer justify-content-center border-0">
+                            <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"
+                                data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn rounded-pill btn-sm btn-twitter px-4 load_animation"
+                                id="submit_quote" disabled>
+                                Gửi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Modal Xác Nhận Xóa Tất Cả --}}
             <div class="modal fade" id="deleteAll" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
                 aria-labelledby="deleteAllLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-md">
                     <div class="modal-content border-0 shadow">
                         <div class="modal-header bg-danger text-white">
-                            <h5 class="modal-title text-white" id="deleteAllLabel">Xác Nhận Xóa Tất Cả người dùng</h5>
+                            <h5 class="modal-title text-white" id="deleteAllLabel">Xác Nhận Xóa Tất Cả Nhà Cung Cấp</h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
                         <div class="modal-body text-center" style="padding-bottom: 0px;">
-                            <p class="text-danger mb-4">Bạn có chắc chắn muốn xóa tất cả người dùng đã chọn?</p>
+                            <p class="text-danger mb-4">Bạn có chắc chắn muốn xóa tất cả nhà cung cấp đã chọn?</p>
                         </div>
                         <div class="modal-footer justify-content-center border-0">
                             <button type="button" class="btn rounded-pill btn-sm btn-secondary px-4"

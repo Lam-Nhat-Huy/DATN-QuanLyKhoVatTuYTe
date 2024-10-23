@@ -442,7 +442,7 @@
             handleImportEquipmentRequest(4);
         });
 
-        // Thêm yêu cầu mua hàng
+        // Thêm yêu cầu xuất hàng
         function handleImportEquipmentRequest(exportEquipmentStatus) {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('loading-overlay').style.display = 'block';
@@ -581,11 +581,11 @@
                 quantity_error.innerText = '';
 
                 if (!equipment) {
-                    equipment_error.innerText = "Vui lòng chọn thiết bị cần mua";
+                    equipment_error.innerText = "Vui lòng chọn thiết bị yêu cầu";
                 }
 
                 if (quantity <= 0) {
-                    quantity_error.innerText = "Vui lòng nhập số lượng cần mua và phải lớn hơn 0";
+                    quantity_error.innerText = "Vui lòng nhập số lượng yêu cầu và phải lớn hơn 0";
                 }
                 if (!equipment ||
                     quantity <= 0) {

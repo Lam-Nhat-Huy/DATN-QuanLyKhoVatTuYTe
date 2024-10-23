@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Supplier;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Supplier\CreateSupplierRequest;
 use App\Http\Requests\Supplier\UpdateSupplierRequest;
+use App\Mail\QuoteSupplierMail;
 use App\Models\Import_equipment_requests;
+use App\Models\Quote_histories;
 use App\Models\Suppliers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class SupplierController extends Controller
 {
@@ -25,27 +28,54 @@ class SupplierController extends Controller
         $title = 'Nhà Cung Cấp';
 
         if ($request->has('supplier_codes')) {
-            // Lấy danh sách các mã nhà cung cấp trùng với supplier_code trong Import_equipment_requests
-            $existingSuppliers = Import_equipment_requests::whereIn('supplier_code', $request->supplier_codes)
-                ->pluck('supplier_code')
-                ->toArray();
+            if ($request->action_type === 'delete') {
+                // Lấy danh sách các mã nhà cung cấp trùng với supplier_code trong Import_equipment_requests
+                $existingSuppliers = Import_equipment_requests::whereIn('supplier_code', $request->supplier_codes)
+                    ->pluck('supplier_code')
+                    ->toArray();
 
-            // Tìm mã nhà cung cấp trong $request->supplier_codes không có trong danh sách $existingSuppliers
-            $nonExistingSuppliers = array_diff($request->supplier_codes, $existingSuppliers);
+                // Tìm mã nhà cung cấp trong $request->supplier_codes không có trong danh sách $existingSuppliers
+                $nonExistingSuppliers = array_diff($request->supplier_codes, $existingSuppliers);
 
-            // Nếu có mã nhà cung cấp không tồn tại trong Import_equipment_requests, thì xóa chúng
-            if (!empty($nonExistingSuppliers)) {
-                // Xóa các nhà cung cấp không trùng
-                $this->SupplierModel::whereIn('code', $nonExistingSuppliers)->delete();
+                // Nếu có mã nhà cung cấp không tồn tại trong Import_equipment_requests, thì xóa chúng
+                if (!empty($nonExistingSuppliers)) {
+                    // Xóa các nhà cung cấp không trùng
+                    $this->SupplierModel::whereIn('code', $nonExistingSuppliers)->delete();
 
-                toastr()->success('Đã xóa nhà cung cấp không tồn tại trong giao dịch của hệ thống.');
+                    toastr()->success('Đã xóa nhà cung cấp không tồn tại trong giao dịch của hệ thống.');
+
+                    return redirect()->back();
+                }
+
+                toastr()->error('Không thể xóa, nhà cung cấp này đã tồn tại trong giao dịch của hệ thống');
 
                 return redirect()->back();
+            } elseif ($request->action_type === 'browse') {
+
+                if ($request->file('excel_file')) {
+
+                    $filePath = $request->file('excel_file')->store('excelFile', 'public');
+
+                    $getEmailSuppliers = $this->SupplierModel::whereIn('code', $request->supplier_codes)->get();
+
+                    foreach ($getEmailSuppliers as $supplier) {
+
+                        $data['supplier_code'] = $supplier->code;
+
+                        $data['file_excel'] = $filePath;
+
+                        $data['user_code'] = session('user_code');
+
+                        Quote_histories::create($data);
+
+                        Mail::to($supplier->email)->send(new QuoteSupplierMail($filePath, $supplier->name));
+                    }
+
+                    toastr()->success('Đã gửi yêu cầu báo giá đến email của nhà cung cấp');
+
+                    return redirect()->back();
+                }
             }
-
-            toastr()->error('Không thể xóa, nhà cung cấp này đã tồn tại trong giao dịch của hệ thống');
-
-            return redirect()->back();
         }
 
         if ($request->has('supplier_code_delete')) {
@@ -109,7 +139,6 @@ class SupplierController extends Controller
         return view("{$this->route}.list", compact('title', 'allSupplier'));
     }
 
-
     public function trash(Request $request)
     {
         $title = 'Nhà Cung Cấp';
@@ -142,6 +171,15 @@ class SupplierController extends Controller
         return view("{$this->route}.trash", compact('title', 'allSupplierTrash'));
     }
 
+    public function quote_history()
+    {
+        $title = 'Nhà Cung Cấp';
+
+        $allQuoteHistory = Quote_histories::orderBy('created_at', 'DESC')->paginate(10);
+
+        return view("{$this->route}.quote_history", compact('title', 'allQuoteHistory'));
+    }
+
     public function add()
     {
         $title = 'Nhà Cung Cấp';
@@ -156,7 +194,7 @@ class SupplierController extends Controller
     {
         $data = $request->validated();
 
-        $data['code'] = 'SP' . $this->generateRandomString(9);
+        $data['code'] = 'SP' . $this->generateRandomString(8);
 
         $data['name'] = $request->name;
 

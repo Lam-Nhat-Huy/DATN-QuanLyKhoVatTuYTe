@@ -11,6 +11,8 @@ Route::prefix('supplier')->middleware(CheckLogin::class)->group(function () {
     Route::post('/', [SupplierController::class, 'index'])->name('supplier.list');
 
     Route::get('/trash', [SupplierController::class, 'trash'])->name('supplier.trash');
+
+    Route::get('/quote_history', [SupplierController::class, 'quote_history'])->name('supplier.quote_history');
     
     Route::post('/trash', [SupplierController::class, 'trash'])->name('supplier.trash');
 
