@@ -139,7 +139,7 @@
                                 alt="">
                         </div>
                         <div class="text-left">
-                            <h6 class="mb-1">Chatbox</h6>
+                            <h6 class="mb-1">Bot</h6>
                             <span>Xin Chào, Bạn Cần Gì?</span>
                         </div>
                     </div>

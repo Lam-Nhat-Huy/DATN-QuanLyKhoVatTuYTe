@@ -297,8 +297,7 @@
                                             </div>
 
                                             <div class="card-body py-5 text-end bg-white">
-                                                <div
-                                                    class="button-group">
+                                                <div class="button-group">
                                                     @if ($item->status == 0 && now()->lt(\Carbon\Carbon::parse($item->required_date)->addDays(1)))
                                                         {{-- Chưa duyệt và ngày cần thiết bé hơn ngày hiện tại --}}
 
@@ -388,7 +387,8 @@
                                             </div>
 
                                             {{-- In --}}
-                                            <div class="fade modal" id="printArea_{{ $item->code }}">
+                                            <div class="fade modal position-relative" id="printArea_{{ $item->code }}">
+                                                <span class="link-primary position-absolute" style="top: 5%; right: 5%;"><strong class="text-danger">Mã: </strong>{{ $item->code }}</span>
                                                 <div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
                                                     <div class="d-flex mb-5">
                                                         <img src="{{ asset('image/logo_warehouse.png') }}" width="100"
@@ -407,7 +407,6 @@
                                                             </h1>
                                                             <div class="text-muted fw-bold fs-6">Thông Tin Chi Tiết Về
                                                                 Phiếu Yêu Cầu Xuất Kho
-                                                                <span class="link-primary ">#{{ $item->code }}</span>.
                                                             </div>
                                                             <div class="text-muted fs-30">
                                                                 Ngày Lập
@@ -420,19 +419,14 @@
                                                                 <div class="pt-2">
                                                                     <p>
                                                                         <strong>Tên người xuất:</strong>
-                                                                        <span id="modalReason">
-                                                                            ....................................................................................
-                                                                        </span>
-                                                                        <strong>Bộ phận:</strong>
-                                                                        <span id="modalReason">
-                                                                            .........................................................................
+                                                                        <span id="modalReason" class="me-1">
+                                                                            {{ $item->users->last_name . ' ' . $item->users->first_name ?? 'N/A' }}
                                                                         </span>
                                                                     </p>
                                                                     <p>
                                                                         <strong>Lý do xuất:</strong>
                                                                         <span id="modalReason" style="line-height: 2;">
-                                                                            ........................................................................................................................................................................................
-                                                                            .............................................................................................................................................................................................................
+                                                                            {{ $item->reason_export }}
                                                                         </span>
                                                                     </p>
                                                                     <p>
